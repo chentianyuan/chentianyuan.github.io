@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>关于 | City Corner</title>
+<title>nodejs | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -13,12 +13,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
-
-  
-    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
-  
-
-  
 
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -97,38 +91,34 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <div class="post-detail">
-            <h2 class="post-title">关于</h2>
-            <div class="post-date">2019-01-25</div>
-            
-            <div class="post-content">
-              <blockquote>
-<p>渴望拔尖，却无法脱离中庸，恨其不争，却惶惶终日。</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<p>感谢海岛心大佬，如此便捷的搭站方式，还有配套客户端，真的贴心了 ~<br>
-本站不限于技术，生活，艺术，思考，希望能百花齐放</p>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<p>一颗漂浮在宇宙中的尘埃，期待与你相遇 ~</p>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>🏀、⌨⌨️、🎸</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>微信：cxs507<br>
-github：<a href="https://github.com/chentianyuan">https://github.com/chentianyuan</a></p>
+          <h2 class="current-tag">标签: nodejs</h2>
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://chentianyuan.github.io/post/xiang-jie-session-he-token">
+                  <h2 class="post-title">Session Token</h2>
+                </a>
+                <div class="post-date">
+                  2019-10-05
+                </div>
+                <div class="post-abstract">
+                  <p><strong>这是一篇对比session和token登录机制的文章</strong></p>
 
-            </div>
-            
-            
-
-            
+                </div>
+              </div>
               
-                <div id="gitalk-container" data-aos="fade-in"></div>
+                <a class="right" href="https://chentianyuan.github.io/post/xiang-jie-session-he-token">
+                  <div class="feature-container" style="background-image: url('https://chentianyuan.github.io/post-images/xiang-jie-session-he-token.jpeg')">
+                  </div>
+                </a>
               
+            </article>
+          
 
-              
-            
-
-          </div>
+          <div class="pagination-container">
+  
+  
+</div>
 
         </div>
       </div>
@@ -150,29 +140,6 @@ var app = new Vue({
 })
 
 </script>
-
-
-
-  
-    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-    <script>
-
-      var gitalk = new Gitalk({
-        clientID: 'c56a51c05f5b5d771fd3',
-        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
-        repo: 'chentianyuan.github.io',
-        owner: 'chentianyuan',
-        admin: ['chentianyuan'],
-        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-        distractionFreeMode: false  // Facebook-like distraction free mode
-      })
-
-      gitalk.render('gitalk-container')
-
-    </script>
-  
-
-  
 
 
 

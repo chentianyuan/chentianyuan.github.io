@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>关于 | City Corner</title>
+<title>Session Token | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -98,26 +98,56 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">关于</h2>
-            <div class="post-date">2019-01-25</div>
+            <h2 class="post-title">Session Token</h2>
+            <div class="post-date">2019-10-05</div>
+            
+              <div class="feature-container" style="background-image: url('https://chentianyuan.github.io/post-images/xiang-jie-session-he-token.jpeg')">
+              </div>
             
             <div class="post-content">
-              <blockquote>
-<p>渴望拔尖，却无法脱离中庸，恨其不争，却惶惶终日。</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<p>感谢海岛心大佬，如此便捷的搭站方式，还有配套客户端，真的贴心了 ~<br>
-本站不限于技术，生活，艺术，思考，希望能百花齐放</p>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<p>一颗漂浮在宇宙中的尘埃，期待与你相遇 ~</p>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>🏀、⌨⌨️、🎸</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>微信：cxs507<br>
-github：<a href="https://github.com/chentianyuan">https://github.com/chentianyuan</a></p>
+              <p><strong>这是一篇对比session和token登录机制的文章</strong></p>
+<!-- more -->
+<h2 id="question">question:</h2>
+<p>1、为什么需要session和token？<br>
+因为http请求是无状态的，为了标识多个请求之间的联系，必须引入一些手段和工具来标记他们，所以需要引入session和token<br>
+最常见的就是标识用户的登录状态</p>
+<h2 id="流程">流程：</h2>
+<p>1、客户端发起登录请求</p>
+<h3 id="session和cookie">Session和Cookie</h3>
+<p>2、服务端验证登录信息通过，生成session_id作为hash映射用户信息session<br>
+3、在响应体中加入set-cookie字段<br>
+4、客户端接收到响应，根据set-cookie，自动种下session_id<br>
+5、客户端再次请求，自动带上session_id，服务端根据session_id拿到用户信息和登录状态，再返回客户端想要的用户数据</p>
+<h3 id="token">Token</h3>
+<p>2、服务端验证登录信息通过，根据header，payload生成token（header.payload.signnature）（signnature也叫签名，其实是base64编码的header+'.'+base64编码的payload，再根据私匙加密一下得到的）<br>
+3、客户端拿到token后存储到storage内，下次请求，再主动塞入header里<br>
+4、服务端拿到header里的token，取出header和payload，用私匙重新加密，再和header里的token的signnature进行对比，如果正确则验证通过，证明用户是登录状态<br>
+5、从payload中拿到用户id，查询并返回客户端想要的用户数据</p>
+<h4 id="额外的">额外的</h4>
+<p>1、token天然就有预防CSRF攻击的功能，cookie中存储的session在有post表单提交的攻击网站上会带上目标网站的所有cookie信息，如果刚好最近登录过，那么请求是会成功的<br>
+2、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
+3、session会占用服务端宝贵的内存资源，带来内存压力<br>
+4、token的校验比较耗时，可能会影响接口返回速度</p>
 
             </div>
             
+              <div class="tag-container">
+                
+                  <a href="https://chentianyuan.github.io/tag/utXgApKu0" class="tag">
+                    nodejs
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/hello-gridea">
+                  <h3 class="post-title">
+                    Hello Gridea
+                  </h3>
+                </a>
+              </div>
             
 
             

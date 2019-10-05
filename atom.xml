@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2019-10-05T11:56:06.839Z</updated>
+    <updated>2019-10-05T14:06:31.087Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,39 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[Session Token]]></title>
+        <id>https://chentianyuan.github.io/post/xiang-jie-session-he-token</id>
+        <link href="https://chentianyuan.github.io/post/xiang-jie-session-he-token">
+        </link>
+        <updated>2019-10-05T11:50:52.000Z</updated>
+        <summary type="html"><![CDATA[<p><strong>这是一篇对比session和token登录机制的文章</strong></p>
+]]></summary>
+        <content type="html"><![CDATA[<p><strong>这是一篇对比session和token登录机制的文章</strong></p>
+<!-- more -->
+<h2 id="question">question:</h2>
+<p>1、为什么需要session和token？<br>
+因为http请求是无状态的，为了标识多个请求之间的联系，必须引入一些手段和工具来标记他们，所以需要引入session和token<br>
+最常见的就是标识用户的登录状态</p>
+<h2 id="流程">流程：</h2>
+<p>1、客户端发起登录请求</p>
+<h3 id="session和cookie">Session和Cookie</h3>
+<p>2、服务端验证登录信息通过，生成session_id作为hash映射用户信息session<br>
+3、在响应体中加入set-cookie字段<br>
+4、客户端接收到响应，根据set-cookie，自动种下session_id<br>
+5、客户端再次请求，自动带上session_id，服务端根据session_id拿到用户信息和登录状态，再返回客户端想要的用户数据</p>
+<h3 id="token">Token</h3>
+<p>2、服务端验证登录信息通过，根据header，payload生成token（header.payload.signnature）（signnature也叫签名，其实是base64编码的header+'.'+base64编码的payload，再根据私匙加密一下得到的）<br>
+3、客户端拿到token后存储到storage内，下次请求，再主动塞入header里<br>
+4、服务端拿到header里的token，取出header和payload，用私匙重新加密，再和header里的token的signnature进行对比，如果正确则验证通过，证明用户是登录状态<br>
+5、从payload中拿到用户id，查询并返回客户端想要的用户数据</p>
+<h4 id="额外的">额外的</h4>
+<p>1、token天然就有预防CSRF攻击的功能，cookie中存储的session在有post表单提交的攻击网站上会带上目标网站的所有cookie信息，如果刚好最近登录过，那么请求是会成功的<br>
+2、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
+3、session会占用服务端宝贵的内存资源，带来内存压力<br>
+4、token的校验比较耗时，可能会影响接口返回速度</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://chentianyuan.github.io/post/hello-gridea</id>
