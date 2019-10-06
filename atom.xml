@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2019-10-05T14:06:31.087Z</updated>
+    <updated>2019-10-06T12:19:29.985Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -36,11 +36,19 @@
 3、客户端拿到token后存储到storage内，下次请求，再主动塞入header里<br>
 4、服务端拿到header里的token，取出header和payload，用私匙重新加密，再和header里的token的signnature进行对比，如果正确则验证通过，证明用户是登录状态<br>
 5、从payload中拿到用户id，查询并返回客户端想要的用户数据</p>
-<h4 id="额外的">额外的</h4>
+<h4 id="优缺点">优缺点</h4>
 <p>1、token天然就有预防CSRF攻击的功能，cookie中存储的session在有post表单提交的攻击网站上会带上目标网站的所有cookie信息，如果刚好最近登录过，那么请求是会成功的<br>
-2、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
-3、session会占用服务端宝贵的内存资源，带来内存压力<br>
-4、token的校验比较耗时，可能会影响接口返回速度</p>
+2、token的校验比较耗时，可能会影响接口返回速度<br>
+3、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
+4、session会占用服务端宝贵的内存资源，带来内存压力</p>
+<h4 id="如何清除登录状态">如何清除登录状态</h4>
+<p>session机制中，下发sessionId的同时会带一个expires或者maxAge，服务端需要记录下发时间，下次请求进来时对查到的sessionId对应的session的时效性进行校验，如果超时，则清除server端存储的信息，并告知客户端登录超时。<br>
+token无法做到完美清除<br>
+1、可以在token的payload位置存储一个时间戳，然后校验合法性时同时校验token是否超时。用户主动登出时，重新下发一个超时的token挤掉原先的token。<br>
+2、在user表中加一个时间戳字段，查询用户信息时同时对比token是否过期。</p>
+<h4 id="再讲一个题外话为什么token需要用base64编码呢">再讲一个题外话，为什么token需要用base64编码呢❓</h4>
+<p>base64最早是通用的邮件传输协议中的转码方式，原先的邮件传输协议只支持ASCII码传递，而ascii码的128～255之间的值是不可见字符，因此，如果要传输二进制文件是无法实现的，所以base64就是用来将二进制文件编码为只包含ASCII可见字符的内容再用来传输的，虽然尺寸会增加三分之一（在base64编码中，需要2的6次方位来表示字符，所以每6个比特代表一个字节。假如要传输Man三个字符，base64编码后是TWFu，文件尺寸是原来的3分之4），但是得到了更好的兼容性。<br>
+<a href="https://zh.wikipedia.org/wiki/Base64">base64</a></p>
 ]]></content>
     </entry>
     <entry>
