@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2019-10-06T12:19:29.985Z</updated>
+    <updated>2019-10-26T03:16:50.556Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,106 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[commonjs和ES6模块的区别]]></title>
+        <id>https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie</id>
+        <link href="https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie">
+        </link>
+        <updated>2019-10-26T03:10:51.000Z</updated>
+        <summary type="html"><![CDATA[<p>对比commonjs和ES6，了解前端模块化机制</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>对比commonjs和ES6，了解前端模块化机制</p>
+<!-- more -->
+<h2 id="commonjs-规范">commonjs 规范</h2>
+<p>1、commonjs应用于nodejs模块化管理，是nodejs实现的一套模块化机制。</p>
+<p>2、commonjs属于动态编译，运行时才确定加载模块，输入时需查找对象属性，所以无法做到按需加载，总是引入整个模块对象。</p>
+<p>3、模块导出的是值得拷贝各个引用互不影响。</p>
+<p>4、this指向当前模块。</p>
+<h2 id="es6-module">ES6 module</h2>
+<p>1、es6的模块化可以应用在浏览器和node服务端。</p>
+<p>2、es6模块的设计思想，是尽量静态化，在编译时就确定模块的依赖关系以及输入和输出的变量，其静态编译使得可以编译时就确认要使用的模块中的内容可做按需加载。</p>
+<p>3、模块导出的是值得引用，若其中引用被修改，下次引用时得到的是修改后的值。</p>
+<p>4、this指向undefined。</p>
+<pre><code class="language-javascript">import zw from './a' 
+import('./b').then(res =&gt; {
+  console.log(zw) // b模块修改后的zw的值
+})
+</code></pre>
+<h2 id="扩展">扩展</h2>
+<p>webpack打包时默认会模拟一套类commonjs规范的加载器，如果有使用spliteChunk抽离出runtime的话，可以查阅相关代码，所以webpack默认是无法做到按需加载的，像<code>import { Button } from 'Antd'</code>这样的语句会打包Antd提供的所有模块，并使用其中的babel模块，我们可以引入<code>babel-plugin-component</code>或者<code>babel-plugin-import</code>来解决这个问题。</p>
+<blockquote>
+<p>babel 能提前将 es6 的 import 等模块关键字转换成 commonjs 的规范。这样 webpack 就无需再做处理，直接使用 webpack 运行时定义的 <strong>webpack_require</strong> 处理。而babel-plugin-component就做了一件事，将 import { Button } from 'antd' 转换成了 import Button from 'antd/lib/button'，这样即便转成commonjs规范也只引入了一个库文件</p>
+</blockquote>
+<p>深夜打卡<br>
+<s>水了一篇，开心٩(๑❛ᴗ❛๑)۶</s></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[某大厂前端二面题]]></title>
+        <id>https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti</id>
+        <link href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti">
+        </link>
+        <updated>2019-10-26T03:09:42.000Z</updated>
+        <summary type="html"><![CDATA[<p>杭州某大厂前端面试题总结，过于浮躁，损失了一次进大厂的机会🤦‍♂</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>杭州某大厂前端面试题总结，过于浮躁，损失了一次进大厂的机会🤦‍♂</p>
+<!-- more -->
+<h2 id="1-重启nginx需要什么权限">1、重启nginx需要什么权限</h2>
+<p>linux的文件目录有所有者和组的概念，对一个目录来说所有人分为三种，<strong>ugo</strong>，u为此目录拥有者，g为group，o为other，还有一个a，包含以上三者。若是目录的所有者，或者此时的用户在此目录的用户组内，则有该用户组所拥有的所有权限。</p>
+<h3 id="一些常识">一些常识</h3>
+<p>十位权限含义 第一位d代表目录-代表文件，其后分别为ugo的三种权限，drwxrwxrwx 代表此目录所有人皆可读写执行。</p>
+<pre><code class="language-javascript">chmod u=rw,g=---,o--- // 给user读写权限，group内的人和其他人没有任何权限
+chmod a=rwx // 给所有人读写执行权限
+chmod 777 file // 其实 就是 chmod a=rwx file  --&gt; 4 + 2 + 1
+chmod u+x file // 就是给拥有者执行权限
+// 若文件没有x权限，仍可通过有权限的其他，比如sh，node，python命令来执行某个文件，若其有x权限，那么直接在文件中标明要使用的bash命令，然后 ./文件名 执行即可
+</code></pre>
+<p>每个文件都有rwx（read/writer/excute)读写操作权限，想要修改一个nginx配置文件并执行，看如何修改，若是直接删除替换，则仅需rx权限，若通过vim这种，还需要关注文件内容，还需额外r读权限。（另外还有一个 - 即代表无权限），*nginx的执行脚本所在的bin目录一般只有root有权限。*所以应当是root权限吧。</p>
+<h2 id="2-单核机器多进程构建时是否有效">2、单核机器多进程构建时是否有效</h2>
+<p>答案是无效的，而且效率会变低。。。</p>
+<p>webpack使用happypack开启多进程构建，在单核机器上并没有效果。单核cpu从宏观上看是为多进程服务的，实际上是每个进程轮流使用一段时间片，即便开1w个进程速度也不会变快，而且还有进程的上下文切换开销，速度反而会变慢，而且一旦其中有一个进程计算量大卡住，其他进程也会进入假死状态，无法继续执行任务。</p>
+<p>机（智）智（障）的我答了有效。</p>
+<h2 id="3-实现类似node的eventemitter模块">3、实现类似node的EventEmitter模块</h2>
+<p>拿到面试官的电脑，我已经满脑子的骚操作决定扳回一局，结果</p>
+<pre><code>// 一顿分析猛如虎，一看战绩0杠5
+class event {
+  constuctor () {
+    this.eventLib = {}
+  }
+  on (name, callback) {
+    if (Array.isArray(this.eventLib[name])) {
+      this.eventLib[name].push(callback)
+    } else {
+      this.eventLib[name] = [callback]
+    }
+  }
+  emit (name) {
+    if (!this.eventLib[name]) reutrn
+    for (let cb of this.eventLib[name] ) {
+      cb()
+    }
+  }
+}
+let e = new event()
+e.on('take', function () { console.log(123) })
+e.on('take', async function () {
+  await new Promsie (r =&gt; {
+     console.log(456) 
+  })
+})
+e.emit('task')
+// 并不知道这样写是不是面试官最后想要的，希望有评论区大神出现
+</code></pre>
+<h2 id="4-ssr相对java直出页面模板速度有变快吗">4、SSR相对java直出页面模板速度有变快吗</h2>
+<p>为了表现的我们做的SSR有用，我毫不犹豫地回答有。</p>
+<p>其实java直出页面和node直出是一样的模式，仅仅语言不同（的确老的java直出的模板有些是异步数据，整个页面呈现速度没有node做了页面缓存来得快）但是就模式上来说，单线程的node对上java根本没有优势，速度的确不会有提升，甚至可能变慢（抛弃代码及策略优化的影响），相对java直出模板SSR带来的好处更多的是前后端解耦，在保持SEO，避免白屏的前提下，享受MVVM带来的便捷开发，node减轻服务端压力，减少后端工作量等等...</p>
+<h2 id="5-面试总结">5、面试总结</h2>
+<p>少在简历上挖坑。</p>
+<p>少吹牛比多看书。</p>
+<p>talk is cheap，show me your thinking。</p>
+<p><em>还有一些问题文中没有提及，待总结</em></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Session Token]]></title>
         <id>https://chentianyuan.github.io/post/xiang-jie-session-he-token</id>

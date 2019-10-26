@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Session Token | City Corner</title>
+<title>commonjs和ES6模块的区别 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -98,44 +98,34 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">Session Token</h2>
-            <div class="post-date">2019-10-05</div>
-            
-              <div class="feature-container" style="background-image: url('https://chentianyuan.github.io/post-images/xiang-jie-session-he-token.jpeg')">
-              </div>
+            <h2 class="post-title">commonjs和ES6模块的区别</h2>
+            <div class="post-date">2019-10-26</div>
             
             <div class="post-content">
-              <p><strong>这是一篇对比session和token登录机制的文章</strong></p>
+              <p>对比commonjs和ES6，了解前端模块化机制</p>
 <!-- more -->
-<h2 id="question">question:</h2>
-<p>1、为什么需要session和token？<br>
-因为http请求是无状态的，为了标识多个请求之间的联系，必须引入一些手段和工具来标记他们，所以需要引入session和token<br>
-最常见的就是标识用户的登录状态</p>
-<h2 id="流程">流程：</h2>
-<p>1、客户端发起登录请求</p>
-<h3 id="session和cookie">Session和Cookie</h3>
-<p>2、服务端验证登录信息通过，生成session_id作为hash映射用户信息session<br>
-3、在响应体中加入set-cookie字段<br>
-4、客户端接收到响应，根据set-cookie，自动种下session_id<br>
-5、客户端再次请求，自动带上session_id，服务端根据session_id拿到用户信息和登录状态，再返回客户端想要的用户数据</p>
-<h3 id="token">Token</h3>
-<p>2、服务端验证登录信息通过，根据header，payload生成token（header.payload.signnature）（signnature也叫签名，其实是base64编码的header+'.'+base64编码的payload，再根据私匙加密一下得到的）<br>
-3、客户端拿到token后存储到storage内，下次请求，再主动塞入header里<br>
-4、服务端拿到header里的token，取出header和payload，用私匙重新加密，再和header里的token的signnature进行对比，如果正确则验证通过，证明用户是登录状态<br>
-5、从payload中拿到用户id，查询并返回客户端想要的用户数据</p>
-<h4 id="优缺点">优缺点</h4>
-<p>1、token天然就有预防CSRF攻击的功能，cookie中存储的session在有post表单提交的攻击网站上会带上目标网站的所有cookie信息，如果刚好最近登录过，那么请求是会成功的<br>
-2、token的校验比较耗时，可能会影响接口返回速度<br>
-3、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
-4、session会占用服务端宝贵的内存资源，带来内存压力</p>
-<h4 id="如何清除登录状态">如何清除登录状态</h4>
-<p>session机制中，下发sessionId的同时会带一个expires或者maxAge，服务端需要记录下发时间，下次请求进来时对查到的sessionId对应的session的时效性进行校验，如果超时，则清除server端存储的信息，并告知客户端登录超时。<br>
-token无法做到完美清除<br>
-1、可以在token的payload位置存储一个时间戳，然后校验合法性时同时校验token是否超时。用户主动登出时，重新下发一个超时的token挤掉原先的token。<br>
-2、在user表中加一个时间戳字段，查询用户信息时同时对比token是否过期。</p>
-<h4 id="再讲一个题外话为什么token需要用base64编码呢">再讲一个题外话，为什么token需要用base64编码呢❓</h4>
-<p>base64最早是通用的邮件传输协议中的转码方式，原先的邮件传输协议只支持ASCII码传递，而ascii码的128～255之间的值是不可见字符，因此，如果要传输二进制文件是无法实现的，所以base64就是用来将二进制文件编码为只包含ASCII可见字符的内容再用来传输的，虽然尺寸会增加三分之一（在base64编码中，需要2的6次方位来表示字符，所以每6个比特代表一个字节。假如要传输Man三个字符，base64编码后是TWFu，文件尺寸是原来的3分之4），但是得到了更好的兼容性。<br>
-<a href="https://zh.wikipedia.org/wiki/Base64">base64</a></p>
+<h2 id="commonjs-规范">commonjs 规范</h2>
+<p>1、commonjs应用于nodejs模块化管理，是nodejs实现的一套模块化机制。</p>
+<p>2、commonjs属于动态编译，运行时才确定加载模块，输入时需查找对象属性，所以无法做到按需加载，总是引入整个模块对象。</p>
+<p>3、模块导出的是值得拷贝各个引用互不影响。</p>
+<p>4、this指向当前模块。</p>
+<h2 id="es6-module">ES6 module</h2>
+<p>1、es6的模块化可以应用在浏览器和node服务端。</p>
+<p>2、es6模块的设计思想，是尽量静态化，在编译时就确定模块的依赖关系以及输入和输出的变量，其静态编译使得可以编译时就确认要使用的模块中的内容可做按需加载。</p>
+<p>3、模块导出的是值得引用，若其中引用被修改，下次引用时得到的是修改后的值。</p>
+<p>4、this指向undefined。</p>
+<pre><code class="language-javascript">import zw from './a' 
+import('./b').then(res =&gt; {
+  console.log(zw) // b模块修改后的zw的值
+})
+</code></pre>
+<h2 id="扩展">扩展</h2>
+<p>webpack打包时默认会模拟一套类commonjs规范的加载器，如果有使用spliteChunk抽离出runtime的话，可以查阅相关代码，所以webpack默认是无法做到按需加载的，像<code>import { Button } from 'Antd'</code>这样的语句会打包Antd提供的所有模块，并使用其中的babel模块，我们可以引入<code>babel-plugin-component</code>或者<code>babel-plugin-import</code>来解决这个问题。</p>
+<blockquote>
+<p>babel 能提前将 es6 的 import 等模块关键字转换成 commonjs 的规范。这样 webpack 就无需再做处理，直接使用 webpack 运行时定义的 <strong>webpack_require</strong> 处理。而babel-plugin-component就做了一件事，将 import { Button } from 'antd' 转换成了 import Button from 'antd/lib/button'，这样即便转成commonjs规范也只引入了一个库文件</p>
+</blockquote>
+<p>深夜打卡<br>
+<s>水了一篇，开心٩(๑❛ᴗ❛๑)۶</s></p>
 
             </div>
             
@@ -150,9 +140,9 @@ token无法做到完美清除<br>
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://chentianyuan.github.io/post/hello-gridea">
+                <a href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti">
                   <h3 class="post-title">
-                    Hello Gridea
+                    某大厂前端二面题
                   </h3>
                 </a>
               </div>
