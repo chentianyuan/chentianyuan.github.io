@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Hello Gridea | City Corner</title>
+<title>浏览器工作原理及实践 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -106,45 +106,58 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">Hello Gridea</h2>
-            <div class="post-date">2018-12-12</div>
-            
-              <div class="feature-container" style="background-image: url('https://chentianyuan.github.io/post-images/hello-gridea.png')">
-              </div>
+            <h2 class="post-title">浏览器工作原理及实践</h2>
+            <div class="post-date">2019-11-08</div>
             
             <div class="post-content">
-              <p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+              <p>极客时间课程笔记</p>
 <!-- more -->
-<p><a href="https://github.com/getgridea/gridea">Github</a><br>
-<a href="https://gridea.dev/">Gridea 主页</a><br>
-<a href="http://fehey.com/">示例网站</a></p>
-<h2 id="特性">特性👇</h2>
-<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
-<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
-<p>🏷️  你可以对文章进行标签分组</p>
-<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
-<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
-<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
-<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
-<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
-<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
-<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
-<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
-<p>未来，它一定会成为你离不开的伙伴</p>
-<p>尽情发挥你的才华吧！</p>
-<p>😘 Enjoy~</p>
+<h2 id="0-chrome架构">0、chrome架构</h2>
+<p>q: 为什么chrome打开一个页面，会启动四个进程？<br>
+a: 浏览器主进程、插件进程、网络进程、渲染进程、GPU进程(GPU进程用于3D绘制，在2d场景下渲染进程就可以)存在进程隔离，相比在ie6中使用单进程架构，任意一个进程崩溃都会导致浏览器的崩溃，chrome的多进程架构很好的解决了这个问题。而且每个进程都在沙箱中运行，也解决了插件的安全问题。</p>
+<h2 id="1-tcp协议">1、TCP协议</h2>
+<p>q: TCP协议为什么能完整地传输页面？<br>
+a: 首先，了解一下过程，TCP和UDP都作为传输层的协议，TCP和UDP都需要在传输层向数据包中添加端口，然后网络层的ip协议添加ip端口。UDP为无连接的传输协议，无法组装数据包，而且容易丢包，常用于视频传输，或者音频传输。而TCP是一种面向连接的、可靠的、基于字节流的传输层通信协议，相对于UDP，有丢包重传和数据包排序（数据包按顺序组装成完整文件）的特点。</p>
+<h2 id="2-http请求流程">2、http请求流程</h2>
+<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1573212377705.png" alt="部分流程"></figure>
+<h2 id="3-从输入一个url到显示页面发生了什么">3、从输入一个url到显示页面发生了什么？</h2>
+<p>（以前总是想把每个细节都说的很完整，但是在面试中，这个的关键是流程，不是细节流程，大可等面试官下一个问题）</p>
+<ol>
+<li>用户输入url，按下回车键</li>
+<li>浏览器检查url，组装协议</li>
+<li>浏览器进程通过ipc通知网络进程</li>
+<li>网络进程接收到url后检查本地缓存，是则直接拿出缓存给浏览器进程，否则<br>
+4.1 dns解析，拿到ip和端口（80或443）<br>
+4.2 通过TLS协议，建立安全连接<br>
+4.3 建立TCP连接<br>
+4.4 TCP、IP协议组装数据包，发送请求<br>
+4.4 网络进程接收响应信息，并解析响应内容 （略去了304的流程）</li>
+<li>网络进程通知浏览器进程，浏览器进程决定是否需要重新开启渲染进程</li>
+<li>浏览器进程通知渲染进程，渲染进程和网络进程建立管道，开始接收数据</li>
+<li>加载css，解析html，生成cssom和domTree，进而生成render tree，如遇到js则阻塞渲染和解析，js的加载不一定阻塞，最后js执行完毕，进行layout，最后进行paint</li>
+<li>渲染进程通知，浏览器进程更新状态，icon、前进后退状态、安全等</li>
+</ol>
+<h2 id="4-渲染进程">4、渲染进程</h2>
+<p>浏览器无法直接渲染html文件，需要经历以下步骤<br>
+dom tree =&gt; document<br>
+cssom =&gt; document.stylesheet<br>
+合并得到layoutTree <strong>（布局树）</strong><br>
+得到布局树之后，还不能直接绘制，浏览器的页面实际上被分为了很多图层**（元素有了层叠上下文属性或者需要裁剪都会形成新的图层）**，所有图层叠加得到了最后的页面<br>
+渲染进程绘制图层<br>
+GPU进程进行栅格化操作，为视口区域生成位图，保存在GPU内存中<br>
+最后通知浏览器进程，展示页面</p>
 
             </div>
             
-              <div class="tag-container">
-                
-                  <a href="https://chentianyuan.github.io/tag/tTL3sMOu5" class="tag">
-                    Gridea
-                  </a>
-                
-              </div>
             
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/https-xie-yi-xiang-jie">
+                  <h3 class="post-title">
+                    https协议详解
+                  </h3>
+                </a>
+              </div>
             
 
             

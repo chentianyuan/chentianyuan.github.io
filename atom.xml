@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2019-10-30T12:27:35.097Z</updated>
+    <updated>2019-11-11T11:57:59.956Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,52 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[浏览器工作原理及实践]]></title>
+        <id>https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian</id>
+        <link href="https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian">
+        </link>
+        <updated>2019-11-08T10:51:13.000Z</updated>
+        <summary type="html"><![CDATA[<p>极客时间课程笔记</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>极客时间课程笔记</p>
+<!-- more -->
+<h2 id="0-chrome架构">0、chrome架构</h2>
+<p>q: 为什么chrome打开一个页面，会启动四个进程？<br>
+a: 浏览器主进程、插件进程、网络进程、渲染进程、GPU进程(GPU进程用于3D绘制，在2d场景下渲染进程就可以)存在进程隔离，相比在ie6中使用单进程架构，任意一个进程崩溃都会导致浏览器的崩溃，chrome的多进程架构很好的解决了这个问题。而且每个进程都在沙箱中运行，也解决了插件的安全问题。</p>
+<h2 id="1-tcp协议">1、TCP协议</h2>
+<p>q: TCP协议为什么能完整地传输页面？<br>
+a: 首先，了解一下过程，TCP和UDP都作为传输层的协议，TCP和UDP都需要在传输层向数据包中添加端口，然后网络层的ip协议添加ip端口。UDP为无连接的传输协议，无法组装数据包，而且容易丢包，常用于视频传输，或者音频传输。而TCP是一种面向连接的、可靠的、基于字节流的传输层通信协议，相对于UDP，有丢包重传和数据包排序（数据包按顺序组装成完整文件）的特点。</p>
+<h2 id="2-http请求流程">2、http请求流程</h2>
+<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1573212377705.png" alt="部分流程"></figure>
+<h2 id="3-从输入一个url到显示页面发生了什么">3、从输入一个url到显示页面发生了什么？</h2>
+<p>（以前总是想把每个细节都说的很完整，但是在面试中，这个的关键是流程，不是细节流程，大可等面试官下一个问题）</p>
+<ol>
+<li>用户输入url，按下回车键</li>
+<li>浏览器检查url，组装协议</li>
+<li>浏览器进程通过ipc通知网络进程</li>
+<li>网络进程接收到url后检查本地缓存，是则直接拿出缓存给浏览器进程，否则<br>
+4.1 dns解析，拿到ip和端口（80或443）<br>
+4.2 通过TLS协议，建立安全连接<br>
+4.3 建立TCP连接<br>
+4.4 TCP、IP协议组装数据包，发送请求<br>
+4.4 网络进程接收响应信息，并解析响应内容 （略去了304的流程）</li>
+<li>网络进程通知浏览器进程，浏览器进程决定是否需要重新开启渲染进程</li>
+<li>浏览器进程通知渲染进程，渲染进程和网络进程建立管道，开始接收数据</li>
+<li>加载css，解析html，生成cssom和domTree，进而生成render tree，如遇到js则阻塞渲染和解析，js的加载不一定阻塞，最后js执行完毕，进行layout，最后进行paint</li>
+<li>渲染进程通知，浏览器进程更新状态，icon、前进后退状态、安全等</li>
+</ol>
+<h2 id="4-渲染进程">4、渲染进程</h2>
+<p>浏览器无法直接渲染html文件，需要经历以下步骤<br>
+dom tree =&gt; document<br>
+cssom =&gt; document.stylesheet<br>
+合并得到layoutTree <strong>（布局树）</strong><br>
+得到布局树之后，还不能直接绘制，浏览器的页面实际上被分为了很多图层**（元素有了层叠上下文属性或者需要裁剪都会形成新的图层）**，所有图层叠加得到了最后的页面<br>
+渲染进程绘制图层<br>
+GPU进程进行栅格化操作，为视口区域生成位图，保存在GPU内存中<br>
+最后通知浏览器进程，展示页面</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[https协议详解]]></title>
         <id>https://chentianyuan.github.io/post/https-xie-yi-xiang-jie</id>
