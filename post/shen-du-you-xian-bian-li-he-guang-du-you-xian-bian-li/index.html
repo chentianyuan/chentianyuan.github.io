@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>关于 | City Corner</title>
+<title>深度优先遍历和广度优先遍历 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -106,26 +106,74 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">关于</h2>
-            <div class="post-date">2019-01-25</div>
+            <h2 class="post-title">深度优先遍历和广度优先遍历</h2>
+            <div class="post-date">2019-12-04</div>
             
             <div class="post-content">
-              <blockquote>
-<p>渴望拔尖，却无法脱离中庸，恨其不争，却惶惶终日。</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<p>感谢海岛心大佬，如此便捷的搭站方式，还有配套客户端，真的贴心了 ~<br>
-本站不限于技术，生活，艺术，思考，希望能百花齐放</p>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<p>一颗漂浮在宇宙中的尘埃，期待与你相遇 ~</p>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>🏀、⌨⌨️、🎸</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>微信：cxs507<br>
-github：<a href="https://github.com/chentianyuan">https://github.com/chentianyuan</a></p>
+              <p>DFS VS BFS</p>
+<!-- more -->
+<h3 id="题目">题目</h3>
+<p>给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。</p>
+<pre><code class="language-javascript">// DFS 解题
+var rightSideView = function(root) {
+    let resultList = []
+    let i = 0
+    let dfs = function (Node, i) {
+      // 该节点不存在
+      if (!Node) {
+        return
+      }
+      resultList[i] = resultList[i] || []
+      resultList[i].push(Node.val)
+      dfs(Node.left, i + 1)
+      dfs(Node.right, i + 1)
+    }
+    dfs(root, i)
+    return resultList.map(result =&gt; result[result.length - 1])
+};
+// 优先左子树，再遍历右子树，每次递归深度+1
+</code></pre>
+<pre><code class="language-javascript">// BFS 解题
+var rightSideView = function(root) {
+    let resultList = []
+    let j = -1
+    let bfs = function (Nodes) {
+      while (Nodes.length &gt; 0) {
+        j++
+        // 该节点不存在
+        if (!Nodes.length) {
+          return
+        }
+        let length = Nodes.length
+        for (let i = 0; i &lt; length; i++) {
+          let Node = Nodes.shift()
+          resultList[j] = resultList[j] || []
+          resultList[j].push(Node.val)
+          if (Node.left) Nodes.push(Node.left)
+          if (Node.right) Nodes.push(Node.right)
+        }
+      }
+    }
+    if (!root) return []
+    bfs([root])
+    return resultList.map(result =&gt; result[result.length - 1])
+};
+// 广度优先遍历的核心就是queues
+// 队列存储左右节点，然后进入下一次循环，循环原始队列，队列头出队列，将左子树右子树分别重新插入队列，最后的到的类似[left.left, left.right, right.left, right.right]进行我们想要的操作
+</code></pre>
+<p><a href="https://leetcode-cn.com/problems/binary-tree-right-side-view/">力扣原题</a></p>
 
             </div>
             
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian">
+                  <h3 class="post-title">
+                    浏览器工作原理及实践
+                  </h3>
+                </a>
+              </div>
             
 
             

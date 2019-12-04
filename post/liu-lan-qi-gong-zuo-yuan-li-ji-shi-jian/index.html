@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1573473473821">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1575465943307">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1573473473821" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1575465943307" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -146,6 +146,11 @@ cssom =&gt; document.stylesheet<br>
 渲染进程绘制图层<br>
 GPU进程进行栅格化操作，为视口区域生成位图，保存在GPU内存中<br>
 最后通知浏览器进程，展示页面</p>
+<h2 id="5-浏览器内的js执行">5、浏览器内的js执行</h2>
+<p>全局代码执行首先会编译代码，然后创建执行上下文和将代码分别在变量环境和词法环境执行<br>
+在碰到function执行时会创建新的上下文和新的词法环境<br>
+同eval执行wei'd'wa<br>
+<img src="https://chentianyuan.github.io/post-images/1573476515573.png" alt="执行上下文"></p>
 
             </div>
             
