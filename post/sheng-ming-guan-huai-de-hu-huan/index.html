@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>面试 | City Corner</title>
+<title>生命关怀的呼唤 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -13,6 +13,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
 
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -99,29 +105,45 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <h2 class="current-tag">标签: 面试</h2>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti">
-                  <h2 class="post-title">某大厂前端二面题</h2>
+          <div class="post-detail">
+            <h2 class="post-title">生命关怀的呼唤</h2>
+            <div class="post-date">2019-12-22</div>
+            
+            <div class="post-content">
+              <p>在死亡到来的那一天，人人平等，离开这个熟悉又陌生的世界前，我们能带给她们什么？</p>
+<!-- more -->
+<p>上海临终关怀医院，那里住着的多是不治之症的患者，还有一些因为忍受不了病痛的折磨，放弃治疗，平静等待死亡的重病病人。</p>
+<p>情况好一些的病人，如果走出医院，她们看起来和常人没什么区别，但是每每发病的夜晚，晚期疾病带来的痛苦和煎熬，只有她们自己知道。</p>
+<p>还有些病人，没法说话，无法进食，没法闭上眼睛，没法睡觉，肺部感染带来的高烧在一步一步地销蚀她们的身体，每一次喘气都好像耗尽了她们的所有力气。病房的时钟滴答滴答地走着，像是死神的计时表，不知道哪一秒，死神就挥下了它的镰刀。</p>
+<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1577017544790.png" alt="death"></figure>
+<p><s>如果时间能够倒转，也许不会是现在的光景。</s></p>
+<p>当她失去自主意识，只是本能地呼吸，死亡倒成了一种奢望。</p>
+<p>在现代医学已经无能为力的时候，面对这些即将离开的人，我们还能为她们做些什么？</p>
+<p>有时候，什么也做不了，做什么，都是徒劳。</p>
+<p>关怀生命，不是生命结束前的一个口号，而是生者的呼唤，一种生活的态度，一种不让那一天到来留下遗憾的祈盼。</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li">
+                  <h3 class="post-title">
+                    深度优先遍历和广度优先遍历
+                  </h3>
                 </a>
-                <div class="post-date">
-                  2019-10-26
-                </div>
-                <div class="post-abstract">
-                  <p>杭州某大厂前端面试题总结，过于浮躁，损失了一次进大厂的机会🤦‍♂</p>
-
-                </div>
               </div>
-              
-            </article>
-          
+            
 
-          <div class="pagination-container">
-  
-  
-</div>
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
 
         </div>
       </div>
@@ -143,6 +165,29 @@ var app = new Vue({
 })
 
 </script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
 
 
 
