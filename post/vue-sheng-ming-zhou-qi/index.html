@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>vue生命周期（简略版） | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1578734559148">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1578734559148" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">vue生命周期（简略版）</h2>
+            <div class="post-date">2020-01-11</div>
+            
+            <div class="post-content">
+              <p>通过 debugger vue 源码 观察得出的vue生命周期流程<br>
+对vue的生命周期进行深入了解 (*/ω＼*)</p>
+<!-- more -->
+<blockquote>
+<p>版本：vue2.6.11 完整版本</p>
+</blockquote>
+<p>附官方配图<br>
+<img src="file:///Users/apple/Documents/Gridea/post-images/1578721758426.png" style="zoom:50%" /></p>
+<p>一切的一切要从vue文件加载说起</p>
+<h2 id="init">init</h2>
+<p>无论是模块化引入，还是script标签加载，都会引入vue的bundle文件，在进入生命周期之前，vue会执行如下几个方法<br>
+往vue的构造函数上挂载之后需要用到的变量，往原型上挂载要用到的方法<br>
+修改push，pop等数组操作方法，使用包装器包装</p>
+<pre><code class="language-javascript">// initGlobalAPI
+initMixin(Vue);
+stateMixin(Vue);
+eventsMixin(Vue);
+lifecycleMixin(Vue);
+renderMixin(Vue);
+</code></pre>
+<h2 id="new-vueoptions">new Vue(options)</h2>
+<p>新建vue实例的时候，构造函数内只有一个入口<code>this._init(options);</code></p>
+<h2 id="mergeoptionsconstructoroptions-options-vm">mergeOptions(constructor.options, options, vm)</h2>
+<p>将initGlobalApi中初始化的构造函数上的属性和传入的属性做一次merge，此时，一些我们平常没有注入的Component，keep-alive，transition，transition-group三个内置组件也是在这里被merge进我们的option的。值得一提的是，这里的merge不是简单的对象合并，针对不同的option，会采用不同的合并策略，比如data执行后合并成新的data函数，生命周期钩子，则被推入对应生命周期数组中</p>
+<h2 id="beforecreate">beforeCreate</h2>
+<pre><code class="language-javascript">initLifecycle(vm);
+initEvents(vm);
+initRender(vm);
+callHook(vm, 'beforeCreate');
+</code></pre>
+<p>执行beforeCreate钩子，此时的数据还不是响应式，真实dom也没有挂载到页面，页面还是带vue语法的模板</p>
+<h2 id="数据监测">数据监测</h2>
+<p>从data函数开始，<code>data.call(vm, vm)</code>得到data对象，对data对象的每个属性进行监测，为每个属性新建一个dep对象<code>const dep = new Dep()</code>，通过<code>Obejct.defineProperty</code>设置对应属性的get，set，在get中进行依赖收集，需要收集的地方会将Dep.target加到dep.sub中<code>dep.addSub(Dep.target)</code>，在被set时，通过<code>dep.notify() =&gt; watcher.cb()</code>来通知模板更新，如果属性是数组，其数组操作方法在初始化时已经被替换，则在各个操作方法中进行通知。如果当前key对应的属性仍不是基本类型，则继续进行深度遍历，知道所有属性被监听。除了data这一阶段还包括对watcher和computed的处理。</p>
+<h2 id="create">Create</h2>
+<p>这一阶段还包括了父组件provide和子组件inject的初始化处理，数据监听完毕，触发create钩子</p>
+<pre><code class="language-javascript">initInjections(vm); // resolve injections before data/props
+initState(vm);
+initProvide(vm); // resolve provide after data/props
+callHook(vm, 'created');
+</code></pre>
+<h2 id="模板编译阶段-compiletofn">模板编译阶段 CompileToFn</h2>
+<p>vue分两种版本，一种是包含模板编译大一点的版本，一种是vue.runtime.js，只包含运行时的版本，在使用webpack构建时常使用vue-loader来预处理模板，因此到页面上只需引入运行时的vue版本就好了，而没有使用模板编译的话，只能引入全量的vue了。所谓模板编译，其实就是template到render函数的过程，中间通过ast转化，通过正则匹配来确定是普通的html语法还是vue的特殊语法从而进行不同的特殊处理，最后得到一个类似这样的render函数</p>
+<pre><code class="language-javascript">(function anonymous(
+) {
+with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_v(&quot;Latest Vue.js Commits&quot;)]),_v(&quot; &quot;),_l((branches),function(branch){return [_c('input',{directives:[{name:&quot;model&quot;,rawName:&quot;v-model&quot;,value:(currentBranch),expression:&quot;currentBranch&quot;}],attrs:{&quot;type&quot;:&quot;radio&quot;,&quot;id&quot;:branch,&quot;name&quot;:&quot;branch&quot;},domProps:{&quot;value&quot;:branch,&quot;checked&quot;:_q(currentBranch,branch)},on:{&quot;change&quot;:function($event){currentBranch=branch}}}),_v(&quot; &quot;),_c('label',{attrs:{&quot;for&quot;:branch}},[_v(_s(branch))])]}),_v(&quot; &quot;),_c('p',[_v(&quot;vuejs/vue@&quot;+_s(currentBranch))]),_v(&quot; &quot;),_c('ul',_l((commits),function(record){return _c('li',[_c('a',{staticClass:&quot;commit&quot;,attrs:{&quot;href&quot;:record.html_url,&quot;target&quot;:&quot;_blank&quot;}},[_v(_s(record.sha.slice(0, 7)))]),_v(&quot;\n          - &quot;),_c('span',{staticClass:&quot;message&quot;},[_v(_s(_f(&quot;truncate&quot;)(record.commit.message)))]),_c('br'),_v(&quot;\n          by &quot;),_c('span',{staticClass:&quot;author&quot;},[_c('a',{attrs:{&quot;href&quot;:record.author.html_url,&quot;target&quot;:&quot;_blank&quot;}},[_v(_s(record.commit.author.name))])]),_v(&quot;\n          at &quot;),_c('span',{staticClass:&quot;date&quot;},[_v(_s(_f(&quot;formatDate&quot;)(record.commit.author.date)))])])}),0)],2)}
+})
+</code></pre>
+<p>with语法执行了当前作用域环境，_c其实就是常见的createElement函数</p>
+<h2 id="模板编译完成得到render函数触发beforemounted钩子">模板编译完成，得到render函数，触发beforeMounted钩子</h2>
+<h2 id="vnodetoelmmounted钩子触发">vnodeToElm，mounted钩子触发</h2>
+<p>函数执行生成的是vnode，再经由<code>vm._update(vnode, hydrating)</code>处理，进入<code>vm.__patch__(vm.$el, vnode, hydrating, false)</code>处理，第一次不会进入<code>patchVnode</code>函数，进入生成分支<code>emptyNodeAt(elm)</code>，生成最外层的父节点，再执行<code>createElm</code>阶段，将当前elm设置成<code>document.createElement(tagName)</code>，再继续进行<code>createChildren</code>，对节点的子节点重复调用<code>createElm</code>，所得的真实dom会通过parent.insertBefore或者parent.appendChild添加到父级真实dom中，最后再移除之前所有的未编译节点，呈现最终的页面（vnode.elm可以看到所有的真实节点）<br>
+<code>mountComponent</code>执行完毕，触发mounted钩子，页面上已有真实dom，但是尚未渲染。</p>
+<h2 id="nexttick异步任务">nextTick异步任务</h2>
+<p><img src="https://chentianyuan.github.io/post-images/1578730088518.png" alt="渲染流程" loading="lazy"><br>
+根据浏览器兼容性，promise =&gt; mutationObserver =&gt; setTimeout<br>
+微任务可以确保执行时间点会在会在渲染完毕之前，所以在promise =&gt; mutationObserver实现的情况下只会进行一次渲染，而setTimeout(fn, 0)，无法确保执行时间是在渲染后还是渲染之前，所以可能会造成重复渲染，造成跳帧的感觉。</p>
+<h2 id="beforeupdate钩子">beforeUpdate钩子</h2>
+<p>在mounted之后，data数据发生改变时调用，其有一个专属的组件级的watcher，在数据变化时会被调用before函数，在所有设置的watcher之前，触发beforeUpdate钩子。</p>
+<h2 id="updated钩子">updated钩子</h2>
+<p>在beforeUpdate钩子之后，对所有的update钩子进行执行<code>nextTick(flushSchedulerQueue) -&gt; callHook(vm, 'update')</code>，如果设置了，则每次在下一次重渲染之前，update钩子会被调用。</p>
+<h2 id="beforedestory钩子">beforeDestory钩子</h2>
+<p>destory可以通过<code>vm.$destory()</code>来主动触发，其并不会影响页面的展示，但是会清理与其它实例的连接，解绑(<code>vm.deps[i].removeSub()</code>)当前实例的全部指令及事件监听器，然后执行<code>vm.__patch__(vm._vnode, null)</code>，将当前vnode置空，并在其中会触发子组件的destory方法，和mounted一样，destory钩子也是先子组件后父组件</p>
+<h2 id="destory钩子">Destory钩子</h2>
+<p>所有销毁动作完成之后，触发destroyed钩子，</p>
+<h2 id="activated钩子-deactivated钩子">activated钩子 &amp;&amp; deactivated钩子</h2>
+<p>涉及keep-alive没有深入研究，大概是组件被复用和缓存组件被销毁时触发</p>
+<hr>
+<h2 id="总结">总结</h2>
+<p>1、js加载并执行，混入必要的属性和方法，声明常用工具类方法<br>
+2、实例化，属性合并，初始化解析event事件绑定的方法<br>
+3、触发beforeCreate<br>
+4、进行数据监测，依赖收集<br>
+5、触发craete<br>
+6、进行模板编译，将模板转化为render函数<br>
+7、触发beforeMounted<br>
+8、执行render函数，生成vnode，根据vnode创建真实dom，挂载到指定节点<br>
+9、触发mounted钩子<br>
+<strong>其他</strong><br>
+10、beforeUpdate执行所在的函数在beforeMounted和mounted之前已经生成了，mounted之后的数据变动都会触发beforeUpdate<br>
+11、watcher.run()<br>
+12、模板更新结束，触发updated钩子<br>
+13、beforeDestory组件销毁时触发，也可主动触发，进行事件解绑，依赖移除，vnode清空，执行顺序是先子组件后父组件<br>
+14、destory组件销毁完毕触发<br>
+15、activated钩子 &amp;&amp; deactivated钩子 缓存组件复用和缓存组件被销毁时触发</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/sheng-ming-guan-huai-de-hu-huan">
+                  <h3 class="post-title">
+                    生命关怀的呼唤
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

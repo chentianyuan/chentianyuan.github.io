@@ -2,14 +2,109 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2019-12-28T03:13:40.119Z</updated>
+    <updated>2020-01-11T09:22:41.565Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
     <subtitle>脚踏实地 仰望星空</subtitle>
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2019, City Corner</rights>
+    <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[vue生命周期（简略版）]]></title>
+        <id>https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi</id>
+        <link href="https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi">
+        </link>
+        <updated>2020-01-11T05:42:15.000Z</updated>
+        <summary type="html"><![CDATA[<p>通过 debugger vue 源码 观察得出的vue生命周期流程<br>
+对vue的生命周期进行深入了解 (*/ω＼*)</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>通过 debugger vue 源码 观察得出的vue生命周期流程<br>
+对vue的生命周期进行深入了解 (*/ω＼*)</p>
+<!-- more -->
+<blockquote>
+<p>版本：vue2.6.11 完整版本</p>
+</blockquote>
+<p>附官方配图<br>
+<img src="file:///Users/apple/Documents/Gridea/post-images/1578721758426.png" style="zoom:50%" /></p>
+<p>一切的一切要从vue文件加载说起</p>
+<h2 id="init">init</h2>
+<p>无论是模块化引入，还是script标签加载，都会引入vue的bundle文件，在进入生命周期之前，vue会执行如下几个方法<br>
+往vue的构造函数上挂载之后需要用到的变量，往原型上挂载要用到的方法<br>
+修改push，pop等数组操作方法，使用包装器包装</p>
+<pre><code class="language-javascript">// initGlobalAPI
+initMixin(Vue);
+stateMixin(Vue);
+eventsMixin(Vue);
+lifecycleMixin(Vue);
+renderMixin(Vue);
+</code></pre>
+<h2 id="new-vueoptions">new Vue(options)</h2>
+<p>新建vue实例的时候，构造函数内只有一个入口<code>this._init(options);</code></p>
+<h2 id="mergeoptionsconstructoroptions-options-vm">mergeOptions(constructor.options, options, vm)</h2>
+<p>将initGlobalApi中初始化的构造函数上的属性和传入的属性做一次merge，此时，一些我们平常没有注入的Component，keep-alive，transition，transition-group三个内置组件也是在这里被merge进我们的option的。值得一提的是，这里的merge不是简单的对象合并，针对不同的option，会采用不同的合并策略，比如data执行后合并成新的data函数，生命周期钩子，则被推入对应生命周期数组中</p>
+<h2 id="beforecreate">beforeCreate</h2>
+<pre><code class="language-javascript">initLifecycle(vm);
+initEvents(vm);
+initRender(vm);
+callHook(vm, 'beforeCreate');
+</code></pre>
+<p>执行beforeCreate钩子，此时的数据还不是响应式，真实dom也没有挂载到页面，页面还是带vue语法的模板</p>
+<h2 id="数据监测">数据监测</h2>
+<p>从data函数开始，<code>data.call(vm, vm)</code>得到data对象，对data对象的每个属性进行监测，为每个属性新建一个dep对象<code>const dep = new Dep()</code>，通过<code>Obejct.defineProperty</code>设置对应属性的get，set，在get中进行依赖收集，需要收集的地方会将Dep.target加到dep.sub中<code>dep.addSub(Dep.target)</code>，在被set时，通过<code>dep.notify() =&gt; watcher.cb()</code>来通知模板更新，如果属性是数组，其数组操作方法在初始化时已经被替换，则在各个操作方法中进行通知。如果当前key对应的属性仍不是基本类型，则继续进行深度遍历，知道所有属性被监听。除了data这一阶段还包括对watcher和computed的处理。</p>
+<h2 id="create">Create</h2>
+<p>这一阶段还包括了父组件provide和子组件inject的初始化处理，数据监听完毕，触发create钩子</p>
+<pre><code class="language-javascript">initInjections(vm); // resolve injections before data/props
+initState(vm);
+initProvide(vm); // resolve provide after data/props
+callHook(vm, 'created');
+</code></pre>
+<h2 id="模板编译阶段-compiletofn">模板编译阶段 CompileToFn</h2>
+<p>vue分两种版本，一种是包含模板编译大一点的版本，一种是vue.runtime.js，只包含运行时的版本，在使用webpack构建时常使用vue-loader来预处理模板，因此到页面上只需引入运行时的vue版本就好了，而没有使用模板编译的话，只能引入全量的vue了。所谓模板编译，其实就是template到render函数的过程，中间通过ast转化，通过正则匹配来确定是普通的html语法还是vue的特殊语法从而进行不同的特殊处理，最后得到一个类似这样的render函数</p>
+<pre><code class="language-javascript">(function anonymous(
+) {
+with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_v(&quot;Latest Vue.js Commits&quot;)]),_v(&quot; &quot;),_l((branches),function(branch){return [_c('input',{directives:[{name:&quot;model&quot;,rawName:&quot;v-model&quot;,value:(currentBranch),expression:&quot;currentBranch&quot;}],attrs:{&quot;type&quot;:&quot;radio&quot;,&quot;id&quot;:branch,&quot;name&quot;:&quot;branch&quot;},domProps:{&quot;value&quot;:branch,&quot;checked&quot;:_q(currentBranch,branch)},on:{&quot;change&quot;:function($event){currentBranch=branch}}}),_v(&quot; &quot;),_c('label',{attrs:{&quot;for&quot;:branch}},[_v(_s(branch))])]}),_v(&quot; &quot;),_c('p',[_v(&quot;vuejs/vue@&quot;+_s(currentBranch))]),_v(&quot; &quot;),_c('ul',_l((commits),function(record){return _c('li',[_c('a',{staticClass:&quot;commit&quot;,attrs:{&quot;href&quot;:record.html_url,&quot;target&quot;:&quot;_blank&quot;}},[_v(_s(record.sha.slice(0, 7)))]),_v(&quot;\n          - &quot;),_c('span',{staticClass:&quot;message&quot;},[_v(_s(_f(&quot;truncate&quot;)(record.commit.message)))]),_c('br'),_v(&quot;\n          by &quot;),_c('span',{staticClass:&quot;author&quot;},[_c('a',{attrs:{&quot;href&quot;:record.author.html_url,&quot;target&quot;:&quot;_blank&quot;}},[_v(_s(record.commit.author.name))])]),_v(&quot;\n          at &quot;),_c('span',{staticClass:&quot;date&quot;},[_v(_s(_f(&quot;formatDate&quot;)(record.commit.author.date)))])])}),0)],2)}
+})
+</code></pre>
+<p>with语法执行了当前作用域环境，_c其实就是常见的createElement函数</p>
+<h2 id="模板编译完成得到render函数触发beforemounted钩子">模板编译完成，得到render函数，触发beforeMounted钩子</h2>
+<h2 id="vnodetoelmmounted钩子触发">vnodeToElm，mounted钩子触发</h2>
+<p>函数执行生成的是vnode，再经由<code>vm._update(vnode, hydrating)</code>处理，进入<code>vm.__patch__(vm.$el, vnode, hydrating, false)</code>处理，第一次不会进入<code>patchVnode</code>函数，进入生成分支<code>emptyNodeAt(elm)</code>，生成最外层的父节点，再执行<code>createElm</code>阶段，将当前elm设置成<code>document.createElement(tagName)</code>，再继续进行<code>createChildren</code>，对节点的子节点重复调用<code>createElm</code>，所得的真实dom会通过parent.insertBefore或者parent.appendChild添加到父级真实dom中，最后再移除之前所有的未编译节点，呈现最终的页面（vnode.elm可以看到所有的真实节点）<br>
+<code>mountComponent</code>执行完毕，触发mounted钩子，页面上已有真实dom，但是尚未渲染。</p>
+<h2 id="nexttick异步任务">nextTick异步任务</h2>
+<p><img src="https://chentianyuan.github.io/post-images/1578730088518.png" alt="渲染流程" loading="lazy"><br>
+根据浏览器兼容性，promise =&gt; mutationObserver =&gt; setTimeout<br>
+微任务可以确保执行时间点会在会在渲染完毕之前，所以在promise =&gt; mutationObserver实现的情况下只会进行一次渲染，而setTimeout(fn, 0)，无法确保执行时间是在渲染后还是渲染之前，所以可能会造成重复渲染，造成跳帧的感觉。</p>
+<h2 id="beforeupdate钩子">beforeUpdate钩子</h2>
+<p>在mounted之后，data数据发生改变时调用，其有一个专属的组件级的watcher，在数据变化时会被调用before函数，在所有设置的watcher之前，触发beforeUpdate钩子。</p>
+<h2 id="updated钩子">updated钩子</h2>
+<p>在beforeUpdate钩子之后，对所有的update钩子进行执行<code>nextTick(flushSchedulerQueue) -&gt; callHook(vm, 'update')</code>，如果设置了，则每次在下一次重渲染之前，update钩子会被调用。</p>
+<h2 id="beforedestory钩子">beforeDestory钩子</h2>
+<p>destory可以通过<code>vm.$destory()</code>来主动触发，其并不会影响页面的展示，但是会清理与其它实例的连接，解绑(<code>vm.deps[i].removeSub()</code>)当前实例的全部指令及事件监听器，然后执行<code>vm.__patch__(vm._vnode, null)</code>，将当前vnode置空，并在其中会触发子组件的destory方法，和mounted一样，destory钩子也是先子组件后父组件</p>
+<h2 id="destory钩子">Destory钩子</h2>
+<p>所有销毁动作完成之后，触发destroyed钩子，</p>
+<h2 id="activated钩子-deactivated钩子">activated钩子 &amp;&amp; deactivated钩子</h2>
+<p>涉及keep-alive没有深入研究，大概是组件被复用和缓存组件被销毁时触发</p>
+<hr>
+<h2 id="总结">总结</h2>
+<p>1、js加载并执行，混入必要的属性和方法，声明常用工具类方法<br>
+2、实例化，属性合并，初始化解析event事件绑定的方法<br>
+3、触发beforeCreate<br>
+4、进行数据监测，依赖收集<br>
+5、触发craete<br>
+6、进行模板编译，将模板转化为render函数<br>
+7、触发beforeMounted<br>
+8、执行render函数，生成vnode，根据vnode创建真实dom，挂载到指定节点<br>
+9、触发mounted钩子<br>
+<strong>其他</strong><br>
+10、beforeUpdate执行所在的函数在beforeMounted和mounted之前已经生成了，mounted之后的数据变动都会触发beforeUpdate<br>
+11、watcher.run()<br>
+12、模板更新结束，触发updated钩子<br>
+13、beforeDestory组件销毁时触发，也可主动触发，进行事件解绑，依赖移除，vnode清空，执行顺序是先子组件后父组件<br>
+14、destory组件销毁完毕触发<br>
+15、activated钩子 &amp;&amp; deactivated钩子 缓存组件复用和缓存组件被销毁时触发</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[生命关怀的呼唤]]></title>
         <id>https://chentianyuan.github.io/post/sheng-ming-guan-huai-de-hu-huan</id>
@@ -23,7 +118,7 @@
 <p>上海临终关怀医院，那里住着的多是不治之症的患者，还有一些因为忍受不了病痛的折磨，放弃治疗，平静等待死亡的重病病人。</p>
 <p>情况好一些的病人，如果走出医院，她们看起来和常人没什么区别，但是每每发病的夜晚，晚期疾病带来的痛苦和煎熬，只有她们自己知道。</p>
 <p>还有些病人，没法说话，无法进食，没法闭上眼睛，没法睡觉，肺部感染带来的高烧在一步一步地销蚀她们的身体，每一次喘气都好像耗尽了她们的所有力气。病房的时钟滴答滴答地走着，像是死神的计时表，不知道哪一秒，死神就挥下了它的镰刀。</p>
-<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1577017544790.png" alt="death"></figure>
+<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1577017544790.png" alt="death" loading="lazy"></figure>
 <p><s>如果时间能够倒转，也许不会是现在的光景。</s></p>
 <p>当她失去自主意识，只是本能地呼吸，死亡倒成了一种奢望。</p>
 <p>在现代医学已经无能为力的时候，面对这些即将离开的人，我们还能为她们做些什么？</p>
@@ -111,7 +206,7 @@ a: 浏览器主进程、插件进程、网络进程、渲染进程、GPU进程(G
 <p>q: TCP协议为什么能完整地传输页面？<br>
 a: 首先，了解一下过程，TCP和UDP都作为传输层的协议，TCP和UDP都需要在传输层向数据包中添加端口，然后网络层的ip协议添加ip端口。UDP为无连接的传输协议，无法组装数据包，而且容易丢包，常用于视频传输，或者音频传输。而TCP是一种面向连接的、可靠的、基于字节流的传输层通信协议，相对于UDP，有丢包重传和数据包排序（数据包按顺序组装成完整文件）的特点。</p>
 <h2 id="2-http请求流程">2、http请求流程</h2>
-<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1573212377705.png" alt="部分流程"></figure>
+<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1573212377705.png" alt="部分流程" loading="lazy"></figure>
 <h2 id="3-从输入一个url到显示页面发生了什么">3、从输入一个url到显示页面发生了什么？</h2>
 <p>（以前总是想把每个细节都说的很完整，但是在面试中，这个的关键是流程，不是细节流程，大可等面试官下一个问题）</p>
 <ol>
@@ -142,7 +237,7 @@ GPU进程进行栅格化操作，为视口区域生成位图，保存在GPU内�
 <p>全局代码执行首先会编译代码，然后创建执行上下文和将代码分别在变量环境和词法环境执行<br>
 在碰到function执行时会创建新的上下文和新的词法环境<br>
 同eval执行wei'd'wa<br>
-<img src="https://chentianyuan.github.io/post-images/1573476515573.png" alt="执行上下文"></p>
+<img src="https://chentianyuan.github.io/post-images/1573476515573.png" alt="执行上下文" loading="lazy"></p>
 ]]></content>
     </entry>
     <entry>
@@ -165,7 +260,7 @@ http请求的所有数据都是明文传输，在网络中无异于裸奔，会�
 https在应用层和传输层中间增加了SSL层，SSL可以理解为CA证书的作用（防止中间人篡改）<br>
 然后使用TLS协议通信，生成对称密匙后采用对称加密，（防止中间人窃取）保证了数据的安全性</li>
 </ol>
-<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1572438323964.JPG" alt="Jesus"></figure>
+<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1572438323964.JPG" alt="Jesus" loading="lazy"></figure>
 <h3 id="how">how？</h3>
 <p>流程详解</p>
 <ol>
