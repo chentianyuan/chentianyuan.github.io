@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>js垃圾回收机制 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1579245128627">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1579245128627" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">js垃圾回收机制</h2>
+            <div class="post-date">2020-01-16</div>
+            
+            <div class="post-content">
+              <p>每种语言都有垃圾回收机制，来回收不再使用的内存空间，垃圾回收又分为主动回收和被动回收两种...</p>
+<!-- more -->
+<p>在js，python，java中使用的都是自动垃圾回收机制，开发者无需主动清除变量所占用的内存，但是在某些场景下，关注内存情况还是很必要的。</p>
+<p>js中的变量都存储在栈和堆中，二者回收机制也不同。</p>
+<h2 id="栈内存回收">栈内存回收</h2>
+<p>js代码会放到一个执行栈中运行，每碰到一个运行函数的指令，就为当前函数创建执行上下文，然后推入调用栈，当函数执行完毕，则函数出栈，开始执行下一个任务。<br>
+js内部会有一个ESP(记录当前执行状态的指针)，该指针总是指向当前的执行上下文，当函数执行完毕ESP指针下移之后，还会销毁ESP上一个指向的函数保存在栈中的执行上下文，从而自动回收其中保存在栈中基本类类型的内存。</p>
+<h2 id="堆内存回收">堆内存回收</h2>
+<p><strong>基本类型存在栈中的内存会随着执行上下文被销毁而自动回收</strong>，而堆内存需要额外的机制来进行回收。</p>
+<h3 id="代际假说the-generational-hypothesis">代际假说(The Generational Hypothesis)</h3>
+<ul>
+<li>大部分对象在内存中存活的时间很短，很多对象占用的内存一经分配就变得不可访问 (新生代)</li>
+<li>不死的对象会活得更久 (老生代)<br>
+为了对这两种情况下的垃圾进行回收，在V8中会把堆内存分为新生代和老生代两个区域。<br>
+新生代的容量较小，老生代容量大。然后针对这两种区域分别使用<code>副回收器(新生代)</code>和<code>主回收器(老生代)</code>对垃圾进行回收。</li>
+</ul>
+<h3 id="副垃圾回收器">副垃圾回收器</h3>
+<p><img src="https://chentianyuan.github.io/post-images/1579243473477.png" alt="新生代和老生代" loading="lazy"><br>
+副垃圾回收器使用的是一种Scavenge算法来处理垃圾的，新生代会被对半划分为对象区域和空闲区域，新加入的对象会加入对象区域，当对象区域快被写满的时候就会开始垃圾回收。</p>
+<ul>
+<li>标记对象区域还在使用的对象</li>
+<li>将被标记的对象复制到空闲区域</li>
+<li>对复制后的对象做内存整理操作，合并内存间隙</li>
+<li>角色翻转，将对象区域转为空闲区域，对空闲区域转为对象区域，上一次未被标记的对象占用的内存则被垃圾回收<br>
+如果新生代内存设置得过大，那么每次清理时间就会过久，造成程序运行缓慢，所以为了执行效率，一般新生代的空间会设的比较小，js中一般是1~8M。新生代的内存区域不大如果都放在新生代则容易被存活对象占满整个区域，所以js引擎采用了<code>对象晋升策略</code>，进过两次垃圾回收依然存活的对象，会被移动到老生代中。另外除了从新生区晋升的对象外，一些比较大的对象会直接被分配到老生代。</li>
+</ul>
+<h3 id="主垃圾回收器">主垃圾回收器</h3>
+<p>主垃圾回收器负责回收老生代区域的垃圾对象，它有内存大，存活时间长等特点，如果继续采用Scavenge算法，拷贝大内存对象十分耗时，导致垃圾回收执行效率不高。因此，主垃圾回收器采用的是<code>标记清除</code>垃圾回收算法。<br>
+<img src="https://chentianyuan.github.io/post-images/1579244309852.png" alt="主垃圾回收器" loading="lazy"><br>
+主垃圾回收器会定期遍历当前的调用栈，然后对当前老生代中的对象使用情况进行标记，如果在调用栈发现了对对象的引用则标记为活动对象，否则标记为垃圾数据。<br>
+当对老生代的垃圾回收之后进行<code>标记整理</code>使所有对象向一端移动清除内存间隙。</p>
+<h3 id="增量标记算法只针对老生代才有标记清除算法">增量标记算法（只针对老生代才有标记清除算法）</h3>
+<p>由于如果js运行的主线程是单线程作业，如果垃圾积攒过多，比如1.5G的老生代需要大约1s的时间进行回收，那么js运行会被垃圾回收阻塞，页面就会有明显的卡顿。因此，为了避免垃圾回收对程序运行带来的影响，V8将标记过程分为一个个的子标记过程，垃圾回收标记和js应用逻辑交替运行，这种算法叫增量标记算法，将一个完整的垃圾回收任务分为很多个小任务，用户就不会因为垃圾回收的阻塞而感到卡顿了。(但是其实这也是在刷题的时候感觉js运行效率不高的原因吧= =，在逻辑运算过程中还穿插了垃圾回收，向java这种多线程语言垃圾回收应该是单独一个线程吧猜想(¦3[▓▓] )。</p>
+<h3 id="总结">总结</h3>
+<p>懒一下，之后总结。。。😹😹😹</p>
+<h2 id="资料参考">资料参考</h2>
+<p><a href="https://time.geekbang.org/column/article/131233">极客时间浏览器工作原理与实践（李兵）</a></p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi">
+                  <h3 class="post-title">
+                    vue生命周期（简略版）
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
