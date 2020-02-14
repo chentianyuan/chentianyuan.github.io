@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>md-loader详解 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1581670999653">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1581670999653" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">md-loader详解</h2>
+            <div class="post-date">2020-02-14</div>
+            
+              <div class="feature-container" style="background-image: url('https://chentianyuan.github.io/post-images/md-loader-xiang-jie.jpeg')">
+              </div>
+            
+            <div class="post-content">
+              <p>没有你的日子里，我真的好想你<br>
+枯了，年前1月20送修的电脑，一个月了才拿回来🤕</p>
+<!-- more -->
+<p>这篇文章加强认知的同时，使用一下star法则，加强表达能力</p>
+<h2 id="situation-情景">situation 情景</h2>
+<p>公司的组件库出第二版了，技术栈是vue2.6+ts，项目写到快要验收的阶段，问题出现了。组件库的文档在直接使用markdown-loader解析md的情况下，出现了md和demo不对应的情况。（有些开发者（好吧就是我自己。。）组件写完，文档写完，发现还要写.vue的demo组件，在本身还有繁杂业务需求的情况下，开始焦躁不已，demo也就草草了事了），对一些复杂组件，一个不和文档对应的demo，跟没有一样。因此，我们把目光瞄向了文档demo对应的element-ui。</p>
+<h2 id="task-任务">task 任务</h2>
+<p>任务就是创建出一套md和demo对应的组件文档。</p>
+<h2 id="action-执行">action 执行</h2>
+<p>确认过眼神，我遇上对的loader。看到element用md作为vue-router的路由组件的时候，element-ui的md-loader应该就是我们想要的东西。<br>
+md中使用</p>
+<pre><code>::: demo
+```html
+&lt;action-sheet&gt;...&lt;/actionsheet&gt;
+export default { ... }
+\```
+:::
+</code></pre>
+<p>包裹的东西最后会转成我们的demo，因此我们只要写一份md就能得到demo和文档了。</p>
+<h3 id="md-loader">md-loader</h3>
+<p>一个webpack loader说白了其实就是一个接受source的function，函数处理source之后，返回一个新的source交给下个loader处理。</p>
+<h3 id="来康康md-loader的处理顺序">来康康md-loader的处理顺序</h3>
+<p>1、获取处理好的md<br>
+这边分几种情况</p>
+<ul>
+<li>普通的md语法 交由markdown-it来解析，得到标签包裹好的文本</li>
+<li>对于被:::demo所包裹的sfc语法，进行两步操作。
+<ul>
+<li>将这部分代码用<code>&lt;!--element-demo: :element-demo--&gt;</code>包裹，这个属于一个占位符，在我们遍历demo时便是以这个来标识demo代码的起点和终点的</li>
+<li>再使用<code>&lt;demo-block&gt;...&lt;/demo-block&gt;</code>包裹</li>
+<li>得到一份新的md</li>
+<li>针对新的md，改变markdown对demo块的处理方式，并放入<code>&lt;template slot=&quot;highlight&quot;&gt;</code>中，作为代码展示部分</li>
+</ul>
+<pre><code>if (token.info === 'html' &amp;&amp; isInDemoContainer) {
+  return `&lt;template slot=&quot;highlight&quot;&gt;&lt;pre v-pre&gt;&lt;code class=&quot;html&quot;&gt;${md.utils.escapeHtml(token.content)}&lt;/code&gt;&lt;/pre&gt;&lt;/template&gt;`;
+}
+</code></pre>
+<ul>
+<li><code>md.render(source)</code> 得到最后的代码块</li>
+</ul>
+</li>
+</ul>
+<p>2、处理代码块，将其变成vue-loader能够处理的模样<br>
+其实，如果md中只有一个demo，根本没有必要进行这步处理，将模板直接塞入source，交给vue-loader处理就好了。可是理想很美好，现实很骨感，每个md一般会有多个demo块，如果共用一份状态，必须混合状态，且状态名不能重复，非常不方便，因此md-loader是这样处理的。</p>
+<pre><code>const demoComponentName = `element-demo${id}`;
+output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&gt;&lt;/template&gt;`);
+</code></pre>
+<p>对每个块插入一个<code>element-demo${id}</code>组件，然后这个组件，就是我们接下来要生成的了，确保了每个demo都是独立互不干扰的。最后这些组件会通过插槽的形式，插入demo-block组件提供的槽位中。</p>
+<h3 id="生成element-demoid组件的render函数">生成element-demo${id}组件的render函数</h3>
+<p>依赖的两个库分别是<code>@vue/component-compiler-utils</code>和<code>vue-template-compiler</code>，</p>
+<ul>
+<li><code>let demoComponentContent = genInlineComponentText(html, script);</code> 通过genInlineComponentText函数生成我们所需的组件代码</li>
+<li>将合法的options传给<code>@vue/component-compiler-utils</code>中提供的<code>compileTemplate</code>函数</li>
+</ul>
+<pre><code>  const finalOptions = {
+    source: `&lt;div&gt;${template}&lt;/div&gt;`,
+    filename: 'inline-component', // TODO：这里有待调整
+    compiler
+  };
+  const compiled = compileTemplate(finalOptions);
+  let demoComponentContent = `
+    ${compiled.code}
+  `;
+  demoComponentContent = `(function() {
+    ${demoComponentContent}
+    ${script}
+    return Object.assign({
+      render,
+      staticRenderFns
+    }, democomponentExport)
+  })()`;
+  return demoComponentContent;
+</code></pre>
+<ul>
+<li>最后的demoComponentContent就是我们要的script了~<br>
+举个例子，最后的demoComponentContent的样子类似这样</li>
+</ul>
+<pre><code>&quot;element-demo0&quot;: (function () {
+    var render = function (_c) { return _c(....) }
+    var staticRenderFns = []
+    const democomponentExport = {
+        data () {
+            return {
+            value1: false,
+            actions1: [
+                { value: 1, label: '项目1' }, 
+                { value: 2, label: '项目2' }, 
+                { value: 3, label: '项目3' }
+            ]
+            }
+        },
+        ...options
+    }
+    return Object.assign({
+        render,
+        staticRenderFns
+    }, democomponentExport)
+})
+</code></pre>
+<h2 id="result-结果">result 结果</h2>
+<p>将生成的模板，和得到的element-demo${id}组件script一起，插入到新的模板中</p>
+<pre><code>// md-loader
+  return `
+    &lt;template&gt;
+      &lt;section class=&quot;content wand-doc&quot; :class=&quot;'wand-doc-' + $route.fullPath.substring(1)&quot;&gt;
+        ${output.join('')}
+      &lt;/section&gt;
+    &lt;/template&gt;
+    ${pageScript}
+  `;
+</code></pre>
+<p>下一步便由vue-loader处理了，生成整个路由组件的render函数并在路由访问时执行并挂载到页面上！最后我们看到的文档和demo就是一一对应的了，看起来非常得直观。<br>
+<img src="https://chentianyuan.github.io/post-images/1581670429040.png" alt="" loading="lazy"><br>
+完成！</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/js-la-ji-hui-shou-ji-zhi">
+                  <h3 class="post-title">
+                    js垃圾回收机制
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
