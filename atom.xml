@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-02-14T09:03:44.515Z</updated>
+    <updated>2020-02-19T14:30:12.623Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -12,8 +12,8 @@
     <rights>All rights reserved 2020, City Corner</rights>
     <entry>
         <title type="html"><![CDATA[md-loader详解]]></title>
-        <id>https://chentianyuan.github.io/post/md-loader-xiang-jie</id>
-        <link href="https://chentianyuan.github.io/post/md-loader-xiang-jie">
+        <id>https://chentianyuan.github.io/post/md-loader-xiang-jie/</id>
+        <link href="https://chentianyuan.github.io/post/md-loader-xiang-jie/">
         </link>
         <updated>2020-02-14T06:54:48.000Z</updated>
         <summary type="html"><![CDATA[<p>没有你的日子里，我真的好想你<br>
@@ -137,8 +137,8 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
     </entry>
     <entry>
         <title type="html"><![CDATA[js垃圾回收机制]]></title>
-        <id>https://chentianyuan.github.io/post/js-la-ji-hui-shou-ji-zhi</id>
-        <link href="https://chentianyuan.github.io/post/js-la-ji-hui-shou-ji-zhi">
+        <id>https://chentianyuan.github.io/post/js-la-ji-hui-shou-ji-zhi/</id>
+        <link href="https://chentianyuan.github.io/post/js-la-ji-hui-shou-ji-zhi/">
         </link>
         <updated>2020-01-16T03:55:24.000Z</updated>
         <summary type="html"><![CDATA[<p>每种语言都有垃圾回收机制，来回收不再使用的内存空间，垃圾回收又分为主动回收和被动回收两种...</p>
@@ -184,8 +184,8 @@ js内部会有一个ESP(记录当前执行状态的指针)，该指针总是指�
     </entry>
     <entry>
         <title type="html"><![CDATA[vue生命周期（简略版）]]></title>
-        <id>https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi</id>
-        <link href="https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi">
+        <id>https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi/</id>
+        <link href="https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi/">
         </link>
         <updated>2020-01-11T05:42:15.000Z</updated>
         <summary type="html"><![CDATA[<p>通过 debugger vue 源码 观察得出的vue生命周期流程<br>
@@ -279,8 +279,8 @@ with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_
     </entry>
     <entry>
         <title type="html"><![CDATA[生命关怀的呼唤]]></title>
-        <id>https://chentianyuan.github.io/post/sheng-ming-guan-huai-de-hu-huan</id>
-        <link href="https://chentianyuan.github.io/post/sheng-ming-guan-huai-de-hu-huan">
+        <id>https://chentianyuan.github.io/post/sheng-ming-guan-huai-de-hu-huan/</id>
+        <link href="https://chentianyuan.github.io/post/sheng-ming-guan-huai-de-hu-huan/">
         </link>
         <updated>2019-12-22T11:49:39.000Z</updated>
         <summary type="html"><![CDATA[<p>在死亡到来的那一天，人人平等，离开这个熟悉又陌生的世界前，我们能带给她们什么？</p>
@@ -301,8 +301,8 @@ with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_
     </entry>
     <entry>
         <title type="html"><![CDATA[深度优先遍历和广度优先遍历]]></title>
-        <id>https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li</id>
-        <link href="https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li">
+        <id>https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li/</id>
+        <link href="https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li/">
         </link>
         <updated>2019-12-04T13:17:43.000Z</updated>
         <summary type="html"><![CDATA[<p>DFS VS BFS</p>
@@ -363,8 +363,8 @@ var rightSideView = function(root) {
     </entry>
     <entry>
         <title type="html"><![CDATA[浏览器工作原理及实践]]></title>
-        <id>https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian</id>
-        <link href="https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian">
+        <id>https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian/</id>
+        <link href="https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian/">
         </link>
         <updated>2019-11-08T10:51:13.000Z</updated>
         <summary type="html"><![CDATA[<p>极客时间课程笔记</p>
@@ -414,8 +414,8 @@ GPU进程进行栅格化操作，为视口区域生成位图，保存在GPU内�
     </entry>
     <entry>
         <title type="html"><![CDATA[https协议详解]]></title>
-        <id>https://chentianyuan.github.io/post/https-xie-yi-xiang-jie</id>
-        <link href="https://chentianyuan.github.io/post/https-xie-yi-xiang-jie">
+        <id>https://chentianyuan.github.io/post/https-xie-yi-xiang-jie/</id>
+        <link href="https://chentianyuan.github.io/post/https-xie-yi-xiang-jie/">
         </link>
         <updated>2019-10-30T12:11:46.000Z</updated>
         <summary type="html"><![CDATA[<p>最后一次，理解https协议</p>
@@ -450,8 +450,8 @@ https在应用层和传输层中间增加了SSL层，SSL可以理解为CA证书�
     </entry>
     <entry>
         <title type="html"><![CDATA[commonjs和ES6模块的区别]]></title>
-        <id>https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie</id>
-        <link href="https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie">
+        <id>https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie/</id>
+        <link href="https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie/">
         </link>
         <updated>2019-10-26T03:10:51.000Z</updated>
         <summary type="html"><![CDATA[<p>对比commonjs和ES6，了解前端模块化机制</p>
@@ -483,14 +483,14 @@ import('./b').then(res =&gt; {
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[某大厂前端二面题]]></title>
-        <id>https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti</id>
-        <link href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti">
+        <title type="html"><![CDATA[某中厂前端二面题]]></title>
+        <id>https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti/</id>
+        <link href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti/">
         </link>
         <updated>2019-10-26T03:09:42.000Z</updated>
-        <summary type="html"><![CDATA[<p>杭州某大厂前端面试题总结，过于浮躁，损失了一次进大厂的机会🤦‍♂</p>
+        <summary type="html"><![CDATA[<p>杭州某中厂前端面试题总结，失败乃成功之母</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>杭州某大厂前端面试题总结，过于浮躁，损失了一次进大厂的机会🤦‍♂</p>
+        <content type="html"><![CDATA[<p>杭州某中厂前端面试题总结，失败乃成功之母</p>
 <!-- more -->
 <h2 id="1-重启nginx需要什么权限">1、重启nginx需要什么权限</h2>
 <p>linux的文件目录有所有者和组的概念，对一个目录来说所有人分为三种，<strong>ugo</strong>，u为此目录拥有者，g为group，o为other，还有一个a，包含以上三者。若是目录的所有者，或者此时的用户在此目录的用户组内，则有该用户组所拥有的所有权限。</p>
@@ -550,8 +550,8 @@ e.emit('task')
     </entry>
     <entry>
         <title type="html"><![CDATA[Session Token]]></title>
-        <id>https://chentianyuan.github.io/post/xiang-jie-session-he-token</id>
-        <link href="https://chentianyuan.github.io/post/xiang-jie-session-he-token">
+        <id>https://chentianyuan.github.io/post/xiang-jie-session-he-token/</id>
+        <link href="https://chentianyuan.github.io/post/xiang-jie-session-he-token/">
         </link>
         <updated>2019-10-05T11:50:52.000Z</updated>
         <summary type="html"><![CDATA[<p><strong>这是一篇对比session和token登录机制的文章</strong></p>
