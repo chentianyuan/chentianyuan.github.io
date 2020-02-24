@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>组件库设计思路 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1582530068484">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1582530068484" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">组件库设计思路</h2>
+            <div class="post-date">2020-02-24</div>
+            
+            <div class="post-content">
+              <p>去年参与了部分公司的组件库建设，md-loader只是一部分，从全局的角度梳理一下整个组件库的设计流程</p>
+<!-- more -->
+<h1 id="1-文档的归属">1、文档的归属</h1>
+<p>一份优质的文档是一个成功的组件库的基础，element-ui的官网文档是经受了无数厂商的考验的，因此md-loader已经是很好的实践。另一个值得权衡的问题是，文档是新开一个项目还是就放在组件库的项目里？<br>
+如果放在项目里，组件库一大，项目会略显臃肿，并且每次跑项目都需要把组件进行重新编译，速度堪忧。而如果分离出一个新的项目，则享受不到开发时热更新的遍历，需要把打包文件频繁输出，才能实时看到组件的效果，而且另起一个工程也是有成本的，需要安装两次通用的依赖。<br>
+综上：从遍历性的角度来看，还是放在一个项目内会方便得多，除非你的目标是做一个大而美的业界组件库，而不是为了业务需要快速迭代的产物（然而没有资本支撑，估计也没人愿意做这么一套东西）</p>
+<h1 id="2-打包配置">2、打包配置</h1>
+<h3 id="21-按需打包配置">2.1 按需打包配置</h3>
+<p>为了按需加载引入，我们常用<code>babel-plugin-component</code>或<code>babel-plugin-syntax-dynamic-import</code>这两个babel插件来使得<code>import { WandUploader } from @weiyi/wand-ui</code>变成<code>import /node_modules/@weiyi/wand-ui/libaryName/uploader/index.js</code>+组件css引入（通用css会从libaryName下引入）来实现。因此我们要将每个组件作为单独入口打包出index.js和组件的css，组件css可以使用<code>MiniCssExtractPlugin</code>来实现拆分。另外，配置中需要外置化vue，否则vue会被打包进入组件bundle。</p>
+<pre><code class="language-javascript">externals: [
+    {
+        vue: {
+        root: 'Vue',
+        commonjs: 'vue',
+        commonjs2: 'vue',
+        amd: 'vue'
+        },
+        'vue-property-decorator': 'vue-property-decorator'
+    }
+]
+</code></pre>
+<h3 id="22-全量打包配置">2.2 全量打包配置</h3>
+<p>当我们全量引入某个vue组件库时，在入口处直接使用<code>Vue.use(WandUi)</code>来导入非常方便，因此，我们的全量打包入口文件也应当导出一个install函数，来支持这种插件式引入。</p>
+<pre><code class="language-javascript">export default {
+  install: (Vue: VueConstructor) =&gt; {
+    components.forEach(comp =&gt; {
+      if (comp.install) {
+          // 针对支持插件式调用的组件，还需要进行一次插件注册
+        Vue.use(comp as any)
+      } else {
+          // 全局组件注册
+        Vue.component((comp as any).options.name, comp)
+      }
+    })
+  }
+}
+</code></pre>
+<h3 id="3-便捷组件生成">3、便捷组件生成</h3>
+<pre><code class="language-json">{
+    &quot;create&quot;: &quot;node build/create-component&quot;,
+    &quot;generate&quot;: &quot;node build/create-md&quot;
+}
+</code></pre>
+<p>一键生成新的组件规则，通过读取模板，生成组件主文件，组件样式文件，组件文档，将组件添加进路由等等一系列重复操作，减少开发人员开发成本，也是不可或缺的一部分，通过命令行inquiry式调用，提升开发效率</p>
+<h3 id="4-组件命令封装">4、组件命令封装</h3>
+<p>文档打包，组件打包，全量、按需、开发、生产，<code>require(&quot;package.json&quot;).script</code>会越来越大，显得十分臃肿且难以理解，封装一个cli，可以增加可读性，减小代码体积，也提升了再建组件库的通用性。</p>
+<pre><code class="language-json">&quot;scripts&quot;: {
+&quot;bootstrap&quot;: &quot;yarn || npm i&quot;,
+&quot;dev&quot;: &quot;vant-cli dev&quot;,
+&quot;lint&quot;: &quot;vant-cli lint&quot;,
+&quot;test&quot;: &quot;vant-cli test&quot;,
+&quot;build&quot;: &quot;vant-cli build&quot;,
+&quot;release&quot;: &quot;vant-cli release&quot;,
+&quot;test:watch&quot;: &quot;vant-cli test --watch&quot;,
+&quot;release:site&quot;: &quot;sh docs/site/release.sh&quot;,
+&quot;test:coverage&quot;: &quot;open test/coverage/index.html&quot;
+}
+</code></pre>
+<h1 id="总结">总结</h1>
+<p>一个好的组件库不仅在组件本身的通用性，易用性，也在于整体组件库架构设计的可重用性，规范性，易扩展性，市面上的组件库层次不齐，组件库设计可以参考大的如element-ui，ant-design，vant等优秀组件库进行设计</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/md-loader-xiang-jie/">
+                  <h3 class="post-title">
+                    md-loader详解
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-02-19T14:30:12.623Z</updated>
+    <updated>2020-02-24T07:41:12.074Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,76 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[组件库设计思路]]></title>
+        <id>https://chentianyuan.github.io/post/zu-jian-ku-she-ji-si-lu/</id>
+        <link href="https://chentianyuan.github.io/post/zu-jian-ku-she-ji-si-lu/">
+        </link>
+        <updated>2020-02-24T06:22:23.000Z</updated>
+        <summary type="html"><![CDATA[<p>去年参与了部分公司的组件库建设，md-loader只是一部分，从全局的角度梳理一下整个组件库的设计流程</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>去年参与了部分公司的组件库建设，md-loader只是一部分，从全局的角度梳理一下整个组件库的设计流程</p>
+<!-- more -->
+<h1 id="1-文档的归属">1、文档的归属</h1>
+<p>一份优质的文档是一个成功的组件库的基础，element-ui的官网文档是经受了无数厂商的考验的，因此md-loader已经是很好的实践。另一个值得权衡的问题是，文档是新开一个项目还是就放在组件库的项目里？<br>
+如果放在项目里，组件库一大，项目会略显臃肿，并且每次跑项目都需要把组件进行重新编译，速度堪忧。而如果分离出一个新的项目，则享受不到开发时热更新的遍历，需要把打包文件频繁输出，才能实时看到组件的效果，而且另起一个工程也是有成本的，需要安装两次通用的依赖。<br>
+综上：从遍历性的角度来看，还是放在一个项目内会方便得多，除非你的目标是做一个大而美的业界组件库，而不是为了业务需要快速迭代的产物（然而没有资本支撑，估计也没人愿意做这么一套东西）</p>
+<h1 id="2-打包配置">2、打包配置</h1>
+<h3 id="21-按需打包配置">2.1 按需打包配置</h3>
+<p>为了按需加载引入，我们常用<code>babel-plugin-component</code>或<code>babel-plugin-syntax-dynamic-import</code>这两个babel插件来使得<code>import { WandUploader } from @weiyi/wand-ui</code>变成<code>import /node_modules/@weiyi/wand-ui/libaryName/uploader/index.js</code>+组件css引入（通用css会从libaryName下引入）来实现。因此我们要将每个组件作为单独入口打包出index.js和组件的css，组件css可以使用<code>MiniCssExtractPlugin</code>来实现拆分。另外，配置中需要外置化vue，否则vue会被打包进入组件bundle。</p>
+<pre><code class="language-javascript">externals: [
+    {
+        vue: {
+        root: 'Vue',
+        commonjs: 'vue',
+        commonjs2: 'vue',
+        amd: 'vue'
+        },
+        'vue-property-decorator': 'vue-property-decorator'
+    }
+]
+</code></pre>
+<h3 id="22-全量打包配置">2.2 全量打包配置</h3>
+<p>当我们全量引入某个vue组件库时，在入口处直接使用<code>Vue.use(WandUi)</code>来导入非常方便，因此，我们的全量打包入口文件也应当导出一个install函数，来支持这种插件式引入。</p>
+<pre><code class="language-javascript">export default {
+  install: (Vue: VueConstructor) =&gt; {
+    components.forEach(comp =&gt; {
+      if (comp.install) {
+          // 针对支持插件式调用的组件，还需要进行一次插件注册
+        Vue.use(comp as any)
+      } else {
+          // 全局组件注册
+        Vue.component((comp as any).options.name, comp)
+      }
+    })
+  }
+}
+</code></pre>
+<h3 id="3-便捷组件生成">3、便捷组件生成</h3>
+<pre><code class="language-json">{
+    &quot;create&quot;: &quot;node build/create-component&quot;,
+    &quot;generate&quot;: &quot;node build/create-md&quot;
+}
+</code></pre>
+<p>一键生成新的组件规则，通过读取模板，生成组件主文件，组件样式文件，组件文档，将组件添加进路由等等一系列重复操作，减少开发人员开发成本，也是不可或缺的一部分，通过命令行inquiry式调用，提升开发效率</p>
+<h3 id="4-组件命令封装">4、组件命令封装</h3>
+<p>文档打包，组件打包，全量、按需、开发、生产，<code>require(&quot;package.json&quot;).script</code>会越来越大，显得十分臃肿且难以理解，封装一个cli，可以增加可读性，减小代码体积，也提升了再建组件库的通用性。</p>
+<pre><code class="language-json">&quot;scripts&quot;: {
+&quot;bootstrap&quot;: &quot;yarn || npm i&quot;,
+&quot;dev&quot;: &quot;vant-cli dev&quot;,
+&quot;lint&quot;: &quot;vant-cli lint&quot;,
+&quot;test&quot;: &quot;vant-cli test&quot;,
+&quot;build&quot;: &quot;vant-cli build&quot;,
+&quot;release&quot;: &quot;vant-cli release&quot;,
+&quot;test:watch&quot;: &quot;vant-cli test --watch&quot;,
+&quot;release:site&quot;: &quot;sh docs/site/release.sh&quot;,
+&quot;test:coverage&quot;: &quot;open test/coverage/index.html&quot;
+}
+</code></pre>
+<h1 id="总结">总结</h1>
+<p>一个好的组件库不仅在组件本身的通用性，易用性，也在于整体组件库架构设计的可重用性，规范性，易扩展性，市面上的组件库层次不齐，组件库设计可以参考大的如element-ui，ant-design，vant等优秀组件库进行设计</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[md-loader详解]]></title>
         <id>https://chentianyuan.github.io/post/md-loader-xiang-jie/</id>
@@ -73,7 +143,7 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
 <li><code>let demoComponentContent = genInlineComponentText(html, script);</code> 通过genInlineComponentText函数生成我们所需的组件代码</li>
 <li>将合法的options传给<code>@vue/component-compiler-utils</code>中提供的<code>compileTemplate</code>函数</li>
 </ul>
-<pre><code>  const finalOptions = {
+<pre><code class="language-javascript">  const finalOptions = {
     source: `&lt;div&gt;${template}&lt;/div&gt;`,
     filename: 'inline-component', // TODO：这里有待调整
     compiler
@@ -96,7 +166,7 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
 <li>最后的demoComponentContent就是我们要的script了~<br>
 举个例子，最后的demoComponentContent的样子类似这样</li>
 </ul>
-<pre><code>&quot;element-demo0&quot;: (function () {
+<pre><code class="language-javascript">&quot;element-demo0&quot;: (function () {
     var render = function (_c) { return _c(....) }
     var staticRenderFns = []
     const democomponentExport = {
@@ -120,7 +190,7 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
 </code></pre>
 <h2 id="result-结果">result 结果</h2>
 <p>将生成的模板，和得到的element-demo${id}组件script一起，插入到新的模板中</p>
-<pre><code>// md-loader
+<pre><code class="language-javascript">// md-loader
   return `
     &lt;template&gt;
       &lt;section class=&quot;content wand-doc&quot; :class=&quot;'wand-doc-' + $route.fullPath.substring(1)&quot;&gt;
@@ -546,47 +616,6 @@ e.emit('task')
 <p>少吹牛比多看书。</p>
 <p>talk is cheap，show me your thinking。</p>
 <p><em>还有一些问题文中没有提及，待总结</em></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Session Token]]></title>
-        <id>https://chentianyuan.github.io/post/xiang-jie-session-he-token/</id>
-        <link href="https://chentianyuan.github.io/post/xiang-jie-session-he-token/">
-        </link>
-        <updated>2019-10-05T11:50:52.000Z</updated>
-        <summary type="html"><![CDATA[<p><strong>这是一篇对比session和token登录机制的文章</strong></p>
-]]></summary>
-        <content type="html"><![CDATA[<p><strong>这是一篇对比session和token登录机制的文章</strong></p>
-<!-- more -->
-<h2 id="question">question:</h2>
-<p>1、为什么需要session和token？<br>
-因为http请求是无状态的，为了标识多个请求之间的联系，必须引入一些手段和工具来标记他们，所以需要引入session和token<br>
-最常见的就是标识用户的登录状态</p>
-<h2 id="流程">流程：</h2>
-<p>1、客户端发起登录请求</p>
-<h3 id="session和cookie">Session和Cookie</h3>
-<p>2、服务端验证登录信息通过，生成session_id作为hash映射用户信息session<br>
-3、在响应体中加入set-cookie字段<br>
-4、客户端接收到响应，根据set-cookie，自动种下session_id<br>
-5、客户端再次请求，自动带上session_id，服务端根据session_id拿到用户信息和登录状态，再返回客户端想要的用户数据</p>
-<h3 id="token">Token</h3>
-<p>2、服务端验证登录信息通过，根据header，payload生成token（header.payload.signnature）（signnature也叫签名，其实是base64编码的header+'.'+base64编码的payload，再根据私匙加密一下得到的）<br>
-3、客户端拿到token后存储到storage内，下次请求，再主动塞入header里<br>
-4、服务端拿到header里的token，取出header和payload，用私匙重新加密，再和header里的token的signnature进行对比，如果正确则验证通过，证明用户是登录状态<br>
-5、从payload中拿到用户id，查询并返回客户端想要的用户数据</p>
-<h4 id="优缺点">优缺点</h4>
-<p>1、token天然就有预防CSRF攻击的功能，cookie中存储的session在有post表单提交的攻击网站上会带上目标网站的所有cookie信息，如果刚好最近登录过，那么请求是会成功的<br>
-2、token的校验比较耗时，可能会影响接口返回速度<br>
-3、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
-4、session会占用服务端宝贵的内存资源，带来内存压力</p>
-<h4 id="如何清除登录状态">如何清除登录状态</h4>
-<p>session机制中，下发sessionId的同时会带一个expires或者maxAge，服务端需要记录下发时间，下次请求进来时对查到的sessionId对应的session的时效性进行校验，如果超时，则清除server端存储的信息，并告知客户端登录超时。<br>
-token无法做到完美清除<br>
-1、可以在token的payload位置存储一个时间戳，然后校验合法性时同时校验token是否超时。用户主动登出时，重新下发一个超时的token挤掉原先的token。<br>
-2、在user表中加一个时间戳字段，查询用户信息时同时对比token是否过期。</p>
-<h4 id="再讲一个题外话为什么token需要用base64编码呢">再讲一个题外话，为什么token需要用base64编码呢❓</h4>
-<p>base64最早是通用的邮件传输协议中的转码方式，原先的邮件传输协议只支持ASCII码传递，而ascii码的128～255之间的值是不可见字符，因此，如果要传输二进制文件是无法实现的，所以base64就是用来将二进制文件编码为只包含ASCII可见字符的内容再用来传输的，虽然尺寸会增加三分之一（在base64编码中，需要2的6次方位来表示字符，所以每6个比特代表一个字节。假如要传输Man三个字符，base64编码后是TWFu，文件尺寸是原来的3分之4），但是得到了更好的兼容性。<br>
-<a href="https://zh.wikipedia.org/wiki/Base64">base64</a></p>
 ]]></content>
     </entry>
 </feed>

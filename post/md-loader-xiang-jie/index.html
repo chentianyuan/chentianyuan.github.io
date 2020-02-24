@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1582122606500">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1582530068484">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1582122606500" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1582530068484" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -167,7 +167,7 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
 <li><code>let demoComponentContent = genInlineComponentText(html, script);</code> 通过genInlineComponentText函数生成我们所需的组件代码</li>
 <li>将合法的options传给<code>@vue/component-compiler-utils</code>中提供的<code>compileTemplate</code>函数</li>
 </ul>
-<pre><code>  const finalOptions = {
+<pre><code class="language-javascript">  const finalOptions = {
     source: `&lt;div&gt;${template}&lt;/div&gt;`,
     filename: 'inline-component', // TODO：这里有待调整
     compiler
@@ -190,7 +190,7 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
 <li>最后的demoComponentContent就是我们要的script了~<br>
 举个例子，最后的demoComponentContent的样子类似这样</li>
 </ul>
-<pre><code>&quot;element-demo0&quot;: (function () {
+<pre><code class="language-javascript">&quot;element-demo0&quot;: (function () {
     var render = function (_c) { return _c(....) }
     var staticRenderFns = []
     const democomponentExport = {
@@ -214,7 +214,7 @@ output.push(`&lt;template slot=&quot;source&quot;&gt;&lt;${demoComponentName} /&
 </code></pre>
 <h2 id="result-结果">result 结果</h2>
 <p>将生成的模板，和得到的element-demo${id}组件script一起，插入到新的模板中</p>
-<pre><code>// md-loader
+<pre><code class="language-javascript">// md-loader
   return `
     &lt;template&gt;
       &lt;section class=&quot;content wand-doc&quot; :class=&quot;'wand-doc-' + $route.fullPath.substring(1)&quot;&gt;
