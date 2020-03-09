@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-02-24T07:41:12.074Z</updated>
+    <updated>2020-03-09T15:33:16.986Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,52 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[一天一道算法题系列]]></title>
+        <id>https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/</id>
+        <link href="https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/">
+        </link>
+        <updated>2020-03-09T15:02:13.000Z</updated>
+        <summary type="html"><![CDATA[<p>自知算法薄弱，做不到一步登天，那就脚踏实地，聚沙成塔。<br>
+不积跬步无以至千里，不积小流无以成江河。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>自知算法薄弱，做不到一步登天，那就脚踏实地，聚沙成塔。<br>
+不积跬步无以至千里，不积小流无以成江河。</p>
+<!-- more -->
+<p>** 20200309 **<br>
+题目：<a href="https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/">二叉树的层次遍历</a><br>
+题型：树的广度优先遍历</p>
+<pre><code>/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+var levelOrderBottom = function(root) {
+  if (!root) return []
+  let result = []
+  let depth = 0
+  let queue = []
+  queue.push(root)
+  while (queue.length) {
+    result[depth] = []
+    let length = queue.length
+    for (let i = 0; i &lt; length; i++) {
+      queue[i].val !== null &amp;&amp; result[depth].push(queue[i].val)
+      if (queue[i].left) queue.push(queue[i].left)
+      if (queue[i].right) queue.push(queue[i].right)
+    }
+    queue.splice(0, length)
+    depth++
+  }
+  return result.reverse()
+};
+</code></pre>
+<p>方法：广度优先遍历需要借助队列，每一层结束了就splice掉，一层一层向下，最后翻转一下就好<br>
+时间复杂度：O(n)</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[组件库设计思路]]></title>
         <id>https://chentianyuan.github.io/post/zu-jian-ku-she-ji-si-lu/</id>
@@ -550,72 +596,6 @@ import('./b').then(res =&gt; {
 </blockquote>
 <p>深夜打卡<br>
 <s>水了一篇，开心٩(๑❛ᴗ❛๑)۶</s></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[某中厂前端二面题]]></title>
-        <id>https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti/</id>
-        <link href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti/">
-        </link>
-        <updated>2019-10-26T03:09:42.000Z</updated>
-        <summary type="html"><![CDATA[<p>杭州某中厂前端面试题总结，失败乃成功之母</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>杭州某中厂前端面试题总结，失败乃成功之母</p>
-<!-- more -->
-<h2 id="1-重启nginx需要什么权限">1、重启nginx需要什么权限</h2>
-<p>linux的文件目录有所有者和组的概念，对一个目录来说所有人分为三种，<strong>ugo</strong>，u为此目录拥有者，g为group，o为other，还有一个a，包含以上三者。若是目录的所有者，或者此时的用户在此目录的用户组内，则有该用户组所拥有的所有权限。</p>
-<h3 id="一些常识">一些常识</h3>
-<p>十位权限含义 第一位d代表目录-代表文件，其后分别为ugo的三种权限，drwxrwxrwx 代表此目录所有人皆可读写执行。</p>
-<pre><code class="language-javascript">chmod u=rw,g=---,o--- // 给user读写权限，group内的人和其他人没有任何权限
-chmod a=rwx // 给所有人读写执行权限
-chmod 777 file // 其实 就是 chmod a=rwx file  --&gt; 4 + 2 + 1
-chmod u+x file // 就是给拥有者执行权限
-// 若文件没有x权限，仍可通过有权限的其他，比如sh，node，python命令来执行某个文件，若其有x权限，那么直接在文件中标明要使用的bash命令，然后 ./文件名 执行即可
-</code></pre>
-<p>每个文件都有rwx（read/writer/excute)读写操作权限，想要修改一个nginx配置文件并执行，看如何修改，若是直接删除替换，则仅需rx权限，若通过vim这种，还需要关注文件内容，还需额外r读权限。（另外还有一个 - 即代表无权限），*nginx的执行脚本所在的bin目录一般只有root有权限。*所以应当是root权限吧。</p>
-<h2 id="2-单核机器多进程构建时是否有效">2、单核机器多进程构建时是否有效</h2>
-<p>答案是无效的，而且效率会变低。。。</p>
-<p>webpack使用happypack开启多进程构建，在单核机器上并没有效果。单核cpu从宏观上看是为多进程服务的，实际上是每个进程轮流使用一段时间片，即便开1w个进程速度也不会变快，而且还有进程的上下文切换开销，速度反而会变慢，而且一旦其中有一个进程计算量大卡住，其他进程也会进入假死状态，无法继续执行任务。</p>
-<p>机（智）智（障）的我答了有效。</p>
-<h2 id="3-实现类似node的eventemitter模块">3、实现类似node的EventEmitter模块</h2>
-<p>拿到面试官的电脑，我已经满脑子的骚操作决定扳回一局，结果</p>
-<pre><code>// 一顿分析猛如虎，一看战绩0杠5
-class event {
-  constuctor () {
-    this.eventLib = {}
-  }
-  on (name, callback) {
-    if (Array.isArray(this.eventLib[name])) {
-      this.eventLib[name].push(callback)
-    } else {
-      this.eventLib[name] = [callback]
-    }
-  }
-  emit (name) {
-    if (!this.eventLib[name]) reutrn
-    for (let cb of this.eventLib[name] ) {
-      cb()
-    }
-  }
-}
-let e = new event()
-e.on('take', function () { console.log(123) })
-e.on('take', async function () {
-  await new Promsie (r =&gt; {
-     console.log(456) 
-  })
-})
-e.emit('task')
-// 并不知道这样写是不是面试官最后想要的，希望有评论区大神出现
-</code></pre>
-<h2 id="4-ssr相对java直出页面模板速度有变快吗">4、SSR相对java直出页面模板速度有变快吗</h2>
-<p>为了表现的我们做的SSR有用，我毫不犹豫地回答有。</p>
-<p>其实java直出页面和node直出是一样的模式，仅仅语言不同（的确老的java直出的模板有些是异步数据，整个页面呈现速度没有node做了页面缓存来得快）但是就模式上来说，单线程的node对上java根本没有优势，速度的确不会有提升，甚至可能变慢（抛弃代码及策略优化的影响），相对java直出模板SSR带来的好处更多的是前后端解耦，在保持SEO，避免白屏的前提下，享受MVVM带来的便捷开发，node减轻服务端压力，减少后端工作量等等...</p>
-<h2 id="5-面试总结">5、面试总结</h2>
-<p>少在简历上挖坑。</p>
-<p>少吹牛比多看书。</p>
-<p>talk is cheap，show me your thinking。</p>
-<p><em>还有一些问题文中没有提及，待总结</em></p>
 ]]></content>
     </entry>
 </feed>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Session Token | City Corner</title>
+<title>一天一道算法题系列 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -106,61 +106,54 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">Session Token</h2>
-            <div class="post-date">2019-10-05</div>
-            
-              <div class="feature-container" style="background-image: url('https://chentianyuan.github.io/post-images/xiang-jie-session-he-token.jpeg')">
-              </div>
+            <h2 class="post-title">一天一道算法题系列</h2>
+            <div class="post-date">2020-03-09</div>
             
             <div class="post-content">
-              <p><strong>这是一篇对比session和token登录机制的文章</strong></p>
+              <p>自知算法薄弱，做不到一步登天，那就脚踏实地，聚沙成塔。<br>
+不积跬步无以至千里，不积小流无以成江河。</p>
 <!-- more -->
-<h2 id="question">question:</h2>
-<p>1、为什么需要session和token？<br>
-因为http请求是无状态的，为了标识多个请求之间的联系，必须引入一些手段和工具来标记他们，所以需要引入session和token<br>
-最常见的就是标识用户的登录状态</p>
-<h2 id="流程">流程：</h2>
-<p>1、客户端发起登录请求</p>
-<h3 id="session和cookie">Session和Cookie</h3>
-<p>2、服务端验证登录信息通过，生成session_id作为hash映射用户信息session<br>
-3、在响应体中加入set-cookie字段<br>
-4、客户端接收到响应，根据set-cookie，自动种下session_id<br>
-5、客户端再次请求，自动带上session_id，服务端根据session_id拿到用户信息和登录状态，再返回客户端想要的用户数据</p>
-<h3 id="token">Token</h3>
-<p>2、服务端验证登录信息通过，根据header，payload生成token（header.payload.signnature）（signnature也叫签名，其实是base64编码的header+'.'+base64编码的payload，再根据私匙加密一下得到的）<br>
-3、客户端拿到token后存储到storage内，下次请求，再主动塞入header里<br>
-4、服务端拿到header里的token，取出header和payload，用私匙重新加密，再和header里的token的signnature进行对比，如果正确则验证通过，证明用户是登录状态<br>
-5、从payload中拿到用户id，查询并返回客户端想要的用户数据</p>
-<h4 id="优缺点">优缺点</h4>
-<p>1、token天然就有预防CSRF攻击的功能，cookie中存储的session在有post表单提交的攻击网站上会带上目标网站的所有cookie信息，如果刚好最近登录过，那么请求是会成功的<br>
-2、token的校验比较耗时，可能会影响接口返回速度<br>
-3、在负载均衡的情况下，session无法做到多台机器共享，必须要借助一个共用服务<br>
-4、session会占用服务端宝贵的内存资源，带来内存压力</p>
-<h4 id="如何清除登录状态">如何清除登录状态</h4>
-<p>session机制中，下发sessionId的同时会带一个expires或者maxAge，服务端需要记录下发时间，下次请求进来时对查到的sessionId对应的session的时效性进行校验，如果超时，则清除server端存储的信息，并告知客户端登录超时。<br>
-token无法做到完美清除<br>
-1、可以在token的payload位置存储一个时间戳，然后校验合法性时同时校验token是否超时。用户主动登出时，重新下发一个超时的token挤掉原先的token。<br>
-2、在user表中加一个时间戳字段，查询用户信息时同时对比token是否过期。</p>
-<h4 id="再讲一个题外话为什么token需要用base64编码呢">再讲一个题外话，为什么token需要用base64编码呢❓</h4>
-<p>base64最早是通用的邮件传输协议中的转码方式，原先的邮件传输协议只支持ASCII码传递，而ascii码的128～255之间的值是不可见字符，因此，如果要传输二进制文件是无法实现的，所以base64就是用来将二进制文件编码为只包含ASCII可见字符的内容再用来传输的，虽然尺寸会增加三分之一（在base64编码中，需要2的6次方位来表示字符，所以每6个比特代表一个字节。假如要传输Man三个字符，base64编码后是TWFu，文件尺寸是原来的3分之4），但是得到了更好的兼容性。<br>
-<a href="https://zh.wikipedia.org/wiki/Base64">base64</a></p>
+<p>** 20200309 **<br>
+题目：<a href="https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/">二叉树的层次遍历</a><br>
+题型：树的广度优先遍历</p>
+<pre><code>/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+var levelOrderBottom = function(root) {
+  if (!root) return []
+  let result = []
+  let depth = 0
+  let queue = []
+  queue.push(root)
+  while (queue.length) {
+    result[depth] = []
+    let length = queue.length
+    for (let i = 0; i &lt; length; i++) {
+      queue[i].val !== null &amp;&amp; result[depth].push(queue[i].val)
+      if (queue[i].left) queue.push(queue[i].left)
+      if (queue[i].right) queue.push(queue[i].right)
+    }
+    queue.splice(0, length)
+    depth++
+  }
+  return result.reverse()
+};
+</code></pre>
+<p>方法：广度优先遍历需要借助队列，每一层结束了就splice掉，一层一层向下，最后翻转一下就好<br>
+时间复杂度：O(n)</p>
 
             </div>
-            
-              <div class="tag-container">
-                
-                  <a href="https://chentianyuan.github.io/tag/utXgApKu0/" class="tag">
-                    nodejs
-                  </a>
-                
-              </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://chentianyuan.github.io/post/hello-gridea/">
+                <a href="https://chentianyuan.github.io/post/zu-jian-ku-she-ji-si-lu/">
                   <h3 class="post-title">
-                    Hello Gridea
+                    组件库设计思路
                   </h3>
                 </a>
               </div>
