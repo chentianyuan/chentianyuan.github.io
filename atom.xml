@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-11T01:07:02.337Z</updated>
+    <updated>2020-03-11T15:25:32.218Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -85,6 +85,38 @@ var diameterOfBinaryTree = function(root) {
 };
 </code></pre>
 <p>思路：方向是对的，深度优先遍历，但是这边有个坑，不能直接两边最大深度相加，因为这个直径可能根本就不经过根节点，所以要把每个节点都当做根节点进行一次递归求两边最大深度与当前result的大值。</p>
+<h1 id="20200311">20200311</h1>
+<p><strong>题型：数学、双向链表</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcqeh1o63nj312q0u0763.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} A
+ * @return {boolean}
+ */
+var canThreePartsEqualSum = function(A) {
+  let sum = getSum(A)
+  let left = []
+  let right = []
+  if (sum % 3 !== 0) return false
+  for (let i = 0; i &lt; A.length - 1; i++) {
+    left.push(A[i])
+    if (getSum(left) === sum / 3) {
+      for (let j = A.length - 1; j &gt; i + 1; j--) {
+        right.push(A[j])
+        if (getSum(right) === sum / 3) {
+          return true
+        }
+      }
+      return false
+    }
+  }
+  return false
+};
+
+function getSum (arr) {
+  return arr.reduce((a, b) =&gt; (a + b), 0)
+}
+</code></pre>
+<p>思路：最重要的是，数组可以分成三段，每段和相同，那么他们一定等于<code>getSum(A) / 3</code>，剩下的就是两边往中间遍历而已。</p>
 ]]></content>
     </entry>
     <entry>

@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1583888815900">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1583940329767">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1583888815900" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1583940329767" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -176,6 +176,38 @@ var diameterOfBinaryTree = function(root) {
 };
 </code></pre>
 <p>思路：方向是对的，深度优先遍历，但是这边有个坑，不能直接两边最大深度相加，因为这个直径可能根本就不经过根节点，所以要把每个节点都当做根节点进行一次递归求两边最大深度与当前result的大值。</p>
+<h1 id="20200311">20200311</h1>
+<p><strong>题型：数学、双向链表</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcqeh1o63nj312q0u0763.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} A
+ * @return {boolean}
+ */
+var canThreePartsEqualSum = function(A) {
+  let sum = getSum(A)
+  let left = []
+  let right = []
+  if (sum % 3 !== 0) return false
+  for (let i = 0; i &lt; A.length - 1; i++) {
+    left.push(A[i])
+    if (getSum(left) === sum / 3) {
+      for (let j = A.length - 1; j &gt; i + 1; j--) {
+        right.push(A[j])
+        if (getSum(right) === sum / 3) {
+          return true
+        }
+      }
+      return false
+    }
+  }
+  return false
+};
+
+function getSum (arr) {
+  return arr.reduce((a, b) =&gt; (a + b), 0)
+}
+</code></pre>
+<p>思路：最重要的是，数组可以分成三段，每段和相同，那么他们一定等于<code>getSum(A) / 3</code>，剩下的就是两边往中间遍历而已。</p>
 
             </div>
             
