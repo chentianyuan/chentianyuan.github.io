@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-09T15:33:16.986Z</updated>
+    <updated>2020-03-11T01:07:02.337Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -22,10 +22,10 @@
         <content type="html"><![CDATA[<p>自知算法薄弱，做不到一步登天，那就脚踏实地，聚沙成塔。<br>
 不积跬步无以至千里，不积小流无以成江河。</p>
 <!-- more -->
-<p>** 20200309 **<br>
-题目：<a href="https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/">二叉树的层次遍历</a><br>
-题型：树的广度优先遍历</p>
-<pre><code>/**
+<h1 id="20200309">20200309</h1>
+<p><strong>题型：树的广度优先遍历</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcokigrjddj31b00pk755.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
  * Definition for a binary tree node.
  * function TreeNode(val) {
  *     this.val = val;
@@ -52,8 +52,39 @@ var levelOrderBottom = function(root) {
   return result.reverse()
 };
 </code></pre>
-<p>方法：广度优先遍历需要借助队列，每一层结束了就splice掉，一层一层向下，最后翻转一下就好<br>
+<p>思路：广度优先遍历需要借助队列，每一层结束了就splice掉，一层一层向下，最后翻转一下就好。<br>
 时间复杂度：O(n)</p>
+<h1 id="20200310">20200310</h1>
+<p><strong>题型：树的深度优先遍历</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcp7mcpe93j31bi0jwdgo.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+var diameterOfBinaryTree = function(root) {
+  if (!root) return 0
+  let result = 0
+  function getMax (root) {
+    result = Math.max(result, getDeep(root.left) + getDeep(root.right))
+    if (root.left) getMax(root.left)
+    if (root.right) getMax(root.right)
+    return result
+  }
+  function getDeep (node, depth = 0) {
+    if (node) {
+      depth++
+      return Math.max(getDeep(node.left, depth), getDeep(node.right, depth))
+    } else {
+      return depth
+    }
+  }
+  return getMax(root)
+};
+</code></pre>
+<p>思路：方向是对的，深度优先遍历，但是这边有个坑，不能直接两边最大深度相加，因为这个直径可能根本就不经过根节点，所以要把每个节点都当做根节点进行一次递归求两边最大深度与当前result的大值。</p>
 ]]></content>
     </entry>
     <entry>
