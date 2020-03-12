@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-11T15:25:32.218Z</updated>
+    <updated>2020-03-12T16:10:04.048Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -117,6 +117,32 @@ function getSum (arr) {
 }
 </code></pre>
 <p>思路：最重要的是，数组可以分成三段，每段和相同，那么他们一定等于<code>getSum(A) / 3</code>，剩下的就是两边往中间遍历而已。</p>
+<h1 id="20200312">20200312</h1>
+<p>** 题型：数学 **<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcrld0bogcj314y0u0dh9.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {string} str1
+ * @param {string} str2
+ * @return {string}
+ */
+var gcdOfStrings = function(str1, str2) {
+  if (str1 === str2) return str1
+  if (str1.length &lt; str2.length) {
+    let temp = str2
+    str2 = str1
+    str1 = temp
+  }
+  let result = ''
+  for (let i = 1; i &lt;= str2.length; i++) {
+    let temp = str2.slice(0, i)
+    if (str1.split(temp).join('') === '' &amp;&amp; str2.split(temp).join('') === '') {
+      result = temp
+    }
+  }
+  return result
+};
+</code></pre>
+<p>思路：1、最简单的枚举，从长度1到较小字符串长度一个一个试，2、欧几里得公式，求最大公约数，然后从较小的字符串里取这个长度</p>
 ]]></content>
     </entry>
     <entry>

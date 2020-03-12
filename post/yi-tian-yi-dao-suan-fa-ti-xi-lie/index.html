@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1583940329767">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584029393353">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1583940329767" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584029393353" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -208,6 +208,32 @@ function getSum (arr) {
 }
 </code></pre>
 <p>思路：最重要的是，数组可以分成三段，每段和相同，那么他们一定等于<code>getSum(A) / 3</code>，剩下的就是两边往中间遍历而已。</p>
+<h1 id="20200312">20200312</h1>
+<p>** 题型：数学 **<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcrld0bogcj314y0u0dh9.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {string} str1
+ * @param {string} str2
+ * @return {string}
+ */
+var gcdOfStrings = function(str1, str2) {
+  if (str1 === str2) return str1
+  if (str1.length &lt; str2.length) {
+    let temp = str2
+    str2 = str1
+    str1 = temp
+  }
+  let result = ''
+  for (let i = 1; i &lt;= str2.length; i++) {
+    let temp = str2.slice(0, i)
+    if (str1.split(temp).join('') === '' &amp;&amp; str2.split(temp).join('') === '') {
+      result = temp
+    }
+  }
+  return result
+};
+</code></pre>
+<p>思路：1、最简单的枚举，从长度1到较小字符串长度一个一个试，2、欧几里得公式，求最大公约数，然后从较小的字符串里取这个长度</p>
 
             </div>
             
