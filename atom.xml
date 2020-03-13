@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-12T16:10:04.048Z</updated>
+    <updated>2020-03-13T14:32:46.969Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -143,6 +143,29 @@ var gcdOfStrings = function(str1, str2) {
 };
 </code></pre>
 <p>思路：1、最简单的枚举，从长度1到较小字符串长度一个一个试，2、欧几里得公式，求最大公约数，然后从较小的字符串里取这个长度</p>
+<h1 id="20200313">20200313</h1>
+<p>** 题型：哈希表 **<br>
+169. 多数元素</p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var majorityElement = function(nums) {
+  let timeMap = new Map()
+  if (nums.length === 1) return nums[0]
+  for (let i = 0; i &lt; nums.length; i++) {
+    if (timeMap.has(nums[i])) {
+      if (timeMap.get(nums[i]) + 1 &gt; Math.floor(nums.length / 2)) {
+        return nums[i]
+      }
+      timeMap.set(nums[i], timeMap.get(nums[i]) + 1)
+    } else {
+      timeMap.set(nums[i], 1)
+    }
+  }
+};
+</code></pre>
+<p>思路：hashmap存储元素出现的次数，比较简单</p>
 ]]></content>
     </entry>
     <entry>
