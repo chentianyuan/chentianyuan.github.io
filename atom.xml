@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-13T14:32:46.969Z</updated>
+    <updated>2020-03-14T14:49:20.971Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -166,6 +166,30 @@ var majorityElement = function(nums) {
 };
 </code></pre>
 <p>思路：hashmap存储元素出现的次数，比较简单</p>
+<h1 id="20200314">20200314</h1>
+<p>** 题型：动态规划 **<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gctu5hfdfrj31bq0jkmya.jpg" alt="最长上升子序列" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function(nums) {
+  let maxUpList = []
+  for (let i = 0; i  &lt; nums.length; i++) {
+    if (!maxUpList.length) {
+      maxUpList.push(nums[i])
+    } else if (maxUpList.slice(-1) &lt; nums[i]) {
+      maxUpList.push(nums[i])
+    } else {
+      let index = maxUpList.findIndex(item =&gt; item &gt;= nums[i])
+      maxUpList[index] = nums[i]
+    }
+  }
+  return maxUpList.length
+};
+</code></pre>
+<p>思路：最开始的思路就是对整个数组进行一次遍历，往后插入大值，小值可以替换前面的值，因为遍历还是线性的，所以时间复杂度还是O(n^2)<br>
+从动态规划的角度来看，dp[j] = dp[i] + 1，只要满足j位置的值大于前面i位置的值，那么就可以和i位置的最长上升子序列组成一个更长的最长上升子序列，因为每次到j时都得变量一遍前面i个位置的值，所以时间复杂度还是O(n^2)，使用的数组长度小于等于原数组长度，空间复杂度O(n)</p>
 ]]></content>
     </entry>
     <entry>

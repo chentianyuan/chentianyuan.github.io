@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584109954599">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584197357491">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584109954599" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584197357491" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -257,6 +257,30 @@ var majorityElement = function(nums) {
 };
 </code></pre>
 <p>思路：hashmap存储元素出现的次数，比较简单</p>
+<h1 id="20200314">20200314</h1>
+<p>** 题型：动态规划 **<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gctu5hfdfrj31bq0jkmya.jpg" alt="最长上升子序列" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function(nums) {
+  let maxUpList = []
+  for (let i = 0; i  &lt; nums.length; i++) {
+    if (!maxUpList.length) {
+      maxUpList.push(nums[i])
+    } else if (maxUpList.slice(-1) &lt; nums[i]) {
+      maxUpList.push(nums[i])
+    } else {
+      let index = maxUpList.findIndex(item =&gt; item &gt;= nums[i])
+      maxUpList[index] = nums[i]
+    }
+  }
+  return maxUpList.length
+};
+</code></pre>
+<p>思路：最开始的思路就是对整个数组进行一次遍历，往后插入大值，小值可以替换前面的值，因为遍历还是线性的，所以时间复杂度还是O(n^2)<br>
+从动态规划的角度来看，dp[j] = dp[i] + 1，只要满足j位置的值大于前面i位置的值，那么就可以和i位置的最长上升子序列组成一个更长的最长上升子序列，因为每次到j时都得变量一遍前面i个位置的值，所以时间复杂度还是O(n^2)，使用的数组长度小于等于原数组长度，空间复杂度O(n)</p>
 
             </div>
             
