@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584198016396">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584376791105">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584198016396" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584376791105" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -295,6 +295,10 @@ var lengthOfLIS = function(nums) {
 </code></pre>
 <p>思路：最开始的思路就是对整个数组进行一次遍历，往后插入大值，小值可以替换前面的值，因为遍历还是线性的，所以时间复杂度还是O(n^2)<br>
 从动态规划的角度来看，dp[j] = dp[i] + 1，只要满足j位置的值大于前面i位置的值，那么就可以和i位置的最长上升子序列组成一个更长的最长上升子序列，因为每次到j时都得变量一遍前面i个位置的值，所以时间复杂度还是O(n^2)，使用的数组长度小于等于原数组长度，空间复杂度O(n)</p>
+<h1 id="20200316">20200316</h1>
+<p>** 题型：空间换取时间 **<br>
+<a href="https://leetcode-cn.com/problems/compress-string-lcci/">试题 01.06. 字符串压缩</a><br>
+思路：用两个组分别存储重复字符和重复字符的长度，最后进行一次比较即可</p>
 
             </div>
             
