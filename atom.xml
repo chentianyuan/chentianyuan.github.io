@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-16T16:39:53.222Z</updated>
+    <updated>2020-03-17T16:26:26.101Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -208,6 +208,35 @@ var lengthOfLIS = function(nums) {
 <p>** 题型：空间换取时间 **<br>
 <a href="https://leetcode-cn.com/problems/compress-string-lcci/">试题 01.06. 字符串压缩</a><br>
 思路：用两个组分别存储重复字符和重复字符的长度，最后进行一次比较即可</p>
+<h1 id="20200317">20200317</h1>
+<p>** 题型：哈希表计数 **<br>
+<a href="https://leetcode-cn.com/problems/find-words-that-can-be-formed-by-characters/">1160. 拼写单词</a></p>
+<pre><code class="language-javascript">var countCharacters = function(words, chars) {
+  let map = {}
+  for (let i = 0; i &lt; chars.length; i++) {
+    if (!map[chars[i]]) {
+      map[chars[i]] = 1
+    } else {
+      map[chars[i]] = map[chars[i]] + 1
+    }
+  }
+  return words.reduce((result, cur) =&gt; {
+    let word = {}
+    for (let i = 0; i &lt; cur.length; i++) {
+      if (word[cur[i]]) {
+        word[cur[i]] = word[cur[i]] + 1
+      } else {
+        word[cur[i]] = 1
+      }
+    }
+    if (Object.keys(word).every(key =&gt; map[key] &gt;= word[key])) {
+      return result + cur.length
+    } else {
+      return result
+    }
+  }, 0)
+};
+</code></pre>
 ]]></content>
     </entry>
     <entry>

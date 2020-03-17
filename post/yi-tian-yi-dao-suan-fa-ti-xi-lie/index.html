@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584376791105">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584462382470">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584376791105" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584462382470" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -299,6 +299,35 @@ var lengthOfLIS = function(nums) {
 <p>** 题型：空间换取时间 **<br>
 <a href="https://leetcode-cn.com/problems/compress-string-lcci/">试题 01.06. 字符串压缩</a><br>
 思路：用两个组分别存储重复字符和重复字符的长度，最后进行一次比较即可</p>
+<h1 id="20200317">20200317</h1>
+<p>** 题型：哈希表计数 **<br>
+<a href="https://leetcode-cn.com/problems/find-words-that-can-be-formed-by-characters/">1160. 拼写单词</a></p>
+<pre><code class="language-javascript">var countCharacters = function(words, chars) {
+  let map = {}
+  for (let i = 0; i &lt; chars.length; i++) {
+    if (!map[chars[i]]) {
+      map[chars[i]] = 1
+    } else {
+      map[chars[i]] = map[chars[i]] + 1
+    }
+  }
+  return words.reduce((result, cur) =&gt; {
+    let word = {}
+    for (let i = 0; i &lt; cur.length; i++) {
+      if (word[cur[i]]) {
+        word[cur[i]] = word[cur[i]] + 1
+      } else {
+        word[cur[i]] = 1
+      }
+    }
+    if (Object.keys(word).every(key =&gt; map[key] &gt;= word[key])) {
+      return result + cur.length
+    } else {
+      return result
+    }
+  }, 0)
+};
+</code></pre>
 
             </div>
             
