@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584462382470">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584543612747">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584462382470" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584543612747" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -328,6 +328,35 @@ var lengthOfLIS = function(nums) {
   }, 0)
 };
 </code></pre>
+<h1 id="20200318">20200318</h1>
+<p>** 题型：数学 **<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcyh1i751cj312q0u0761.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} rec1
+ * @param {number[]} rec2
+ * @return {boolean}
+ */
+var isRectangleOverlap = function(rec1, rec2) {
+  let [x1, y1, x2, y2] = rec1
+  let [x3, y3, x4, y4] = rec2
+  return hasjiaoji([x1, x2], [x3, x4]) &amp;&amp; hasjiaoji([y1, y2], [y3, y4])
+};
+
+function hasjiaoji (arr1, arr2) {
+  let da1 = Math.max(arr1[0], arr1[1])
+  let da2 = Math.max(arr2[0], arr2[1])
+  let xiao1 = Math.min(arr1[0], arr1[1])
+  let xiao2 = Math.min(arr2[0], arr2[1])
+  if (
+    da1 &lt;= xiao2 || xiao1 &gt;= da2
+  ) {
+    return false
+  } else {
+    return true
+  }
+}
+</code></pre>
+<p>思路：看x轴和y轴是否两两相交，如果是则必有面积重叠</p>
 
             </div>
             
