@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-19T01:11:49.150Z</updated>
+    <updated>2020-03-19T15:55:47.977Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -266,6 +266,34 @@ function hasjiaoji (arr1, arr2) {
 }
 </code></pre>
 <p>思路：看x轴和y轴是否两两相交，如果是则必有面积重叠</p>
+<h1 id="20200319">20200319</h1>
+<p>** 题型：哈希表 || Set **<br>
+<a href="https://leetcode-cn.com/problems/longest-palindrome/">409. 最长回文串</a></p>
+<pre><code class="language-javascript">/**
+ * @param {string} s
+ * @return {number}
+ */
+var longestPalindrome = function(s) {
+  let map = {}
+  for (let i = 0; i &lt; s.length; i++) {
+    if (map[s[i]]) {
+      map[s[i]] = map[s[i]] + 1
+    } else {
+      map[s[i]] = 1
+    }
+  }
+  let hasSingle = false
+  return Object.values(map).reduce((result, cur) =&gt; {
+    if (cur % 2 !== 0 &amp;&amp; !hasSingle) {
+      hasSingle = true
+    }
+    return result + (Math.floor(cur / 2) * 2)
+  }, 0) + (hasSingle ? 1 : 0)
+};
+</code></pre>
+<p>思路：<br>
+1、能组成回文则出现偶数次，若有一个字符出现奇数次，回文长度加一<br>
+2、使用Set数据结构，set.has，则长度加2，并set.delete该值，若不存在则set.add</p>
 ]]></content>
     </entry>
     <entry>

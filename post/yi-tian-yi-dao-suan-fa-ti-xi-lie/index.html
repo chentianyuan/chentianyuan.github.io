@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584543612747">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1584633345514">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584543612747" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1584633345514" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -357,6 +357,34 @@ function hasjiaoji (arr1, arr2) {
 }
 </code></pre>
 <p>思路：看x轴和y轴是否两两相交，如果是则必有面积重叠</p>
+<h1 id="20200319">20200319</h1>
+<p>** 题型：哈希表 || Set **<br>
+<a href="https://leetcode-cn.com/problems/longest-palindrome/">409. 最长回文串</a></p>
+<pre><code class="language-javascript">/**
+ * @param {string} s
+ * @return {number}
+ */
+var longestPalindrome = function(s) {
+  let map = {}
+  for (let i = 0; i &lt; s.length; i++) {
+    if (map[s[i]]) {
+      map[s[i]] = map[s[i]] + 1
+    } else {
+      map[s[i]] = 1
+    }
+  }
+  let hasSingle = false
+  return Object.values(map).reduce((result, cur) =&gt; {
+    if (cur % 2 !== 0 &amp;&amp; !hasSingle) {
+      hasSingle = true
+    }
+    return result + (Math.floor(cur / 2) * 2)
+  }, 0) + (hasSingle ? 1 : 0)
+};
+</code></pre>
+<p>思路：<br>
+1、能组成回文则出现偶数次，若有一个字符出现奇数次，回文长度加一<br>
+2、使用Set数据结构，set.has，则长度加2，并set.delete该值，若不存在则set.add</p>
 
             </div>
             
