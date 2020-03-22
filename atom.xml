@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-19T15:55:47.977Z</updated>
+    <updated>2020-03-22T15:12:32.628Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -294,6 +294,36 @@ var longestPalindrome = function(s) {
 <p>思路：<br>
 1、能组成回文则出现偶数次，若有一个字符出现奇数次，回文长度加一<br>
 2、使用Set数据结构，set.has，则长度加2，并set.delete该值，若不存在则set.add</p>
+<h1 id="20200322前两天太忙了今天补上之后继续因为代码可以到力扣看这边简单题只写思路和截图">20200322（前两天太忙了，今天补上之后继续，因为代码可以到力扣看，这边简单题只写思路和截图）</h1>
+<p><strong>题型：hash表</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd31jfoh24j315g0rcabe.jpg" alt="" loading="lazy"><br>
+思路：先排序，重复出现的元素仅需要比上一个出现的非重复元素大1即可，累加相差的值就是要move的值<br>
+<strong>题型：数学</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd33erq644j315a0p475p.jpg" alt="" loading="lazy"><br>
+思路：非常硬核的一道题，暴力求解会超时。由于数组中最大的值为1e9也就是10的9次方，因为2^30&lt; 10e9 &lt;2^31也就是说至少需要31位2进制才可以表示这个二进制数，通过num.toString(2)转为二进制之后，遍历每一位上的0和1的个数并统计，当前位汉明距离（任意两个数二进制当前位不同的数量即01组合的个数）等于count[0]*count[1]个，最后31位统一累加，时间复杂度是O(n)，空间复杂度O(1)</p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var totalHammingDistance = function(nums) {
+  let result = 0
+  let maxBit = 31 // 最大32位
+  nums = nums.map(num =&gt; num.toString(2))
+  for (let i = 0; i &lt; maxBit; i++) {
+    let count = {
+      '0': 0,
+      '1': 0
+    }
+    for (let j = 0; j &lt; nums.length; j++) {
+      let cur = nums[j]
+      count[+cur[cur.length - i - 1] ? '1' : '0']++
+    }
+    result += count[0] * count[1]
+  }
+  return result
+};
+
+</code></pre>
 ]]></content>
     </entry>
     <entry>
