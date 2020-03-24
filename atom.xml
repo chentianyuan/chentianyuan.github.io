@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-23T15:36:37.625Z</updated>
+    <updated>2020-03-24T14:47:27.724Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -329,6 +329,25 @@ var totalHammingDistance = function(nums) {
 思路：<br>
 1、单指针两次遍历，第一次记录长度，第二次访问到中间长度时返回节点<br>
 2、快慢指针，快指针一次移动两格，慢指针一次移动一格，快指针到达链表尾部时，慢指针也就在中间了~</p>
+<h1 id="20200324">20200324</h1>
+<p>** 题型：动态规划**<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd5eehkstfj313b0u0jt9.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var massage = function(nums) {
+  let dp = []
+  dp[0] = nums[0]
+  dp[1] = Math.max(nums[1], nums[0])
+  for (let i = 2; i &lt; nums.length; i++) {
+    dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i])
+  }
+  return dp[nums.length - 1] || 0
+};
+</code></pre>
+<p>每次做到动态规划的题总是知道这道题要用动态规划，可是就是做不出来。。<br>
+思路：<code>dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i])</code>。每次中间需要间隔，三个一组，但是不是0,3到3,6，而是0,3到1,4，像滑动窗口一样划过去，计算每个点位的最大值，最后返回dp[i]即可。</p>
 ]]></content>
     </entry>
     <entry>
