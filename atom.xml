@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-24T14:48:05.524Z</updated>
+    <updated>2020-03-25T16:39:22.834Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -348,6 +348,10 @@ var massage = function(nums) {
 </code></pre>
 <p>每次做到动态规划的题总是知道这道题要用动态规划，可是就是做不出来。。<br>
 思路：<code>dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i])</code>。每次中间需要间隔，三个一组，但是不是0,3到3,6，而是0,3到1,4，像滑动窗口一样划过去，计算每个点位的最大值，最后返回dp[i]即可。</p>
+<h1 id="20200325">20200325</h1>
+<p><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd6ncibrylj30u00vg41h.jpg" alt="" loading="lazy"><br>
+<strong>题型：数学</strong><br>
+思路：横向，竖向分别遍历一次，按条件捕获即可，时间复杂度O(n^2)。</p>
 ]]></content>
     </entry>
     <entry>
