@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-25T16:39:22.834Z</updated>
+    <updated>2020-03-26T09:00:53.008Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,106 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[babel最佳实践]]></title>
+        <id>https://chentianyuan.github.io/post/babel-pluginbabel-presetbabel-runtimebabel-polyfill/</id>
+        <link href="https://chentianyuan.github.io/post/babel-pluginbabel-presetbabel-runtimebabel-polyfill/">
+        </link>
+        <updated>2020-03-26T03:00:19.000Z</updated>
+        <summary type="html"><![CDATA[<p>各式各样的babel工具，babel-plugin/babel-preset/babel-runtime/babel-polyfill.....</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>各式各样的babel工具，babel-plugin/babel-preset/babel-runtime/babel-polyfill.....</p>
+<!-- more -->
+<h1 id="babel配置读取">babel配置读取</h1>
+<p>1、可以通过babe-cli命令行转义高级语法，命令行配置，指定文件<br>
+2、加入script命令，指定babel配置文件<br>
+3、通过babel-loader配置，借助webpack，打包时自动读取cwd()根目录的.babelrc或babel.config.js</p>
+<h1 id="babelpreset-env">@babel/preset-env</h1>
+<p>babel7的preset工具@babel/preset-env</p>
+<pre><code class="language-javascript">// .babelrc
+{
+    &quot;presets&quot;: [
+        &quot;@babel/preset-env&quot;,
+        options
+    ]
+}
+</code></pre>
+<p>配置过后，babel-loader会读取该文件，并根据预设转换需要转换的高级<strong>语法</strong>，但是它并不提供高级语法如Array.prototype.includes、Array.prototype.flat的垫片。</p>
+<h1 id="babelpolyfill">@babel/polyfill</h1>
+<p>core-js@3的出现，替代了@babel/polyfill，配合@babel/preset-env的useBuiltlns选项，可以得到更小的代码体积</p>
+<pre><code class="language-javascript">{
+  &quot;presets&quot;: [
+    [
+      &quot;@babel/preset-env&quot;,
+      {
+        &quot;useBuiltIns&quot;: &quot;usage&quot;,
+        &quot;corejs&quot;: 3
+      }
+    ]
+  ]
+}
+</code></pre>
+<h1 id="babelplugin-transfrom-runtime">@babel/plugin-transfrom-runtime</h1>
+<p>上面的配置可以达到转义的功能，但是看一下输出的代码</p>
+<pre><code class="language-javascript">&quot;use strict&quot;;
+
+require(&quot;core-js/modules/es.array.from&quot;);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(&quot;Cannot call a class as a function&quot;); } }
+
+var Parent = function Parent() {
+  _classCallCheck(this, Parent);
+};
+
+Array.from([])
+</code></pre>
+<p>上面编译的代码有两个问题<br>
+1、helper重复注入<br>
+2、全局环境污染</p>
+<h2 id="重复注入">重复注入</h2>
+<p>babel-runtime会在每个文件，使用到class Xxx {} 的地方提供一个helper，如果class很多，会使得单文件体积变大。然后就到了@babel/plugin-transfrom-runtime出场的时候了</p>
+<pre><code class="language-javascript">{
+  &quot;presets&quot;: [
+    [
+      &quot;@babel/preset-env&quot;,
+      {
+        &quot;useBuiltIns&quot;: &quot;usage&quot;,
+        &quot;corejs&quot;: 3
+      }
+    ]
+  ],
+  &quot;plugins&quot;: [
+    &quot;@babel/plugin-transform-runtime&quot;
+  ]
+}
+</code></pre>
+<p>然后_classCallCheck就会作为一个模块被生成，而不是每次都注入一个_classCallCheck函数了。</p>
+<h2 id="全局环境污染">全局环境污染</h2>
+<p>可以看到<code>require(&quot;core-js/modules/es.array.from&quot;);</code>直接把Array的from函数给顶掉了，如果babel团队更新不及时，而js引擎换了对from的解析规则，那么真实的Array.from方法就被替换了，所以为了避免这种情况发生，需要安装@babel/runtime-corejs3</p>
+<pre><code class="language-javascript">{
+  &quot;presets&quot;: [
+    &quot;@babel/preset-env&quot;,
+    {
+        &quot;useBuiltIns&quot;: &quot;usage&quot;,
+        &quot;corejs&quot;: 3
+    }
+  ],
+  &quot;plugins&quot;: [
+    [
+      &quot;@babel/plugin-transform-runtime&quot;,
+      {
+        &quot;corejs&quot;: 3
+      }
+    ]
+  ]
+}
+</code></pre>
+<p>输出的代码会实现一个_from方法，然后将代码中所有的Array.from替换为Array._from，避免了在兼容高级语法的机型上，语法被污染的情况。上面也是babel7语法转换最佳配置，最后需要安装的插件有</p>
+<pre><code class="language-bash">npm i @babel/preset-env corejs@3 @babel/plugin-transfrom-runtime @babel/runtime-corejs3 -D
+</code></pre>
+<p>撒花✿✿ヽ(°▽°)ノ✿</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[一天一道算法题系列]]></title>
         <id>https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/</id>
@@ -860,40 +960,6 @@ https在应用层和传输层中间增加了SSL层，SSL可以理解为CA证书�
 </ol>
 <p>总结：<br>
 利用CA证书，加密先使用非对称加解密，再使用对称密匙加解密，解决了http带来的窃听和请求伪造的问题</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[commonjs和ES6模块的区别]]></title>
-        <id>https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie/</id>
-        <link href="https://chentianyuan.github.io/post/commonjs-he-es6-mo-kuai-de-qu-bie/">
-        </link>
-        <updated>2019-10-26T03:10:51.000Z</updated>
-        <summary type="html"><![CDATA[<p>对比commonjs和ES6，了解前端模块化机制</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>对比commonjs和ES6，了解前端模块化机制</p>
-<!-- more -->
-<h2 id="commonjs-规范">commonjs 规范</h2>
-<p>1、commonjs应用于nodejs模块化管理，是nodejs实现的一套模块化机制。</p>
-<p>2、commonjs属于动态编译，运行时才确定加载模块，输入时需查找对象属性，所以无法做到按需加载，总是引入整个模块对象。</p>
-<p>3、模块导出的是值得拷贝各个引用互不影响。</p>
-<p>4、this指向当前模块。</p>
-<h2 id="es6-module">ES6 module</h2>
-<p>1、es6的模块化可以应用在浏览器和node服务端。</p>
-<p>2、es6模块的设计思想，是尽量静态化，在编译时就确定模块的依赖关系以及输入和输出的变量，其静态编译使得可以编译时就确认要使用的模块中的内容可做按需加载。</p>
-<p>3、模块导出的是值得引用，若其中引用被修改，下次引用时得到的是修改后的值。</p>
-<p>4、this指向undefined。</p>
-<pre><code class="language-javascript">import zw from './a' 
-import('./b').then(res =&gt; {
-  console.log(zw) // b模块修改后的zw的值
-})
-</code></pre>
-<h2 id="扩展">扩展</h2>
-<p>webpack打包时默认会模拟一套类commonjs规范的加载器，如果有使用spliteChunk抽离出runtime的话，可以查阅相关代码，所以webpack默认是无法做到按需加载的，像<code>import { Button } from 'Antd'</code>这样的语句会打包Antd提供的所有模块，并使用其中的babel模块，我们可以引入<code>babel-plugin-component</code>或者<code>babel-plugin-import</code>来解决这个问题。</p>
-<blockquote>
-<p>babel 能提前将 es6 的 import 等模块关键字转换成 commonjs 的规范。这样 webpack 就无需再做处理，直接使用 webpack 运行时定义的 <strong>webpack_require</strong> 处理。而babel-plugin-component就做了一件事，将 import { Button } from 'antd' 转换成了 import Button from 'antd/lib/button'，这样即便转成commonjs规范也只引入了一个库文件</p>
-</blockquote>
-<p>深夜打卡<br>
-<s>水了一篇，开心٩(๑❛ᴗ❛๑)۶</s></p>
 ]]></content>
     </entry>
 </feed>

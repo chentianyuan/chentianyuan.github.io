@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>深度优先遍历和广度优先遍历 | City Corner</title>
+<title>babel最佳实践 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -106,71 +106,109 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">深度优先遍历和广度优先遍历</h2>
-            <div class="post-date">2019-12-04</div>
+            <h2 class="post-title">babel最佳实践</h2>
+            <div class="post-date">2020-03-26</div>
             
             <div class="post-content">
-              <p>DFS VS BFS</p>
+              <p>各式各样的babel工具，babel-plugin/babel-preset/babel-runtime/babel-polyfill.....</p>
 <!-- more -->
-<h3 id="题目">题目</h3>
-<p>给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。</p>
-<pre><code class="language-javascript">// DFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let i = 0
-    let dfs = function (Node, i) {
-      // 该节点不存在
-      if (!Node) {
-        return
-      }
-      resultList[i] = resultList[i] || []
-      resultList[i].push(Node.val)
-      dfs(Node.left, i + 1)
-      dfs(Node.right, i + 1)
-    }
-    dfs(root, i)
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 优先左子树，再遍历右子树，每次递归深度+1
+<h1 id="babel配置读取">babel配置读取</h1>
+<p>1、可以通过babe-cli命令行转义高级语法，命令行配置，指定文件<br>
+2、加入script命令，指定babel配置文件<br>
+3、通过babel-loader配置，借助webpack，打包时自动读取cwd()根目录的.babelrc或babel.config.js</p>
+<h1 id="babelpreset-env">@babel/preset-env</h1>
+<p>babel7的preset工具@babel/preset-env</p>
+<pre><code class="language-javascript">// .babelrc
+{
+    &quot;presets&quot;: [
+        &quot;@babel/preset-env&quot;,
+        options
+    ]
+}
 </code></pre>
-<pre><code class="language-javascript">// BFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let j = -1
-    let bfs = function (Nodes) {
-      while (Nodes.length &gt; 0) {
-        j++
-        // 该节点不存在
-        if (!Nodes.length) {
-          return
-        }
-        let length = Nodes.length
-        for (let i = 0; i &lt; length; i++) {
-          let Node = Nodes.shift()
-          resultList[j] = resultList[j] || []
-          resultList[j].push(Node.val)
-          if (Node.left) Nodes.push(Node.left)
-          if (Node.right) Nodes.push(Node.right)
-        }
+<p>配置过后，babel-loader会读取该文件，并根据预设转换需要转换的高级<strong>语法</strong>，但是它并不提供高级语法如Array.prototype.includes、Array.prototype.flat的垫片。</p>
+<h1 id="babelpolyfill">@babel/polyfill</h1>
+<p>core-js@3的出现，替代了@babel/polyfill，配合@babel/preset-env的useBuiltlns选项，可以得到更小的代码体积</p>
+<pre><code class="language-javascript">{
+  &quot;presets&quot;: [
+    [
+      &quot;@babel/preset-env&quot;,
+      {
+        &quot;useBuiltIns&quot;: &quot;usage&quot;,
+        &quot;corejs&quot;: 3
       }
-    }
-    if (!root) return []
-    bfs([root])
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 广度优先遍历的核心就是queues
-// 队列存储左右节点，然后进入下一次循环，循环原始队列，队列头出队列，将左子树右子树分别重新插入队列，最后的到的类似[left.left, left.right, right.left, right.right]进行我们想要的操作
+    ]
+  ]
+}
 </code></pre>
-<p><a href="https://leetcode-cn.com/problems/binary-tree-right-side-view/">力扣原题</a></p>
+<h1 id="babelplugin-transfrom-runtime">@babel/plugin-transfrom-runtime</h1>
+<p>上面的配置可以达到转义的功能，但是看一下输出的代码</p>
+<pre><code class="language-javascript">&quot;use strict&quot;;
+
+require(&quot;core-js/modules/es.array.from&quot;);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(&quot;Cannot call a class as a function&quot;); } }
+
+var Parent = function Parent() {
+  _classCallCheck(this, Parent);
+};
+
+Array.from([])
+</code></pre>
+<p>上面编译的代码有两个问题<br>
+1、helper重复注入<br>
+2、全局环境污染</p>
+<h2 id="重复注入">重复注入</h2>
+<p>babel-runtime会在每个文件，使用到class Xxx {} 的地方提供一个helper，如果class很多，会使得单文件体积变大。然后就到了@babel/plugin-transfrom-runtime出场的时候了</p>
+<pre><code class="language-javascript">{
+  &quot;presets&quot;: [
+    [
+      &quot;@babel/preset-env&quot;,
+      {
+        &quot;useBuiltIns&quot;: &quot;usage&quot;,
+        &quot;corejs&quot;: 3
+      }
+    ]
+  ],
+  &quot;plugins&quot;: [
+    &quot;@babel/plugin-transform-runtime&quot;
+  ]
+}
+</code></pre>
+<p>然后_classCallCheck就会作为一个模块被生成，而不是每次都注入一个_classCallCheck函数了。</p>
+<h2 id="全局环境污染">全局环境污染</h2>
+<p>可以看到<code>require(&quot;core-js/modules/es.array.from&quot;);</code>直接把Array的from函数给顶掉了，如果babel团队更新不及时，而js引擎换了对from的解析规则，那么真实的Array.from方法就被替换了，所以为了避免这种情况发生，需要安装@babel/runtime-corejs3</p>
+<pre><code class="language-javascript">{
+  &quot;presets&quot;: [
+    &quot;@babel/preset-env&quot;,
+    {
+        &quot;useBuiltIns&quot;: &quot;usage&quot;,
+        &quot;corejs&quot;: 3
+    }
+  ],
+  &quot;plugins&quot;: [
+    [
+      &quot;@babel/plugin-transform-runtime&quot;,
+      {
+        &quot;corejs&quot;: 3
+      }
+    ]
+  ]
+}
+</code></pre>
+<p>输出的代码会实现一个_from方法，然后将代码中所有的Array.from替换为Array._from，避免了在兼容高级语法的机型上，语法被污染的情况。上面也是babel7语法转换最佳配置，最后需要安装的插件有</p>
+<pre><code class="language-bash">npm i @babel/preset-env corejs@3 @babel/plugin-transfrom-runtime @babel/runtime-corejs3 -D
+</code></pre>
+<p>撒花✿✿ヽ(°▽°)ノ✿</p>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://chentianyuan.github.io/post/liu-lan-qi-gong-zuo-yuan-li-ji-shi-jian/">
+                <a href="https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/">
                   <h3 class="post-title">
-                    浏览器工作原理及实践
+                    一天一道算法题系列
                   </h3>
                 </a>
               </div>
