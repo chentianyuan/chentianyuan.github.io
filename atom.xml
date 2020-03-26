@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-26T09:00:53.008Z</updated>
+    <updated>2020-03-26T15:55:54.038Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -449,9 +449,32 @@ var massage = function(nums) {
 <p>每次做到动态规划的题总是知道这道题要用动态规划，可是就是做不出来。。<br>
 思路：<code>dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i])</code>。每次中间需要间隔，三个一组，但是不是0,3到3,6，而是0,3到1,4，像滑动窗口一样划过去，计算每个点位的最大值，最后返回dp[i]即可。</p>
 <h1 id="20200325">20200325</h1>
-<p><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd6ncibrylj30u00vg41h.jpg" alt="" loading="lazy"><br>
-<strong>题型：数学</strong><br>
+<p><strong>题型：数学</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd6ncibrylj30u00vg41h.jpg" alt="" loading="lazy"><br>
 思路：横向，竖向分别遍历一次，按条件捕获即可，时间复杂度O(n^2)。</p>
+<h1 id="20200326">20200326</h1>
+<p><strong>题型：动态规划</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd7rocy4lwj315c0q00to.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxSubArray = function(nums) {
+  let dp = []
+  let max = nums[0]
+  dp[0] = nums[0]
+  for (let i = 1; i &lt; nums.length; i++) {
+    if (dp[i - 1] &lt; 0) {
+      dp[i] = nums[i]
+    } else {
+      dp[i] = dp[i - 1] + nums[i]
+    }
+    max = Math.max(dp[i], max)
+  }
+  return max
+};
+</code></pre>
+<p>思路：动态规划，dp[i - 1]为负时相当于前面的总和已经是负收益，dp[i]直接等于当前值即可，转移方程是 -&gt; dp[i] = dp[i - 1]是负数 ？nums[i] : dp[i - 1] + nums[i]。</p>
 ]]></content>
     </entry>
     <entry>
