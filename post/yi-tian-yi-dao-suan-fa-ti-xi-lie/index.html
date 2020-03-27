@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585238150830">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585324154547">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585238150830" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585324154547" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -466,6 +466,41 @@ var maxSubArray = function(nums) {
 };
 </code></pre>
 <p>思路：动态规划，dp[i - 1]为负时相当于前面的总和已经是负收益，dp[i]直接等于当前值即可，转移方程是 -&gt; dp[i] = dp[i - 1]是负数 ？nums[i] : dp[i - 1] + nums[i]。</p>
+<h1 id="20200326-2">20200326</h1>
+<p><strong>题型：最小公约数</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd8x3w716qj30u30u0dhi.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} deck
+ * @return {boolean}
+ */
+var hasGroupsSizeX = function(deck) {
+  let arr = {}
+  for (let i = 0; i &lt; deck.length; i++) {
+    if (arr[deck[i]] !== void 0) {
+      arr[deck[i]] = arr[deck[i]] + 1
+    } else {
+      arr[deck[i]] = 1
+    }
+  }
+  let g = -1
+  for (let i = 0; i &lt; 10000; i++) {
+    if (arr[i]) {
+      if (g === -1) {
+        g = arr[i]
+      } else {
+        g = gcd(g, arr[i])
+      }
+    }
+  }
+  return g &gt;= 2
+};
+
+// 求最大公约数！谨记，如果x（余）为0，则最大公约数是上一次的x，这一次的y
+function gcd (x, y) {
+  return x === 0 ? y : gcd(y % x, x)
+}
+</code></pre>
+<p>思路：先记录所有数字出现的次数，再根据题意最大值不超过10000，求最小公约数，gcb公式要牢记！还有另一种思路，就是记录最大值，遍历到这个最大值最大公约数是否大于2。</p>
 
             </div>
             

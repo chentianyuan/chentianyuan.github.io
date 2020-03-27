@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-26T15:55:54.038Z</updated>
+    <updated>2020-03-27T15:49:28.234Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -475,6 +475,41 @@ var maxSubArray = function(nums) {
 };
 </code></pre>
 <p>思路：动态规划，dp[i - 1]为负时相当于前面的总和已经是负收益，dp[i]直接等于当前值即可，转移方程是 -&gt; dp[i] = dp[i - 1]是负数 ？nums[i] : dp[i - 1] + nums[i]。</p>
+<h1 id="20200326-2">20200326</h1>
+<p><strong>题型：最小公约数</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd8x3w716qj30u30u0dhi.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} deck
+ * @return {boolean}
+ */
+var hasGroupsSizeX = function(deck) {
+  let arr = {}
+  for (let i = 0; i &lt; deck.length; i++) {
+    if (arr[deck[i]] !== void 0) {
+      arr[deck[i]] = arr[deck[i]] + 1
+    } else {
+      arr[deck[i]] = 1
+    }
+  }
+  let g = -1
+  for (let i = 0; i &lt; 10000; i++) {
+    if (arr[i]) {
+      if (g === -1) {
+        g = arr[i]
+      } else {
+        g = gcd(g, arr[i])
+      }
+    }
+  }
+  return g &gt;= 2
+};
+
+// 求最大公约数！谨记，如果x（余）为0，则最大公约数是上一次的x，这一次的y
+function gcd (x, y) {
+  return x === 0 ? y : gcd(y % x, x)
+}
+</code></pre>
+<p>思路：先记录所有数字出现的次数，再根据题意最大值不超过10000，求最小公约数，gcb公式要牢记！还有另一种思路，就是记录最大值，遍历到这个最大值最大公约数是否大于2。</p>
 ]]></content>
     </entry>
     <entry>
