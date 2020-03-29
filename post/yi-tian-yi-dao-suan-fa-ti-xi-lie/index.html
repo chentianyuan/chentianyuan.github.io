@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585324154547">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585476838925">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585324154547" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585476838925" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -500,7 +500,17 @@ function gcd (x, y) {
   return x === 0 ? y : gcd(y % x, x)
 }
 </code></pre>
-<p>思路：先记录所有数字出现的次数，再根据题意最大值不超过10000，求最小公约数，gcb公式要牢记！还有另一种思路，就是记录最大值，遍历到这个最大值最大公约数是否大于2。</p>
+<p>思路：先记录所有数字出现的次数，再根据题意最大值不超过10000，求最小公约数，gcb公式（Greatest Common Divisor）要牢记！还有另一种思路，就是记录最大值，遍历到这个最大值最大公约数是否大于2。</p>
+<h1 id="20200327">20200327</h1>
+<p><strong>题型：动态规划</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdax9wbqysj314s0ksgmc.jpg" alt="" loading="lazy"><br>
+思路：<br>
+1、&gt;&gt; 符号在js里，如果是&gt;&gt;0相当于Math.floor取整，如果是&gt;&gt;1则表示将2进制位右移一位，并补位0<br>
+2、Array.from(arr, item =&gt; item + 1)，Array的第二个参数是一个回调，可以操作前面的类数组，并最后返回一个数组<br>
+3、最长回文子可以通过暴力枚举、反转字符串求公共子串、动态规划来做<br>
+动态规划：将i，j表示为i到j的字符串，值表示为是否是回文子串动态规划方程是<br>
+dp[i][j] = dp[i + 1][j - 1] &amp;&amp; s[i] === s[j]<br>
+true表示是回文串，反之不是</p>
 
             </div>
             
