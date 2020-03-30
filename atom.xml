@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-29T14:27:35.645Z</updated>
+    <updated>2020-03-30T14:59:48.778Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -11,7 +11,7 @@
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
     <entry>
-        <title type="html"><![CDATA[babel最佳实践]]></title>
+        <title type="html"><![CDATA[babel最佳实践[babel7.4及以上]]]></title>
         <id>https://chentianyuan.github.io/post/babel-pluginbabel-presetbabel-runtimebabel-polyfill/</id>
         <link href="https://chentianyuan.github.io/post/babel-pluginbabel-presetbabel-runtimebabel-polyfill/">
         </link>
@@ -43,7 +43,7 @@
       &quot;@babel/preset-env&quot;,
       {
         &quot;useBuiltIns&quot;: &quot;usage&quot;,
-        &quot;corejs&quot;: 3
+        &quot;corejs&quot;: 3 // 如果不指定，会默认使用core-js2.x
       }
     ]
   ]
@@ -96,7 +96,7 @@ Array.from([])
   ],
   &quot;plugins&quot;: [
     [
-      &quot;@babel/plugin-transform-runtime&quot;,
+      &quot;@babel/transform-runtime&quot;,
       {
         &quot;corejs&quot;: 3
       }
@@ -105,9 +105,20 @@ Array.from([])
 }
 </code></pre>
 <p>输出的代码会实现一个_from方法，然后将代码中所有的Array.from替换为Array._from，避免了在兼容高级语法的机型上，语法被污染的情况。上面也是babel7语法转换最佳配置，最后需要安装的插件有</p>
-<pre><code class="language-bash">npm i @babel/preset-env corejs@3 @babel/plugin-transfrom-runtime @babel/runtime-corejs3 -D
+<pre><code class="language-bash">npm i @babel/preset-env corejs@3 @babel/transfrom-runtime @babel/runtime-corejs3 -D
 </code></pre>
-<p>撒花✿✿ヽ(°▽°)ノ✿</p>
+<h2 id="总结">总结</h2>
+<h3 id="babelpolyfill-和-babelruntime">@babel/polyfill 和 @babel/runtime</h3>
+<p>两个都可以提供es2015的环境，为Array.prototype.reduce之类的方法提供垫片，区别在于<br>
+@babel/polyfill 是通过在Array.prototype上添加了一个自己的reduce方法，会覆盖原方法<br>
+而@babel/runtime是通过引入一个_reduce方法，然后将项目中的reduce方法替换成_reduce，减少了全局污染</p>
+<h3 id="babelplugin-transfrom-runtime-和-babelruntime">@babel/plugin-transfrom-runtime 和 @babel/runtime</h3>
+<pre><code class="language-bash">npm install --save-dev @babel/plugin-transform-runtime
+npm install --save @babel/runtime
+</code></pre>
+<p>plugin-transform-runtime可以和polyfill或者runtime配合，它是用来分析文件需要的垫片，自动从polyfill或者runtime中获取并加入的<br>
+@babel/runtime 用来在生产环境中提供垫片<br>
+撒花✿✿ヽ(°▽°)ノ✿</p>
 ]]></content>
     </entry>
     <entry>
@@ -525,6 +536,28 @@ true表示是回文串，反之不是</p>
 <img src="https://tva1.sinaimg.cn/large/00831rSTly1gdb5vnmdv2j315g0mat9v.jpg" alt="" loading="lazy"><br>
 思路：1、正常思路，控制递增变量，取递增最大的那一次，时间复杂度O(n)，空间复杂度O(1)<br>
 2、动态规划，下一个数大于上一个数则 dp[i] = dp[i - 1] + 1 否则 dp[i] = 1</p>
+<h1 id="20200329">20200329</h1>
+<p><strong>题型：数学</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number} n
+ * @param {number} m
+ * @return {number}
+ */
+var lastRemaining = function(n, m) {
+  if (m === 1) return n - 1
+  let arr = []
+  for (let i = 0; i &lt; n; i++) {
+    arr.push(i)
+  }
+  let idx = 0
+  while (arr.length !== 1) {
+    idx = (idx + m - 1) % arr.length
+    arr.splice(idx, 1)
+  }
+  return arr[0]
+}
+</code></pre>
+<p>思路：每次删除后，记录下当前的位置，下次再对数组长度求余，得到新的要删除的位置，勉强通过</p>
 ]]></content>
     </entry>
     <entry>

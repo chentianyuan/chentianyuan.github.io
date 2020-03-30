@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" >
 
-<title>babel最佳实践 | City Corner</title>
+<title>babel最佳实践[babel7.4及以上] | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585492053729">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585580369451">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585492053729" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585580369451" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -106,7 +106,7 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">babel最佳实践</h2>
+            <h2 class="post-title">babel最佳实践[babel7.4及以上]</h2>
             <div class="post-date">2020-03-26</div>
             
             <div class="post-content">
@@ -135,7 +135,7 @@
       &quot;@babel/preset-env&quot;,
       {
         &quot;useBuiltIns&quot;: &quot;usage&quot;,
-        &quot;corejs&quot;: 3
+        &quot;corejs&quot;: 3 // 如果不指定，会默认使用core-js2.x
       }
     ]
   ]
@@ -188,7 +188,7 @@ Array.from([])
   ],
   &quot;plugins&quot;: [
     [
-      &quot;@babel/plugin-transform-runtime&quot;,
+      &quot;@babel/transform-runtime&quot;,
       {
         &quot;corejs&quot;: 3
       }
@@ -197,9 +197,20 @@ Array.from([])
 }
 </code></pre>
 <p>输出的代码会实现一个_from方法，然后将代码中所有的Array.from替换为Array._from，避免了在兼容高级语法的机型上，语法被污染的情况。上面也是babel7语法转换最佳配置，最后需要安装的插件有</p>
-<pre><code class="language-bash">npm i @babel/preset-env corejs@3 @babel/plugin-transfrom-runtime @babel/runtime-corejs3 -D
+<pre><code class="language-bash">npm i @babel/preset-env corejs@3 @babel/transfrom-runtime @babel/runtime-corejs3 -D
 </code></pre>
-<p>撒花✿✿ヽ(°▽°)ノ✿</p>
+<h2 id="总结">总结</h2>
+<h3 id="babelpolyfill-和-babelruntime">@babel/polyfill 和 @babel/runtime</h3>
+<p>两个都可以提供es2015的环境，为Array.prototype.reduce之类的方法提供垫片，区别在于<br>
+@babel/polyfill 是通过在Array.prototype上添加了一个自己的reduce方法，会覆盖原方法<br>
+而@babel/runtime是通过引入一个_reduce方法，然后将项目中的reduce方法替换成_reduce，减少了全局污染</p>
+<h3 id="babelplugin-transfrom-runtime-和-babelruntime">@babel/plugin-transfrom-runtime 和 @babel/runtime</h3>
+<pre><code class="language-bash">npm install --save-dev @babel/plugin-transform-runtime
+npm install --save @babel/runtime
+</code></pre>
+<p>plugin-transform-runtime可以和polyfill或者runtime配合，它是用来分析文件需要的垫片，自动从polyfill或者runtime中获取并加入的<br>
+@babel/runtime 用来在生产环境中提供垫片<br>
+撒花✿✿ヽ(°▽°)ノ✿</p>
 
             </div>
             
