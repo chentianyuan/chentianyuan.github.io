@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585580369451">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1585670073791">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585580369451" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1585670073791" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -538,6 +538,38 @@ var lastRemaining = function(n, m) {
 }
 </code></pre>
 <p>思路：每次删除后，记录下当前的位置，下次再对数组长度求余，得到新的要删除的位置，勉强通过</p>
+<h1 id="20200330">20200330</h1>
+<p><strong>题型：分治</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gddjsv04n3j31580qcgmf.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var sortArray = function(nums) {
+  if (nums.length &lt;= 1) {
+    return nums
+  }
+  // 归并排序
+  let length = nums.length
+  let mid = (length / 2) &gt;&gt; 0
+  let left = nums.slice(0, mid)
+  let right = nums.slice(mid, length)
+  return merge(sortArray(left), sortArray(right))
+};
+
+function merge (left, right) {
+  let result = []
+  while (left.length &amp;&amp; right.length) {
+    if (left[0] &lt; right[0]) {
+      result.push(left.shift())
+    } else {
+      result.push(right.shift())
+    }
+  }
+  return result.concat(left).concat(right)
+}
+</code></pre>
+<p>思路：Array.sort本质上是快排，选择，归并的合集，根据数组长度来选择最佳的排序规则，做到这道题时想学习一下归并。归并排序采用的是分而治之的思想，将数组拆分成一个一个的小数组进行排序，然后将排序好的小数组再进行一次排序，长度为n的数组本质上仅需要log2n次拆分，时间复杂度为nlogn</p>
 
             </div>
             

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-30T14:59:48.778Z</updated>
+    <updated>2020-03-31T15:54:35.597Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -558,6 +558,38 @@ var lastRemaining = function(n, m) {
 }
 </code></pre>
 <p>思路：每次删除后，记录下当前的位置，下次再对数组长度求余，得到新的要删除的位置，勉强通过</p>
+<h1 id="20200330">20200330</h1>
+<p><strong>题型：分治</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gddjsv04n3j31580qcgmf.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var sortArray = function(nums) {
+  if (nums.length &lt;= 1) {
+    return nums
+  }
+  // 归并排序
+  let length = nums.length
+  let mid = (length / 2) &gt;&gt; 0
+  let left = nums.slice(0, mid)
+  let right = nums.slice(mid, length)
+  return merge(sortArray(left), sortArray(right))
+};
+
+function merge (left, right) {
+  let result = []
+  while (left.length &amp;&amp; right.length) {
+    if (left[0] &lt; right[0]) {
+      result.push(left.shift())
+    } else {
+      result.push(right.shift())
+    }
+  }
+  return result.concat(left).concat(right)
+}
+</code></pre>
+<p>思路：Array.sort本质上是快排，选择，归并的合集，根据数组长度来选择最佳的排序规则，做到这道题时想学习一下归并。归并排序采用的是分而治之的思想，将数组拆分成一个一个的小数组进行排序，然后将排序好的小数组再进行一次排序，长度为n的数组本质上仅需要log2n次拆分，时间复杂度为nlogn</p>
 ]]></content>
     </entry>
     <entry>
