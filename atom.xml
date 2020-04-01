@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-03-31T15:54:35.597Z</updated>
+    <updated>2020-04-01T15:21:30.690Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -590,6 +590,42 @@ function merge (left, right) {
 }
 </code></pre>
 <p>思路：Array.sort本质上是快排，选择，归并的合集，根据数组长度来选择最佳的排序规则，做到这道题时想学习一下归并。归并排序采用的是分而治之的思想，将数组拆分成一个一个的小数组进行排序，然后将排序好的小数组再进行一次排序，长度为n的数组本质上仅需要log2n次拆分，时间复杂度为nlogn</p>
+<h1 id="20200331">20200331</h1>
+<p><strong>题型：栈</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdeoe7snr9j30yx0u0whl.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {string} seq
+ * @return {number[]}
+ */
+var maxDepthAfterSplit = function(seq) {
+  if (!seq.length) return []
+  let result = [0]
+  let A = [seq[0]]
+  let B = []
+  for (let i = 1; i &lt; seq.length; i++) {
+    // A.slice(-1)
+    if (seq[i] === ')') {
+      if (A.length &gt; B.length) {
+        A.length = A.length - 1
+        result.push(0)
+      } else {
+        B.length = B.length - 1
+        result.push(1)
+      }
+    } else {
+      if (A.length &gt; B.length) {
+        B.push(seq[i])
+        result.push(1)
+      } else {
+        A.push(seq[i])
+        result.push(0)
+      }
+    }
+  }
+  return result
+};
+</code></pre>
+<p>思路：保持AB组的深度一致，相差不超过1即可，可以找规律，也可以像我这样暴力破解，哈哈哈哈哈哈哈哈哈嗝，时间复杂度N，空间复杂度1</p>
 ]]></content>
     </entry>
     <entry>
