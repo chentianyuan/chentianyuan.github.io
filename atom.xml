@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-03T05:25:23.337Z</updated>
+    <updated>2020-04-04T16:31:34.852Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -635,6 +635,10 @@ var maxDepthAfterSplit = function(seq) {
 <p>** 题型：数学 **<br>
 <img src="https://tva1.sinaimg.cn/large/00831rSTly1gdgieglimnj30uq0u0422.jpg" alt="" loading="lazy"><br>
 思路：耐心题，确认好函数边界，虚怀若谷，沉住气</p>
+<h1 id="20200403">20200403</h1>
+<p>** 题型：数学（木板效应） **<br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdi7b4d6cmj314y0okjs7.jpg" alt="" loading="lazy"><br>
+思路：根据木板效应，每一个能接的水取决于左右两边最短的那一块减去当前木板高度的值，暴力法求解，时间复杂度O(n^2)</p>
 ]]></content>
     </entry>
     <entry>
