@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-05T16:35:39.314Z</updated>
+    <updated>2020-04-06T14:58:46.376Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -711,6 +711,42 @@ var maxDepthAfterSplit = function(seq) {
 };
 </code></pre>
 <p>思路：跟LRU不同，LRU是根据时间来清除最久未使用的数据，LFU是根据频率来清除最久未使用的数据，为了节省时间，这边需要两个map，一个cacheMap用来存储key对应key的val和freq频率，一个freqMap用来存储每一种freq频率对应的keyArr，以便在相同频率的情况下删除最前面的数据，更新map。（做的我自闭了</p>
+<h1 id="20200405">20200405</h1>
+<p><strong>题型： 排序</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdkfqwhd5vj30yo0r274y.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} arr
+ * @param {number} k
+ * @return {number[]}
+ */
+var getLeastNumbers = function(arr, k) {
+  var sort = incorporateSort(arr)
+  return sort.slice(0, k)
+};
+
+var incorporateSort = function (arr) {
+  if (arr.length &lt;= 1) return arr
+  let mid = Math.floor(arr.length / 2)
+  let left = arr.slice(0, mid)
+  let right = arr.slice(mid)
+  return merge(incorporateSort(left), incorporateSort(right))
+}
+
+var merge = function (left, right) {
+  let result = []
+  while (left.length &amp;&amp; right.length) {
+    if (left[0] &lt; right[0]) {
+      result.push(left.shift())
+    } else {
+      result.push(right.shift())
+    }
+  }
+  return result.concat(left).concat(right)
+}
+</code></pre>
+<p>思路：<br>
+1、排序，我用了归并，分治的思想<br>
+2、（因为这里没有规定要按顺序返回）最小栈，维护一个栈，先将k个数推入栈内，然后从k+1个数开始遍历，如果它比顶部值要小（最小的k个数肯定会满足这个条件），那就插入栈的尾部，最后返回该栈元素</p>
 ]]></content>
     </entry>
     <entry>
