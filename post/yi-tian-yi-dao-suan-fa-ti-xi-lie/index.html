@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1586185123241">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1586277020732">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1586185123241" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1586277020732" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -727,6 +727,32 @@ var merge = function (left, right) {
 <p>思路：<br>
 1、排序，我用了归并，分治的思想<br>
 2、（因为这里没有规定要按顺序返回）最小栈，维护一个栈，先将k个数推入栈内，然后从k+1个数开始遍历，如果它比顶部值要小（最小的k个数肯定会满足这个条件），那就插入栈的尾部，最后返回该栈元素</p>
+<h1 id="20200406">20200406</h1>
+<p><strong>题型：动态规划+缓存</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdlo2f0p7mj30z80ju0ti.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ */
+var NumArray = function(nums) {
+  this.nums = nums
+  this.record = new Array(nums.length)
+  this.record[0] = nums[0]
+  for (let i = 1; i &lt; nums.length; i++) {
+    this.record[i] = this.nums[i] + this.record[i - 1]
+  }
+};
+
+/** 
+ * @param {number} i 
+ * @param {number} j
+ * @return {number}
+ */
+NumArray.prototype.sumRange = function(i, j) {
+  if (i === 0) return this.record[j]
+  return this.record[j] - this.record[i - 1]
+};
+</code></pre>
+<p>思路：刚开始想的就是动态规划，结果一做超时，想着用map来缓存求过的值，一做，还是超时，正确的思路是新建一个记录数组，每个位置为0到该位置的和，那么有sum(i, j) = record[j] - record[i - 1]成立，每次只要计算减法就好了，时间复杂度O(n)比动规O(n^2)效率高很多。</p>
 
             </div>
             
