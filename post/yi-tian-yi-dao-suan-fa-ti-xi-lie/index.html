@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1586361618162">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1586445932302">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1586361618162" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1586445932302" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -794,6 +794,67 @@ function getSum (num) {
 }
 </code></pre>
 <p>思路：好题。题中只能上下左右移动因此可以将不满足条件的点想成砖块，同时对满足砖块的每个点做上下左右移动的操作，并记录到过的点位，可以计出总数。另外求和总数，每次除10求余数，然后除以10，继续取余数，得到位数和。</p>
+<h1 id="20200408">20200408</h1>
+<p><strong>题型：深度优先遍历</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdnwqsy70vj30wm0n0wez.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number} n
+ * @return {string[]}
+ */
+var generateParenthesis = function(n) {
+  let result = []
+  const dfs = function (str, leftNumber, rightNumber) {
+    if (str.length === n * 2) {
+      result.push(str)
+      return
+    }
+    if (rightNumber &lt; leftNumber) return
+    if (leftNumber === n) {
+      dfs(str + '(', leftNumber - 1, rightNumber)
+    } else {
+      leftNumber &gt; 0 &amp;&amp; dfs(str + '(', leftNumber - 1, rightNumber)
+      rightNumber &gt; 0 &amp;&amp; dfs(str + ')', leftNumber, rightNumber - 1)
+    }
+  }
+  dfs('', n, n)
+  return result
+};
+</code></pre>
+<p>思路：深度优先遍历，先全部左括弧，然后一个一个右括弧往上叠加，注意有效的括号左括弧的数量要始终大于等于右括弧的数量。最后返回所有结果。</p>
+<h1 id="20200409">20200409</h1>
+<p><strong>题型：位运算</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdnxbgkm2bj30w40q0zl3.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number} num
+ * @return {number[]}
+ */
+var findClosedNumbers = function(num) {
+  let times = getOneTimes(num)
+  let min = -1
+  let max
+  let i = num
+  let j = num
+  while (!max) {
+    ++i
+    if (getOneTimes(i) === times) {
+      max = i
+    }
+  }
+  while (min === -1 &amp;&amp; j &gt; 0) {
+    --j
+    if (getOneTimes(j) === times) {
+      min = j
+    }
+  }
+  return [max, min]
+};
+
+function getOneTimes (num) {
+  let numT = Number(num).toString(2)
+  return numT.length - numT.split('1').join('').length
+}
+</code></pre>
+<p>思路： 暴力解法就是从num往两边移动，分别找到符合条件的最大最小的数。</p>
 
             </div>
             
