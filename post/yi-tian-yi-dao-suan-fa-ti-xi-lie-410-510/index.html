@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>commonjs和ES6模块的区别 | City Corner</title>
+<title>一天一道算法题系列（4.10-5.10） | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -106,51 +106,27 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">commonjs和ES6模块的区别</h2>
-            <div class="post-date">2019-10-26</div>
+            <h2 class="post-title">一天一道算法题系列（4.10-5.10）</h2>
+            <div class="post-date">2020-04-10</div>
             
             <div class="post-content">
-              <p>对比commonjs和ES6，了解前端模块化机制</p>
+              <p>第二个30天，士兵们，新一轮的战斗开始了</p>
 <!-- more -->
-<h2 id="commonjs-规范">commonjs 规范</h2>
-<p>1、commonjs应用于nodejs模块化管理，是nodejs实现的一套模块化机制。</p>
-<p>2、commonjs属于动态编译，运行时才确定加载模块，输入时需查找对象属性，所以无法做到按需加载，总是引入整个模块对象。</p>
-<p>3、模块导出的是值得拷贝各个引用互不影响。</p>
-<p>4、this指向当前模块。</p>
-<h2 id="es6-module">ES6 module</h2>
-<p>1、es6的模块化可以应用在浏览器和node服务端。</p>
-<p>2、es6模块的设计思想，是尽量静态化，在编译时就确定模块的依赖关系以及输入和输出的变量，其静态编译使得可以编译时就确认要使用的模块中的内容可做按需加载。</p>
-<p>3、模块导出的是值得引用，若其中引用被修改，下次引用时得到的是修改后的值。</p>
-<p>4、this指向undefined。</p>
-<pre><code class="language-javascript">import zw from './a' 
-import('./b').then(res =&gt; {
-  console.log(zw) // b模块修改后的zw的值
-})
-</code></pre>
-<h2 id="扩展">扩展</h2>
-<p>webpack打包时默认会模拟一套类commonjs规范的加载器，如果有使用spliteChunk抽离出runtime的话，可以查阅相关代码，所以webpack默认是无法做到按需加载的，像<code>import { Button } from 'Antd'</code>这样的语句会打包Antd提供的所有模块，并使用其中的babel模块，我们可以引入<code>babel-plugin-component</code>或者<code>babel-plugin-import</code>来解决这个问题。</p>
-<blockquote>
-<p>babel 能提前将 es6 的 import 等模块关键字转换成 commonjs 的规范。这样 webpack 就无需再做处理，直接使用 webpack 运行时定义的 <strong>webpack_require</strong> 处理。而babel-plugin-component就做了一件事，将 import { Button } from 'antd' 转换成了 import Button from 'antd/lib/button'，这样即便转成commonjs规范也只引入了一个库文件</p>
-</blockquote>
-<p>深夜打卡<br>
-<s>水了一篇，开心٩(๑❛ᴗ❛๑)۶</s></p>
+<h1 id="20200410">20200410</h1>
+<p><strong>题型：双指针 | 库函数</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdp4dnxb14j30uk0u0myh.jpg" alt="" loading="lazy"><br>
+思路：<br>
+1、统计每个单词的左右边界，i，j最后反向插入即可<br>
+2、利用库函数split，过滤空格，reverse反正得到结果</p>
 
             </div>
-            
-              <div class="tag-container">
-                
-                  <a href="https://chentianyuan.github.io/tag/utXgApKu0/" class="tag">
-                    nodejs
-                  </a>
-                
-              </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://chentianyuan.github.io/post/mou-da-han-qian-duan-er-mian-ti/">
+                <a href="https://chentianyuan.github.io/post/babel-pluginbabel-presetbabel-runtimebabel-polyfill/">
                   <h3 class="post-title">
-                    某中厂前端二面题
+                    babel最佳实践[babel7.4及以上]
                   </h3>
                 </a>
               </div>

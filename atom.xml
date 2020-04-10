@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-09T15:25:34.349Z</updated>
+    <updated>2020-04-10T16:08:48.889Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,24 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[一天一道算法题系列（4.10-5.10）]]></title>
+        <id>https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie-410-510/</id>
+        <link href="https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie-410-510/">
+        </link>
+        <updated>2020-04-10T15:59:29.000Z</updated>
+        <summary type="html"><![CDATA[<p>第二个30天，士兵们，新一轮的战斗开始了</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>第二个30天，士兵们，新一轮的战斗开始了</p>
+<!-- more -->
+<h1 id="20200410">20200410</h1>
+<p><strong>题型：双指针 | 库函数</strong><br>
+<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdp4dnxb14j30uk0u0myh.jpg" alt="" loading="lazy"><br>
+思路：<br>
+1、统计每个单词的左右边界，i，j最后反向插入即可<br>
+2、利用库函数split，过滤空格，reverse反正得到结果</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[babel最佳实践[babel7.4及以上]]]></title>
         <id>https://chentianyuan.github.io/post/babel-pluginbabel-presetbabel-runtimebabel-polyfill/</id>
@@ -122,7 +140,7 @@ npm install --save @babel/runtime
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[一天一道算法题系列]]></title>
+        <title type="html"><![CDATA[一天一道算法题系列（3.9-4.9）]]></title>
         <id>https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/</id>
         <link href="https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/">
         </link>
@@ -1347,42 +1365,6 @@ GPU进程进行栅格化操作，为视口区域生成位图，保存在GPU内�
 在碰到function执行时会创建新的上下文和新的词法环境<br>
 同eval执行wei'd'wa<br>
 <img src="https://chentianyuan.github.io/post-images/1573476515573.png" alt="执行上下文" loading="lazy"></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[https协议详解]]></title>
-        <id>https://chentianyuan.github.io/post/https-xie-yi-xiang-jie/</id>
-        <link href="https://chentianyuan.github.io/post/https-xie-yi-xiang-jie/">
-        </link>
-        <updated>2019-10-30T12:11:46.000Z</updated>
-        <summary type="html"><![CDATA[<p>最后一次，理解https协议</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>最后一次，理解https协议</p>
-<!-- more -->
-<h3 id="why">why？</h3>
-<p>首先要明确的是https是为了解决什么问题<br>
-http请求的所有数据都是明文传输，在网络中无异于裸奔，会出现以下几个问题</p>
-<ol>
-<li>数据窃听</li>
-<li>假装真实客户端向恶意攻击服务端</li>
-<li>假装服务端返回假数据<br>
-https在应用层和传输层中间增加了SSL层，SSL可以理解为CA证书的作用（防止中间人篡改）<br>
-然后使用TLS协议通信，生成对称密匙后采用对称加密，（防止中间人窃取）保证了数据的安全性</li>
-</ol>
-<figure data-type="image" tabindex="1"><img src="https://chentianyuan.github.io/post-images/1572438323964.JPG" alt="Jesus" loading="lazy"></figure>
-<h3 id="how">how？</h3>
-<p>流程详解</p>
-<ol>
-<li>TCP链接建立之后</li>
-<li>客户端向服务端443端口发起请求，携带random1和加密方法列表，TLS第一步</li>
-<li>服务端返回CA证书携带服务端公匙和random2</li>
-<li>客户端拿到CA证书和公匙，和本地CA证书对比校验证书有效性（这里防止中间人篡改随机数）</li>
-<li>验证有效后，客户端生成random3，这里做了两件事，第一自己使用random1，random2，random3生成对称密匙sercet，第二使用服务端给出的公匙加密random3，返回给服务端（非对称加密防止中间人窃取）</li>
-<li>服务端拿到加密后的random3，使用私匙解密，截止目前为止，客户端和服务端都知道random1，random2，random3，服务端也生成对称密匙sercet，得到双方都知道的对称密匙</li>
-<li>最后，双方使用对称密匙加密数据进行通信</li>
-</ol>
-<p>总结：<br>
-利用CA证书，加密先使用非对称加解密，再使用对称密匙加解密，解决了http带来的窃听和请求伪造的问题</p>
 ]]></content>
     </entry>
 </feed>
