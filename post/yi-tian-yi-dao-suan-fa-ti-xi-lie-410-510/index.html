@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1586534926685">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1586622476010">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1586534926685" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1586622476010" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -118,6 +118,57 @@
 思路：<br>
 1、统计每个单词的左右边界，i，j最后反向插入即可<br>
 2、利用库函数split，过滤空格，reverse反正得到结果</p>
+<h1 id="20200411">20200411</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdqal0bkyoj319k0nu3z8.jpg" alt="" loading="lazy"><br>
+<strong>题型：双指针，数学</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var threeSum = function(nums) {
+  let result = []
+  if (nums.length &lt; 3) return result
+  // 顺序排序
+  nums = nums.sort((a, b) =&gt; a - b)
+  for (let i = 0; i &lt; nums.length; i++) {
+    // 首个元素大于0可以不用再比了
+    if (nums[i] &gt; 0) return result
+    // 和上个元素相同，避免重复解
+    if (i &gt; 0 &amp;&amp; nums[i] === nums[i - 1]) {
+      continue
+    }
+    let left = i + 1
+    let right = nums.length - 1
+    while (left &lt; right) {
+      var total = nums[i] + nums[left] + nums[right]
+      if (total === 0) {
+        // 先承认该数
+        result.push([nums[i], nums[left], nums[right]])
+        // 避免重复解，只需要在得到解之后，遇到相同数的时候继续向后移动即可避免重复解
+        while (left &lt; right &amp;&amp; nums[left + 1] === nums[left]) {
+          left++
+        }
+        while (left &lt; right &amp;&amp; nums[right - 1] === nums[right]) {
+          right--
+        }
+        // 避免重复解之后也不要忘了移动指针，否则会死循环
+        left++
+        right--
+      } else if (total &gt; 0) {
+        right = right - 1
+      } else {
+        left = left + 1
+      }
+    }
+  }
+  return result
+};
+</code></pre>
+<p>思路：<br>
+三数之和，可以以第一个数为游标（固定数），排序之后向后移动，中间数Left即为 i + 1，最大数Right可暂定num.length - 1<br>
+如果和大于0，说明最大数太大，Right向左偏移<br>
+如果和小于0，说明中间数太小，Left向右偏移<br>
+中间遇到合法的解，为了避免后面有重复的数字，需要判断，并继续偏移</p>
 
             </div>
             
