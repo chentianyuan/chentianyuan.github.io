@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-11T16:27:57.892Z</updated>
+    <updated>2020-04-12T15:45:02.876Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -77,6 +77,10 @@ var threeSum = function(nums) {
 如果和大于0，说明最大数太大，Right向左偏移<br>
 如果和小于0，说明中间数太小，Left向右偏移<br>
 中间遇到合法的解，为了避免后面有重复的数字，需要判断，并继续偏移</p>
+<h1 id="20200412">20200412</h1>
+<p><strong>题型：反向遍历</strong><br>
+题号：58 <a href="https://leetcode-cn.com/problems/length-of-last-word/">最后一个单词的长度</a><br>
+思路：很简单，不过js的执行效率不够高，解释型语言就是这样。这边复习一下js执行的过程吧，我们都只到js是由v8引擎驱动的，v8要开始执行一段js代码，首先需要对这行js代码进行词法分析，分析每个字符的含义，然后是语法分析，分析这些字符组合在一起的含义，再然后再转成v8引擎能够识别的AST语法树，然后将其编译成字节码（字节码是在机器码上层封装的一种代码格式），然后由JIT编译器逐行执行（补充一下，当某段代码被重复执行时，v8会将其转为机器码，来提高之后的执行效率，不将所有代码转换成机器码的原因是，一行代码转成机器码可能有20行，内存占用大，所以只有部分高频使用的代码才会转成机器码）。</p>
 ]]></content>
     </entry>
     <entry>
