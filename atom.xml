@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-17T03:50:09.651Z</updated>
+    <updated>2020-04-17T11:47:22.389Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -83,7 +83,7 @@ var threeSum = function(nums) {
 思路：很简单，不过js的执行效率不够高，解释型语言就是这样。这边复习一下js执行的过程吧，我们都只到js是由v8引擎驱动的，v8要开始执行一段js代码，首先需要对这行js代码进行词法分析，分析每个字符的含义，然后是语法分析，分析这些字符组合在一起的含义，再然后再转成v8引擎能够识别的AST语法树，然后将其编译成字节码（字节码是在机器码上层封装的一种代码格式），然后由JIT编译器逐行执行（补充一下，当某段代码被重复执行时，v8会将其转为机器码，来提高之后的执行效率，不将所有代码转换成机器码的原因是，一行代码转成机器码可能有20行，内存占用大，所以只有部分高频使用的代码才会转成机器码）。</p>
 <h1 id="20200413">20200413</h1>
 <p><strong>题型：数组的深度优先遍历 | 回溯 | 全排列</strong><br>
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdskyk5spqj31ec0j2thi.jpg" alt="" loading="lazy"></p>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdwzljjaxsj30se0hcjsf.jpg" alt="" loading="lazy"></p>
 <pre><code class="language-javascript">/**
  * @param {number[]} nums
  * @return {number[][]}
@@ -150,6 +150,30 @@ var merge = function(nums1, m, nums2, n) {
 <p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdwmdavo0uj30sg0w8774.jpg" alt="" loading="lazy"><br>
 <strong>题型：递归</strong><br>
 思路：全排列的变种，关键在于剪枝，及时中断，否则很容易超时</p>
+<h1 id="20200417">20200417</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdx049ci2tj30q00pqwi4.jpg" alt="" loading="lazy"><br>
+<strong>题型：贪心算法</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canJump = function(nums) {
+  if (nums.length === 1) return true
+  let max = nums[0]
+  for (let i = 0; i &lt; max; i++) {
+    let step = i
+    while (step &lt; nums.length &amp;&amp; nums[step] !== 0) {
+      step += nums[step]
+      max = Math.max(max, step)
+    }
+    if (max &gt;= nums.length - 1) {
+      return true
+    }
+  }
+  return false
+};
+</code></pre>
+<p>思路：每次往前跳最大格，可以到达的位置max随之增大，step起始位置也增大，如果有符合条件的跳跃方式<code>max &gt; nums.length - 1</code>，则说明条件成立。（少见的贪心算法题，关键在于遍历的条件<code>i &lt; max</code>中的max在随着贪心条件的变化而变化）</p>
 ]]></content>
     </entry>
     <entry>
