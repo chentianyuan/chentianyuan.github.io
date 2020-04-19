@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-17T11:47:22.389Z</updated>
+    <updated>2020-04-19T15:38:46.302Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -174,6 +174,66 @@ var canJump = function(nums) {
 };
 </code></pre>
 <p>思路：每次往前跳最大格，可以到达的位置max随之增大，step起始位置也增大，如果有符合条件的跳跃方式<code>max &gt; nums.length - 1</code>，则说明条件成立。（少见的贪心算法题，关键在于遍历的条件<code>i &lt; max</code>中的max在随着贪心条件的变化而变化）</p>
+<h1 id="20200418">20200418</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdzhkk26ncj30s00fs0uq.jpg" alt="" loading="lazy"><br>
+<strong>题型：数学规律</strong></p>
+<pre><code class="language-javascript">var nextPermutation = function(nums) {
+  let i = nums.length - 2
+  while (i &gt;= 0 &amp;&amp; nums[i] &gt;= nums[i + 1]) {
+    i--
+  }
+  // i是破坏升序的数如3，5，4，2，1中的3
+  if (i &gt;= 0) {
+    let j = nums.length - 1
+    // 找到j遍历过的数中比破坏数大的数的位置，像是4
+    while (j &gt;= i &amp;&amp; nums[j] &lt;= nums[i]) {
+      j--
+    }
+    // 进行一次交换，得到4，5，3，2，1
+    swap(nums, i, j)
+  }
+  // 然后要保证后面的数升序，得到下一个排列
+  if (i &gt;= 0) {
+    i = i + 1
+    // console.log(i, nums, '-----')
+    let j = nums.length - 1
+    while (i &lt; j) {
+      swap(nums, i, j)
+      i++
+      j--
+    }
+    return nums
+  }  
+  return nums.reverse()
+};
+
+function swap (nums, i, j) {
+  let temp = nums[i]
+  nums[i] = nums[j]
+  nums[j] = temp
+}
+</code></pre>
+<p>思路：寻找下一个排列更大的数，解法倒序遍历，先找到第一个破坏了降序的数，然后在前面的数里找到比这个数大的数对它进行替换，再把遍历过的数进行翻转，保证是<strong>下一个</strong>排列更大的数即可，最多遍历两次（每次做到这种题，就觉得对刷题的兴趣越来越不够了，这种找规律的题就算法来说并没有什么规律可言，只是数学上的一种规则，如果做过或许很快就能找到规律，没做过，可能很久也想不出来，时间花在这上面，带来的收益是成正比的吗？）</p>
+<h1 id="20200419">20200419</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gdzi0zimxgj30ss0i03zz.jpg" alt="" loading="lazy"><br>
+<strong>题型：链表</strong></p>
+<pre><code class="language-javascript">var deleteDuplicates = function(head) {
+  loop(head)
+  return head
+};
+
+function loop (linked) {
+  if (linked &amp;&amp; linked.next) {
+    if (linked.val === linked.next.val) {
+      linked.next = linked.next.next
+      loop(linked)
+    } else {
+      loop(linked.next)
+    }
+  }
+}
+</code></pre>
+<p>思路：正向遍历链表好了，如果重复，则舍弃重复链，重新比较，否则继续向下遍历。</p>
 ]]></content>
     </entry>
     <entry>
