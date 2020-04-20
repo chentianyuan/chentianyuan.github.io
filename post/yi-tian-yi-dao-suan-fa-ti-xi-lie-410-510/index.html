@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587310721403">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587399052017">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587310721403" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587399052017" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -326,6 +326,41 @@ function loop (linked) {
 }
 </code></pre>
 <p>思路：正向遍历链表好了，如果重复，则舍弃重复链，重新比较，否则继续向下遍历。</p>
+<h1 id="20200420">20200420</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge0okp0hxgj30ys0u0426.jpg" alt="" loading="lazy"><br>
+<strong>题型：无向图遍历</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {character[][]} grid
+ * @return {number}
+ */
+var numIslands = function(grid) {
+    let num = 0;
+    if(grid &amp;&amp; grid.length) {
+        const maxI = grid.length - 1, maxJ = grid[0].length - 1
+        function overturn(i, j) {
+            if(i &lt; 0 || j &lt; 0 || i &gt; maxI || j &gt; maxJ) return;
+            if(grid[i][j] === '1') {
+              // 该值周边所有相连的1都可以翻转成0看做同一个岛屿
+              grid[i][j] = '0'
+              overturn(i, j-1)
+              overturn(i-1, j)
+              overturn(i+1, j)
+              overturn(i, j+1)
+            }
+        }
+        for(let i = 0; i &lt; grid.length; i++) {
+            for(let j = 0; j &lt; grid[i].length; j++) {
+                if(grid[i][j] === '1') {
+                    num++;
+                    overturn(i, j)
+                }
+            }
+        }
+    }
+    return num;
+};
+</code></pre>
+<p>思路：找到陆地时，继续遍历其周边的陆地，如果有相连的陆地，则他们属于同一座岛屿，可以置为0，两次for循环即可，同之前做的机器人的问题，只能上下左右走一个，找准题目条件是关键，这个题还挺好玩的</p>
 
             </div>
             
