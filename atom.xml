@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-20T16:10:53.885Z</updated>
+    <updated>2020-04-22T16:29:58.906Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -269,6 +269,30 @@ var numIslands = function(grid) {
 };
 </code></pre>
 <p>思路：找到陆地时，继续遍历其周边的陆地，如果有相连的陆地，则他们属于同一座岛屿，可以置为0，两次for循环即可，同之前做的机器人的问题，只能上下左右走一个，找准题目条件是关键，这个题还挺好玩的</p>
+<h1 id="20200421">20200421</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge2ytc1lucj30tw0h4q47.jpg" alt="" loading="lazy"><br>
+<strong>题型：广度优先遍历</strong></p>
+<pre><code class="language-javascript">var rightSideView = function(root) {
+ if (!root) return []
+ let queue = [root]
+ let result = []
+ let depth = 0
+ while (queue.length) {
+  let l = queue.length
+  result[depth] = []
+  for (let i = 0; i &lt; l; i++) {
+    let temp = queue.shift()
+    result[depth].push(temp.val)
+    if (temp.left) queue.push(temp.left)
+    if (temp.right) queue.push(temp.right)
+  }
+  depth++
+ }
+ return result.map(arr =&gt; arr.slice(-1))
+};
+</code></pre>
+<p>思路：老题了，bfs一次取最右侧数据即可</p>
+<h1 id=""></h1>
 ]]></content>
     </entry>
     <entry>
