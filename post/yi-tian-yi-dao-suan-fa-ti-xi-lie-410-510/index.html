@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587721394051">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587742185067">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587721394051" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587742185067" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -384,7 +384,72 @@ var numIslands = function(grid) {
 };
 </code></pre>
 <p>思路：老题了，bfs一次取最右侧数据即可</p>
-<h1 id=""></h1>
+<h1 id="20200422">20200422</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge59grhyedj30uk0ren0e.jpg" alt="" loading="lazy"><br>
+<strong>题型：矩阵、数学</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[][]} matrix
+ * @return {number[]}
+ */
+var spiralOrder = function(matrix) {
+  if (!matrix.length || !matrix[0].length) return []
+  // right,down,left,up
+  let dir = 'right'
+  let il = matrix.length
+  let jl = matrix[0].length
+  let total = il * jl
+  let center = `${Math.floor(il / 2)}${Math.floor(jl / 2)}`
+  let leftL = 0
+  let topL = 0
+  let i = 0
+  let j = 0
+  let result = []
+  while (result.length !== total - 1) {
+    while (dir === 'right' &amp;&amp; j &lt;= jl - 1 &amp;&amp; result.length !== total - 1) {
+      if (j === jl - 1) {
+        topL++
+        dir = 'down'
+      } else {
+        result.push(matrix[i][j])
+        j++
+      }
+    }
+    while (dir === 'down' &amp;&amp; i &lt;= il - 1 &amp;&amp; result.length !== total - 1) {
+      if (i === il - 1) {
+        jl--
+        dir = 'left'
+      } else {
+        result.push(matrix[i][j])
+        i++
+      }
+    }
+    while (dir === 'left' &amp;&amp; j &gt;= leftL &amp;&amp; result.length !== total - 1) {
+      if (j === leftL) {
+        il--
+        dir = 'up'
+      } else {
+        result.push(matrix[i][j])
+        j--
+      }
+    }
+    while (dir === 'up' &amp;&amp; i &gt;= topL &amp;&amp; result.length !== total - 1) {
+      if (i === topL) {
+        leftL++
+        dir = 'right'
+      } else {
+        result.push(matrix[i][j])
+        i--
+      }
+    }
+  }
+  return result.concat([matrix[i][j]])
+};
+</code></pre>
+<p>思路：按照题意来即可，每次收窄边界，长度达到限度则已经收集完毕。</p>
+<h1 id="20200423">20200423</h1>
+<p><strong>题型：斐波那契、dp</strong><br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge59x96f87j30ua0oowgq.jpg" alt="" loading="lazy"><br>
+思路：dp[n] = dp[n - 1] + dp[n - 2] 唯一的问题是要在循环里取模，不然最后的精度会丢失。</p>
 
             </div>
             

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-24T09:43:20.386Z</updated>
+    <updated>2020-04-24T15:29:48.015Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,20 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[你知道几种页面适配方案？]]></title>
+        <id>https://chentianyuan.github.io/post/ni-zhi-dao-ji-chong-ye-mian-gua-pei-fang-an/</id>
+        <link href="https://chentianyuan.github.io/post/ni-zhi-dao-ji-chong-ye-mian-gua-pei-fang-an/">
+        </link>
+        <updated>2020-04-24T10:44:22.000Z</updated>
+        <summary type="html"><![CDATA[<p>市场上的移动端产品层出不穷，如何一套代码多端使用？良好的适配方案是一个成功的移动端产品的基石。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>市场上的移动端产品层出不穷，如何一套代码多端使用？良好的适配方案是一个成功的移动端产品的基石。</p>
+<!-- more -->
+<h1 id="pc端适配">pc端适配</h1>
+<p>常用方案</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[秘技：图片领域]]></title>
         <id>https://chentianyuan.github.io/post/mi-ji-tu-pian-ling-yu/</id>
@@ -352,7 +366,72 @@ var numIslands = function(grid) {
 };
 </code></pre>
 <p>思路：老题了，bfs一次取最右侧数据即可</p>
-<h1 id=""></h1>
+<h1 id="20200422">20200422</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge59grhyedj30uk0ren0e.jpg" alt="" loading="lazy"><br>
+<strong>题型：矩阵、数学</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[][]} matrix
+ * @return {number[]}
+ */
+var spiralOrder = function(matrix) {
+  if (!matrix.length || !matrix[0].length) return []
+  // right,down,left,up
+  let dir = 'right'
+  let il = matrix.length
+  let jl = matrix[0].length
+  let total = il * jl
+  let center = `${Math.floor(il / 2)}${Math.floor(jl / 2)}`
+  let leftL = 0
+  let topL = 0
+  let i = 0
+  let j = 0
+  let result = []
+  while (result.length !== total - 1) {
+    while (dir === 'right' &amp;&amp; j &lt;= jl - 1 &amp;&amp; result.length !== total - 1) {
+      if (j === jl - 1) {
+        topL++
+        dir = 'down'
+      } else {
+        result.push(matrix[i][j])
+        j++
+      }
+    }
+    while (dir === 'down' &amp;&amp; i &lt;= il - 1 &amp;&amp; result.length !== total - 1) {
+      if (i === il - 1) {
+        jl--
+        dir = 'left'
+      } else {
+        result.push(matrix[i][j])
+        i++
+      }
+    }
+    while (dir === 'left' &amp;&amp; j &gt;= leftL &amp;&amp; result.length !== total - 1) {
+      if (j === leftL) {
+        il--
+        dir = 'up'
+      } else {
+        result.push(matrix[i][j])
+        j--
+      }
+    }
+    while (dir === 'up' &amp;&amp; i &gt;= topL &amp;&amp; result.length !== total - 1) {
+      if (i === topL) {
+        leftL++
+        dir = 'right'
+      } else {
+        result.push(matrix[i][j])
+        i--
+      }
+    }
+  }
+  return result.concat([matrix[i][j]])
+};
+</code></pre>
+<p>思路：按照题意来即可，每次收窄边界，长度达到限度则已经收集完毕。</p>
+<h1 id="20200423">20200423</h1>
+<p><strong>题型：斐波那契、dp</strong><br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge59x96f87j30ua0oowgq.jpg" alt="" loading="lazy"><br>
+思路：dp[n] = dp[n - 1] + dp[n - 2] 唯一的问题是要在循环里取模，不然最后的精度会丢失。</p>
 ]]></content>
     </entry>
     <entry>
@@ -1579,68 +1658,6 @@ with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_
 <p>有时候，什么也做不了，做什么，都是徒劳。</p>
 <p>关怀生命，不是生命结束前的一个口号，而是生者的呼唤，一种生活的态度，一种不让那一天到来留下遗憾的祈盼。</p>
 <p>太负能量了，再也不写这种了。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[深度优先遍历和广度优先遍历]]></title>
-        <id>https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li/</id>
-        <link href="https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li/">
-        </link>
-        <updated>2019-12-04T13:17:43.000Z</updated>
-        <summary type="html"><![CDATA[<p>DFS VS BFS</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>DFS VS BFS</p>
-<!-- more -->
-<h3 id="题目">题目</h3>
-<p>给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。</p>
-<pre><code class="language-javascript">// DFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let i = 0
-    let dfs = function (Node, i) {
-      // 该节点不存在
-      if (!Node) {
-        return
-      }
-      resultList[i] = resultList[i] || []
-      resultList[i].push(Node.val)
-      dfs(Node.left, i + 1)
-      dfs(Node.right, i + 1)
-    }
-    dfs(root, i)
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 优先左子树，再遍历右子树，每次递归深度+1
-</code></pre>
-<pre><code class="language-javascript">// BFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let j = -1
-    let bfs = function (Nodes) {
-      while (Nodes.length &gt; 0) {
-        j++
-        // 该节点不存在
-        if (!Nodes.length) {
-          return
-        }
-        let length = Nodes.length
-        for (let i = 0; i &lt; length; i++) {
-          let Node = Nodes.shift()
-          resultList[j] = resultList[j] || []
-          resultList[j].push(Node.val)
-          if (Node.left) Nodes.push(Node.left)
-          if (Node.right) Nodes.push(Node.right)
-        }
-      }
-    }
-    if (!root) return []
-    bfs([root])
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 广度优先遍历的核心就是queues
-// 队列存储左右节点，然后进入下一次循环，循环原始队列，队列头出队列，将左子树右子树分别重新插入队列，最后的到的类似[left.left, left.right, right.left, right.right]进行我们想要的操作
-</code></pre>
-<p><a href="https://leetcode-cn.com/problems/binary-tree-right-side-view/">力扣原题</a></p>
 ]]></content>
     </entry>
 </feed>
