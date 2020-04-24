@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>秘技：图片领域 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587721394051">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587721394051" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">秘技：图片领域</h2>
+            <div class="post-date">2020-04-24</div>
+            
+            <div class="post-content">
+              <p>万物皆二进制，图片的<br>
+jpeg/bmp/png/webp</p>
+<!-- more -->
+<h1 id="图片属性要素">图片属性要素</h1>
+<p>一张图片的组成部分，通常有</p>
+<ul>
+<li>图片格式 （jpeg/bmp/png/webp）</li>
+<li>图片大小（大小和尺寸是不一样的）</li>
+<li>像素（也叫尺寸，像素可以理解为像素点，无论图片怎么放大缩小，图片的像素点是不变的）</li>
+<li>dpi（每英寸的像素，也叫扫描精度，web上大部分的图片都是72dpi，也就是每英寸72个像素。但是打印照片时，比如一张4<em>6英寸的照片，扫描精度必须大于300dpi，那么文件的尺寸应该是（4*300）</em>（6*300）= 1200 * 1800 像素）</li>
+<li>颜色模式（RGB，RGBA...）<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge4xioff62j30m80jejti.jpg" alt="图片示例" loading="lazy"><br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge4x40cimoj30hs0emmy9.jpg" alt="detail" loading="lazy"></li>
+</ul>
+<h1 id="前端应用">前端应用</h1>
+<h3 id="1-gif埋点">1、gif埋点</h3>
+<p>百度统计的埋点方式是在首屏引入一个三方的js，然后这个三方的js会种下一个三方的uuid cookie在他们的域下，标识一个用户，每到一个页面会new一个image对象，请求这张图片时会带上前面的cookie，并带上页面数据。那么为什么要使用gif来上报埋点参数呢？<br>
+大致原因如下：</p>
+<ul>
+<li>image.src天然支持跨域</li>
+<li>图片请求优先级低，不占用ajax请求限额，不阻塞页面加载</li>
+<li>相对ajax GET请求较为轻量</li>
+<li>1x1像素是最小的合法图片，而且图片最好是透明的，不影响页面显示效果，而jpeg是不支持透明色的，jpeg的颜色模式是rgb可以直接排除，剩下bmp，png，gif。因为任何一张图片二进制编码都有一些必要的结构体标头，来标识图片信息，最后通过比对，同等条件下gif的必须标头仅43个字节，png67个，bmp74个，因此gif才是最佳选择</li>
+</ul>
+<h3 id="2-图片压缩">2、图片压缩</h3>
+<p>在使用图片时，我们常常要对图片进行一次压缩，不同的图片类型，压缩方式，都会影响图片的压缩效果。</p>
+<h4 id="png">png</h4>
+<p>png图片颜色模式rgba，web应用中通常使用的是png8，也就是8位深度的png图片，位深度是每个像素所需要的像素大小。<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge4yvad06ej30sb099n03.jpg" alt="" loading="lazy"><br>
+位深度越大，图片的细腻程度越高，当位深度是1，那么每个像素都由0和1来表示，那么也就只能表示黑白的图片了<br>
+不同的位数其像素计算的规则不同<br>
+8位：  2^8 = 2^2(B) 2^3(G) 2^3(R) = 256  (256色)    可以总共显示256种颜色<br>
+16位：2^16 = 2^5(B) 2^6(G) 2^5(R) =  65536    可以总共显示65536种颜色<br>
+24位：2^24 = 2^8(B) 2^8(G) 2^8(R) =  16777216    可以总共显示16777216种颜色<br>
+32位：Alpha透明度 + 24位<br>
+用图片像素乘上图片位数即为这张原始图片所占的字节数，当然可以经过一层压缩。<br>
+png的压缩属于无损数据压缩，在保持图片质量的同时，还减少了图片的体积，8位支持alpha透明（只有透明和不透明），而32位有2^8种透明程度。png现常用于web上的logo，icon等图片中</p>
+<h4 id="jpegjpg">jpeg&amp;jpg</h4>
+<p>jpeg其实就是jpg，在web应用中不太常见，采用的是有损压缩方式，可能会导致图片失真，颜色规则rgb，不支持透明色，位深度现在也只有24位，但是相比于png-24，jpeg的无损压缩可以移除人的肉眼无法识别的图片细节，对色彩丰富的图片有更好的压缩效果</p>
+<h4 id="bmp">bmp</h4>
+<p>bmp原始图片，通常不采用压缩，图片质量也是最高的</p>
+<h4 id="webp">webp</h4>
+<p>webp支持有损和无损压缩两种压缩形式，将jpeg和png转为webp之后，实际体积会大幅缩小，webp通过分块和帧内预测的方法，对原有图片进行处理，比jpeg上使用的Huffman encoding表现得更为出色，唯一的缺点就是浏览器兼容性不好。</p>
+<h4 id="通用图片选择方法">通用图片选择方法</h4>
+<figure data-type="image" tabindex="1"><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge4zjpeug1j30gt09njsc.jpg" alt="" loading="lazy"></figure>
+<h1 id="总结">总结</h1>
+<p>前端在埋点上对图片的选择缘由<br>
+前端常见图片格式的分别<br>
+现在公司使用的kano系统应该是根据ua来判断当前浏览器对webp的支持程度，统一返回webp的图片了~</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie-410-510/">
+                  <h3 class="post-title">
+                    一天一道算法题系列（4.10-5.10）
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
