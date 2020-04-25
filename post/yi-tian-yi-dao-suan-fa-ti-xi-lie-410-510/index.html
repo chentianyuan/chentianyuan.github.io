@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587742185067">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587826464815">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587742185067" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587826464815" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -447,9 +447,43 @@ var spiralOrder = function(matrix) {
 </code></pre>
 <p>思路：按照题意来即可，每次收窄边界，长度达到限度则已经收集完毕。</p>
 <h1 id="20200423">20200423</h1>
-<p><strong>题型：斐波那契、dp</strong><br>
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge59x96f87j30ua0oowgq.jpg" alt="" loading="lazy"><br>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge59x96f87j30ua0oowgq.jpg" alt="" loading="lazy"><br>
+<strong>题型：斐波那契、dp</strong><br>
 思路：dp[n] = dp[n - 1] + dp[n - 2] 唯一的问题是要在循环里取模，不然最后的精度会丢失。</p>
+<h1 id="20200424">20200424</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge6efvradsj30u40j8acl.jpg" alt="" loading="lazy"><br>
+<strong>题型：链表，双指针</strong></p>
+<pre><code class="language-javascript">/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode}
+ */
+var getKthFromEnd = function(head, k) {
+  let temp = head
+  let l = getLinkedLength(temp)
+  for (let i = 0; i &lt;= l - k; i++) {
+    head = head.next
+  }
+  return head
+};
+
+function getLinkedLength (head) {
+  let length = 0
+  while (head &amp;&amp; head.next) {
+    length++
+    head = head.next
+  }
+  return length
+}
+</code></pre>
+<p>思路：第一时间想到的是统计链表长度，返回l-k位置的链表就行，其实也可以不统计长度，使用快慢指针的形式，快指针先走k次，然后快慢指针一起走，快指针走到头了，慢指针所指的位置即为倒数第k个的位置。</p>
 
             </div>
             
