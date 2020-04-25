@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" >
 
-<title>你知道几种页面适配方案？ | City Corner</title>
+<title>页面适配后的真相 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587826464815">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1587830573917">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587826464815" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1587830573917" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -106,14 +106,49 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">你知道几种页面适配方案？</h2>
+            <h2 class="post-title">页面适配后的真相</h2>
             <div class="post-date">2020-04-24</div>
             
             <div class="post-content">
-              <p>市场上的移动端产品层出不穷，如何一套代码多端使用？良好的适配方案是一个成功的移动端产品的基石。</p>
+              <p>市场上的移动端产品层出不穷，如何一套代码应对不同分辨率的手机？</p>
 <!-- more -->
-<h1 id="pc端适配">pc端适配</h1>
-<p>常用方案</p>
+<h1 id="移动端的适配方案">移动端的适配方案</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge6fpqm6m2j31ik0r44n5.jpg" alt="" loading="lazy"><br>
+电影天堂的页面并没有做适配，但是放到移动端访问，页面进行了自动的缩放，包括字体，但是设置同样的字体时会员页的字体并没有被缩放？真相是？</p>
+<h2 id="移动端的三种像素">移动端的三种像素</h2>
+<p>移动端最开始其实只有两种像素</p>
+<h3 id="物理像素device-pixels">物理像素（device pixels）</h3>
+<p>指屏幕的物理像素，又叫设备像素，任何设备的物理像素都是固定的。</p>
+<h3 id="css像素css-pixels">css像素（css pixels）</h3>
+<p>这个比较好理解，就是我们常写的100px，200px代码中所指的像素，它和物理像素之间的换算取决于屏幕的特性（是否为高密度屏），比如，在普通屏幕和苹果的视网膜屏幕上，2px所代表的物理像素是不同的<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge6furft4vj30eb07ymxo.jpg" alt="" loading="lazy"><br>
+普通屏幕2px等于2个物理像素，而视网膜屏2px等于8个物理像素，如果用户进行手动放大，一个px还会相当于更多个物理像素。</p>
+<h3 id="设备像素比dpr">设备像素比（dpr）</h3>
+<p>又叫dpr，apple的dpr等于2，因为dpr = 物理像素 和 设备独立像素（也就是css像素）的比值。</p>
+<h2 id="屏幕的三种视口">屏幕的三种视口</h2>
+<h3 id="布局视口-和-视觉视口">布局视口 和 视觉视口</h3>
+<h4 id="布局视口">布局视口</h4>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge6g0p4q8sj309c07xdg2.jpg" alt="" loading="lazy"><br>
+一般移动设备的浏览器都默认设置了一个 viewport 元标签，定义一个虚拟的布局视口（layout viewport）早期为了兼容pc端的网页，屏幕厂商都把布局视口统一设置为980px，我们可以通过<br>
+<code>docuemnt.documentElement.clientWidth</code> 来获取</p>
+<h4 id="视觉视口">视觉视口</h4>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge6g1en1tgj308z084q36.jpg" alt="" loading="lazy"><br>
+视觉视口就是用户可以看到的真实屏幕的视口大小<br>
+当视觉视口小于布局视口时，屏幕会进行一个自动的缩放，来保证大的布局也能在页面上完全显示。<br>
+缩放比例 = 布局视口 / 视觉视口<br>
+所以当我们在移动端看电影天堂的页面，是经过了自动缩放的，如果设置<code>&lt;meta name=&quot;view-port&quot; content=&quot;375&quot; &gt;</code>会发现，字体大小恢复了，页面需要滚动来查看视觉视口外的内容</p>
+<h3 id="理想视口">理想视口</h3>
+<p>慢慢的，浏览器厂商发现布局视口的默认宽度980px并不是一个理想的宽度，因此浏览器厂商引入了理想视口的概念，它对设备而言是最理想的布局视口尺寸。显示在理想视口中的网站具有最理想的宽度，用户无需进行缩放。理想视口的值其实就是屏幕分辨率（对应的像素叫设备逻辑像素）的值（不等同于视觉视口，视觉视口会小于或等于屏幕分辨率）<br>
+<code>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;</code><br>
+这行代码可以保证理想视口和布局视口一致。<br>
+移动端我们常用视口原标签来保证我们的网页不会因为布局视口或者用户的手指操作而缩放<br>
+<code>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0,maximum-scale=1&quot;&gt;</code></p>
+<h2 id="倍图">倍图</h2>
+<p>以下是常见的设备像素比<br>
+普通密度桌面显示屏：devicePixelRatio = 1<br>
+高密度桌面显示屏(Mac Retina)：devicePixelRatio = 2<br>
+主流手机显示屏：devicePixelRatio = 2 or 3<br>
+也就是之前说的dpr，在不同的显示屏下，设备像素比不同，如果统一用2倍图（宽高100的图，分辨率是200*200）@2x，在普通显示屏会有色彩聚集的感觉，因为用1个物理像素来描绘4个图片像素，但是在设备像素比为3的显示屏，相当于用9个物理像素描绘4个图片像素，图片会有失真的感觉，因此这时就要使用3倍图@3x甚至@4x来避免图片的失真。</p>
 
             </div>
             
