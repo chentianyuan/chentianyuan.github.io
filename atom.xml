@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-25T16:02:57.417Z</updated>
+    <updated>2020-04-27T15:44:46.438Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -501,6 +501,39 @@ function getLinkedLength (head) {
 }
 </code></pre>
 <p>思路：第一时间想到的是统计链表长度，返回l-k位置的链表就行，其实也可以不统计长度，使用快慢指针的形式，快指针先走k次，然后快慢指针一起走，快指针走到头了，慢指针所指的位置即为倒数第k个的位置。</p>
+<h1 id="20200425">20200425</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge8qsj1rmmj30u80kyabm.jpg" alt="" loading="lazy"><br>
+<strong>题型：hash表，桶排序</strong><br>
+思路：两次遍历，进行减少遍历条件，减少哈希表大小，正常思路来即可。</p>
+<h1 id="20200426">20200426</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge8r70qb9kj30tq0r8djy.jpg" alt="" loading="lazy"><br>
+<strong>题型：栈和队列的应用</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} pushed
+ * @param {number[]} popped
+ * @return {boolean}
+ */
+var validateStackSequences = function(pushed, popped) {
+  let temp = []
+  for (let i = 0; i &lt; pushed.length; i++) {
+    temp.push(pushed[i])
+    while (temp[temp.length - 1] === popped[0] &amp;&amp; popped[0] !== void 0) {
+      temp.pop()
+      popped.shift()
+    }
+  }
+  while (popped.length) {
+    if (temp[temp.length - 1] === popped[0]) {
+      temp.pop()
+      popped.shift()
+    } else {
+      return false
+    }
+  }
+  return true
+};
+</code></pre>
+<p>思路：栈底等于队列头部则出栈，出队列，若不等则继续推入栈中，最后判断出栈队列是否清空即可。</p>
 ]]></content>
     </entry>
     <entry>
