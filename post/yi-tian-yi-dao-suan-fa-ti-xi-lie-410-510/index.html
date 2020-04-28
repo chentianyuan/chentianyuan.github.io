@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1588002283877">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1588090884250">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1588002283877" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1588090884250" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -517,6 +517,29 @@ var validateStackSequences = function(pushed, popped) {
 };
 </code></pre>
 <p>思路：栈底等于队列头部则出栈，出队列，若不等则继续推入栈中，最后判断出栈队列是否清空即可。</p>
+<h1 id="20200427">20200427</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge9xsia6vyj30sq0ncq52.jpg" alt="" loading="lazy"><br>
+<strong>题型：js的异或操作</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNumber = function(nums) {
+  let result = 0
+  for (let i = 0; i &lt; nums.length; i++) {
+    result ^= nums[i]
+  }
+  return result
+};
+</code></pre>
+<p>思路：思路新奇，不需要借助额外的空间，因为相同的元素进行异或操作一定是0，只要把所有元素进行异或，得到的值肯定就是只出现一次的那个值。</p>
+<h3 id="js的位操作-与-或-非-异或-左移-右移操作">js的位操作 与、或、非、异或、左移、右移操作</h3>
+<p>与：&amp;<br>
+或：|<br>
+非：~<br>
+异或：^<br>
+左移：5 &lt;&lt; 1<br>
+右移：5 &gt;&gt; 1</p>
 
             </div>
             

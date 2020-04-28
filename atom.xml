@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-27T15:44:46.438Z</updated>
+    <updated>2020-04-28T16:21:30.762Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -534,6 +534,29 @@ var validateStackSequences = function(pushed, popped) {
 };
 </code></pre>
 <p>思路：栈底等于队列头部则出栈，出队列，若不等则继续推入栈中，最后判断出栈队列是否清空即可。</p>
+<h1 id="20200427">20200427</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ge9xsia6vyj30sq0ncq52.jpg" alt="" loading="lazy"><br>
+<strong>题型：js的异或操作</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNumber = function(nums) {
+  let result = 0
+  for (let i = 0; i &lt; nums.length; i++) {
+    result ^= nums[i]
+  }
+  return result
+};
+</code></pre>
+<p>思路：思路新奇，不需要借助额外的空间，因为相同的元素进行异或操作一定是0，只要把所有元素进行异或，得到的值肯定就是只出现一次的那个值。</p>
+<h3 id="js的位操作-与-或-非-异或-左移-右移操作">js的位操作 与、或、非、异或、左移、右移操作</h3>
+<p>与：&amp;<br>
+或：|<br>
+非：~<br>
+异或：^<br>
+左移：5 &lt;&lt; 1<br>
+右移：5 &gt;&gt; 1</p>
 ]]></content>
     </entry>
     <entry>
