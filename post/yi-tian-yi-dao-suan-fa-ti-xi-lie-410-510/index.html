@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1588090884250">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1588263266026">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://chentianyuan.github.io">
-        <img src="https://chentianyuan.github.io/images/avatar.png?v=1588090884250" class="site-logo">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1588263266026" class="site-logo">
         <h1 class="site-title">City Corner</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -540,6 +540,64 @@ var singleNumber = function(nums) {
 异或：^<br>
 左移：5 &lt;&lt; 1<br>
 右移：5 &gt;&gt; 1</p>
+<h1 id="20200428">20200428</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gec8gwlcidj30uc0p6jub.jpg" alt="" loading="lazy"><br>
+<strong>题型：快慢指针</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number} n
+ * @return {boolean}
+ */
+var isHappy = function(n) {
+    let slow = n
+    let fast = n
+    do {
+      slow = getNumT(slow)
+      fast = getNumT(fast)
+      fast = getNumT(fast)
+    } while (slow !== fast)
+    return slow === 1
+};
+
+function getNumT (n) {
+  let temp = String(n).split('').map(item =&gt; Number(item))
+  return temp.reduce((pre, cur) =&gt; {
+    return pre + Math.pow(cur, 2)
+  }, 0)
+}
+</code></pre>
+<p>思路：<br>
+思路1：就是递归，然后HashSet存储判断，但是遇到特别大的数可能会超出存储限制<br>
+思路2：快慢指针，最后归于一致说明已经经过了一次循环，归于一致的值如果是1，说明是快乐数</p>
+<h1 id="20200429">20200429</h1>
+<p><strong>题型：双指针</strong><br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gec8o7b3zqj30u80mw0v3.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var exchange = function(nums) {
+  let i = 0
+  let j = nums.length - 1
+  while (i &lt; j) {
+    if (nums[i] % 2 === 0) {
+      while (i &lt; j &amp;&amp; nums[j] % 2 === 0) {
+        j--
+      }
+      swap(i, j, nums)
+    }
+    i++
+  }
+  return nums
+};
+
+function swap (i, j, nums) {
+  let temp = nums[i]
+  nums[i] = nums[j]
+  nums[j] = temp
+}
+</code></pre>
+<p>思路：一开始想的是遍历一次，造两个数组时间复杂度O(n)，空间复杂度O(n)<br>
+更好的思路：双指针，数组内部交换位置，时间复杂度O(n)，空间复杂度O(1)</p>
 
             </div>
             

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-28T16:21:30.762Z</updated>
+    <updated>2020-04-30T16:14:32.034Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -557,6 +557,64 @@ var singleNumber = function(nums) {
 异或：^<br>
 左移：5 &lt;&lt; 1<br>
 右移：5 &gt;&gt; 1</p>
+<h1 id="20200428">20200428</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gec8gwlcidj30uc0p6jub.jpg" alt="" loading="lazy"><br>
+<strong>题型：快慢指针</strong></p>
+<pre><code class="language-javascript">/**
+ * @param {number} n
+ * @return {boolean}
+ */
+var isHappy = function(n) {
+    let slow = n
+    let fast = n
+    do {
+      slow = getNumT(slow)
+      fast = getNumT(fast)
+      fast = getNumT(fast)
+    } while (slow !== fast)
+    return slow === 1
+};
+
+function getNumT (n) {
+  let temp = String(n).split('').map(item =&gt; Number(item))
+  return temp.reduce((pre, cur) =&gt; {
+    return pre + Math.pow(cur, 2)
+  }, 0)
+}
+</code></pre>
+<p>思路：<br>
+思路1：就是递归，然后HashSet存储判断，但是遇到特别大的数可能会超出存储限制<br>
+思路2：快慢指针，最后归于一致说明已经经过了一次循环，归于一致的值如果是1，说明是快乐数</p>
+<h1 id="20200429">20200429</h1>
+<p><strong>题型：双指针</strong><br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gec8o7b3zqj30u80mw0v3.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var exchange = function(nums) {
+  let i = 0
+  let j = nums.length - 1
+  while (i &lt; j) {
+    if (nums[i] % 2 === 0) {
+      while (i &lt; j &amp;&amp; nums[j] % 2 === 0) {
+        j--
+      }
+      swap(i, j, nums)
+    }
+    i++
+  }
+  return nums
+};
+
+function swap (i, j, nums) {
+  let temp = nums[i]
+  nums[i] = nums[j]
+  nums[j] = temp
+}
+</code></pre>
+<p>思路：一开始想的是遍历一次，造两个数组时间复杂度O(n)，空间复杂度O(n)<br>
+更好的思路：双指针，数组内部交换位置，时间复杂度O(n)，空间复杂度O(1)</p>
 ]]></content>
     </entry>
     <entry>
