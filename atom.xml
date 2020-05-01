@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-04-30T16:14:32.034Z</updated>
+    <updated>2020-05-01T15:57:52.805Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -615,6 +615,24 @@ function swap (i, j, nums) {
 </code></pre>
 <p>思路：一开始想的是遍历一次，造两个数组时间复杂度O(n)，空间复杂度O(n)<br>
 更好的思路：双指针，数组内部交换位置，时间复杂度O(n)，空间复杂度O(1)</p>
+<h1 id="20200430">20200430</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gede21uyhpj30tm0dgdh1.jpg" alt="" loading="lazy"><br>
+<strong>题型：链表</strong></p>
+<pre><code class="language-javascript">var mergeTwoLists = function(l1, l2) {
+  if (!l1) {
+    return l2
+  } else if (!l2) {
+    return l1
+  } else if (l1.val &lt; l2.val) {
+    l1.next = mergeTwoLists(l1.next, l2)
+    return l1
+  } else {
+    l2.next = mergeTwoLists(l1, l2.next)
+    return l2
+  }
+};
+</code></pre>
+<p>思路：不借助额外的空间，递归链表，当有一个链表为null时返回另一个链表接到上一个链表的尾部</p>
 ]]></content>
     </entry>
     <entry>
