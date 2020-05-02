@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-05-01T15:57:52.805Z</updated>
+    <updated>2020-05-02T03:09:00.547Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -633,6 +633,30 @@ function swap (i, j, nums) {
 };
 </code></pre>
 <p>思路：不借助额外的空间，递归链表，当有一个链表为null时返回另一个链表接到上一个链表的尾部</p>
+<h1 id="20200501">20200501</h1>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gedxd1do64j30pw0tmgp9.jpg" alt="" loading="lazy"><br>
+<strong>题型：双指针，数学</strong></p>
+<pre><code class="language-javascript">var lengthOfLongestSubstring = function(s) {
+  let result = 0
+  let begin = -1
+  let end = 0
+  const map = new Map()
+  for (let i = 0; i &lt; s.length; i++) {
+    // 碰到重复出现的字符，后面的子序列长度要和前面最大的子序列长度做对比
+    if (!map.has(s[i]) || map.get(s[i]) &lt;= begin) {
+      end = i
+      result = Math.max(end - begin, result)
+    } else {
+      // 已存在，更新begin位置，为上一个出现s[i]的后一位
+      begin = map.get(s[i])
+    }
+    // 更新begin的位置
+    map.set(s[i], i)
+  }
+  return result
+};
+</code></pre>
+<p>思路：记录begin和end的位置，遇到重复字符，如果重复字符已经在begin之前，则不再更新begin位置，但是需要判断当前end-begin的长度是否已经超过前面的最大子序列的长度，如果重复字符在begin之后，那么可以直接更新begin了，避免[begin, end]的区间内有重复字符。</p>
 ]]></content>
     </entry>
     <entry>
