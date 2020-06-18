@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-05-20T08:40:15.210Z</updated>
+    <updated>2020-06-18T17:25:45.079Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,31 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[致她]]></title>
+        <id>https://chentianyuan.github.io/post/zhi-ta/</id>
+        <link href="https://chentianyuan.github.io/post/zhi-ta/">
+        </link>
+        <updated>2020-06-18T15:57:15.000Z</updated>
+        <summary type="html"><![CDATA[<p>一转眼，到今天为止我们在一起已经两周年了。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>一转眼，到今天为止我们在一起已经两周年了。</p>
+<!-- more -->
+<h1 id="初端">初端</h1>
+<p>时间回到2018年6月18日，那时天气还没有现在这么热，也许是这两年全球变暖又加剧了，端午节的前一天，我还住在博奥城的地下室里，不知道出于什么缘故，或许只是那天的一句玩笑，”端午我去上饶找你玩啊“，然后就真的买了一张去上饶的火车票。那时还在实习的我没什么钱，来回的车票已经是我半个月的生活费，然而我还是买了。后面的故事很奇妙，我只记得晚上睡得很香，从上大学以来，第一次睡得那么舒适安稳。</p>
+<h1 id="变故">变故</h1>
+<p>因为地理位置的缘故，加上工作和学业原因，19年我们很少人在一起。我在努力工作，你在努力考研，最后我们都拿到了满意的结果，如果所有的事情都往好的方面发展该有多好。最疼我的爷爷外婆相继离开了我，外婆更是受尽了病痛的折磨，我知道男子汉不该哭的，爸爸妈妈比我还伤心，应该安慰他们的，天堂没有病痛的，在打通你的电话听到你的声音的时候我还是崩溃了，所有的难受都释放出来了，早上上班还和同事嘻嘻哈哈的我坐在寝室外面的台阶上哭得语无伦次，我不是没有其他朋友，这些情绪只有当我在你身边才能真真切切得展现然后离开。我们因为很多人而变得更好，我因为有你而变得安稳。</p>
+<h1 id="如今">如今</h1>
+<p>现在2020年6月19日，12点37分，两年过去了，一切又走上了正轨，再想想两年前在一起的意义突然变得模糊却又渐渐清晰了，喜欢这个词会永远是我们在一起的原因，但是对我来说不是意义所在。喜欢一个人不代表他就再也不会喜欢另外一个人，如果喜欢变成了枷锁，那么人也会慢慢失去喜欢别人的能力，最后连最喜欢的人也喜欢不起来，人类是有思想有情感的动物，喜欢是与生俱来的能力，喜欢一个人得像一个装着纸条的小瓶子，悄悄得存放着内心的秘密，但是喜欢又是约束，为了你，得愿意把最大最精致的瓶子给你放，可以损失所有的其他瓶子，唯独这个不能丢，毕竟这个是最好的，最真切的一直陪在你身边的瓶子，有这个瓶子在人就会变得平静，变得安稳，变得温暖。</p>
+<h1 id="未来">未来</h1>
+<p>未来充满着不可控性和不确定性，未来也许会很艰难，也许会充满痛苦，每件事出现的概率都是有可能的，不过是概率大小的问题。不过，事在人为，兵来将挡水来土掩，问题一定会解决的。未来有你一点都不可怕。</p>
+<p>我一直不懂什么是爱情，以至于两年前即便是说出这两个字我都羞于启齿，不过两年时间过去了，我才有一点点理解，对我来说，爱情不是虚无缥缈的东西，我们面对彼此时的喜怒哀乐，一起生活的酸甜苦辣，这些真真切切流逝的互相陪伴的时间，这就是爱情。</p>
+<blockquote>
+<p>愿陪你度过漫长岁月<br>
+2020/06/19</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[页面适配后的真相]]></title>
         <id>https://chentianyuan.github.io/post/ni-zhi-dao-ji-chong-ye-mian-gua-pei-fang-an/</id>
@@ -657,6 +682,23 @@ function swap (i, j, nums) {
 };
 </code></pre>
 <p>思路：记录begin和end的位置，遇到重复字符，如果重复字符已经在begin之前，则不再更新begin位置，但是需要判断当前end-begin的长度是否已经超过前面的最大子序列的长度，如果重复字符在begin之后，那么可以直接更新begin了，避免[begin, end]的区间内有重复字符。</p>
+<h1 id="20200526">20200526</h1>
+<p>无题<br>
+<strong>插入排序</strong></p>
+<pre><code class="language-javascript">function insertSort (arr) {
+  for (let i = 1; i &lt; arr.length; i++) {
+    let temp = arr[i] // 记录要插入的元素
+    let j = i
+    while (j &gt; 0 &amp;&amp; arr[j - 1] &gt; temp) {
+        arr[j] = arr[j - 1]
+        j--
+    }
+    arr[j] = temp
+  }
+  return arr
+}
+</code></pre>
+<p>思路：假设第一项已经排好序，第一项作为插入项，与前面位进行比较，如果前面位较大，则替换当前位置，每次循环都能保证到第一次不满足条件的位置，之前的数已经排好序了，最好将插入项插入到第一个不满足条件的位置即可，sort函数在长度小于10的数组时采用的就是插入排序，性能比快排和冒泡效率偏高，在10-1000位时采用的是快排，取中位数作为哨兵，大于1000位时取哨兵元素有些许不同</p>
 ]]></content>
     </entry>
     <entry>
@@ -1861,68 +1903,6 @@ with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_
 13、beforeDestory组件销毁时触发，也可主动触发，进行事件解绑，依赖移除，vnode清空，执行顺序是先子组件后父组件<br>
 14、destory组件销毁完毕触发<br>
 15、activated钩子 &amp;&amp; deactivated钩子 缓存组件复用和缓存组件被销毁时触发</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[深度优先遍历和广度优先遍历]]></title>
-        <id>https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li/</id>
-        <link href="https://chentianyuan.github.io/post/shen-du-you-xian-bian-li-he-guang-du-you-xian-bian-li/">
-        </link>
-        <updated>2019-12-04T13:17:43.000Z</updated>
-        <summary type="html"><![CDATA[<p>DFS VS BFS</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>DFS VS BFS</p>
-<!-- more -->
-<h3 id="题目">题目</h3>
-<p>给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。</p>
-<pre><code class="language-javascript">// DFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let i = 0
-    let dfs = function (Node, i) {
-      // 该节点不存在
-      if (!Node) {
-        return
-      }
-      resultList[i] = resultList[i] || []
-      resultList[i].push(Node.val)
-      dfs(Node.left, i + 1)
-      dfs(Node.right, i + 1)
-    }
-    dfs(root, i)
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 优先左子树，再遍历右子树，每次递归深度+1
-</code></pre>
-<pre><code class="language-javascript">// BFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let j = -1
-    let bfs = function (Nodes) {
-      while (Nodes.length &gt; 0) {
-        j++
-        // 该节点不存在
-        if (!Nodes.length) {
-          return
-        }
-        let length = Nodes.length
-        for (let i = 0; i &lt; length; i++) {
-          let Node = Nodes.shift()
-          resultList[j] = resultList[j] || []
-          resultList[j].push(Node.val)
-          if (Node.left) Nodes.push(Node.left)
-          if (Node.right) Nodes.push(Node.right)
-        }
-      }
-    }
-    if (!root) return []
-    bfs([root])
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 广度优先遍历的核心就是queues
-// 队列存储左右节点，然后进入下一次循环，循环原始队列，队列头出队列，将左子树右子树分别重新插入队列，最后的到的类似[left.left, left.right, right.left, right.right]进行我们想要的操作
-</code></pre>
-<p><a href="https://leetcode-cn.com/problems/binary-tree-right-side-view/">力扣原题</a></p>
 ]]></content>
     </entry>
 </feed>
