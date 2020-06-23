@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-06-18T17:25:45.079Z</updated>
+    <updated>2020-06-23T10:13:10.386Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -11,27 +11,93 @@
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
     <entry>
-        <title type="html"><![CDATA[致她]]></title>
-        <id>https://chentianyuan.github.io/post/zhi-ta/</id>
-        <link href="https://chentianyuan.github.io/post/zhi-ta/">
+        <title type="html"><![CDATA[组件库搭建总结]]></title>
+        <id>https://chentianyuan.github.io/post/zu-jian-ku-she-ji-shang-de-tan-suo/</id>
+        <link href="https://chentianyuan.github.io/post/zu-jian-ku-she-ji-shang-de-tan-suo/">
         </link>
-        <updated>2020-06-18T15:57:15.000Z</updated>
-        <summary type="html"><![CDATA[<p>一转眼，到今天为止我们在一起已经两周年了。</p>
+        <updated>2020-06-23T03:11:16.000Z</updated>
+        <summary type="html"><![CDATA[<p>微医门户在移动端组件库方向上的探索</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>一转眼，到今天为止我们在一起已经两周年了。</p>
+        <content type="html"><![CDATA[<p>微医门户在移动端组件库方向上的探索</p>
 <!-- more -->
-<h1 id="初端">初端</h1>
-<p>时间回到2018年6月18日，那时天气还没有现在这么热，也许是这两年全球变暖又加剧了，端午节的前一天，我还住在博奥城的地下室里，不知道出于什么缘故，或许只是那天的一句玩笑，”端午我去上饶找你玩啊“，然后就真的买了一张去上饶的火车票。那时还在实习的我没什么钱，来回的车票已经是我半个月的生活费，然而我还是买了。后面的故事很奇妙，我只记得晚上睡得很香，从上大学以来，第一次睡得那么舒适安稳。</p>
-<h1 id="变故">变故</h1>
-<p>因为地理位置的缘故，加上工作和学业原因，19年我们很少人在一起。我在努力工作，你在努力考研，最后我们都拿到了满意的结果，如果所有的事情都往好的方面发展该有多好。最疼我的爷爷外婆相继离开了我，外婆更是受尽了病痛的折磨，我知道男子汉不该哭的，爸爸妈妈比我还伤心，应该安慰他们的，天堂没有病痛的，在打通你的电话听到你的声音的时候我还是崩溃了，所有的难受都释放出来了，早上上班还和同事嘻嘻哈哈的我坐在寝室外面的台阶上哭得语无伦次，我不是没有其他朋友，这些情绪只有当我在你身边才能真真切切得展现然后离开。我们因为很多人而变得更好，我因为有你而变得安稳。</p>
-<h1 id="如今">如今</h1>
-<p>现在2020年6月19日，12点37分，两年过去了，一切又走上了正轨，再想想两年前在一起的意义突然变得模糊却又渐渐清晰了，喜欢这个词会永远是我们在一起的原因，但是对我来说不是意义所在。喜欢一个人不代表他就再也不会喜欢另外一个人，如果喜欢变成了枷锁，那么人也会慢慢失去喜欢别人的能力，最后连最喜欢的人也喜欢不起来，人类是有思想有情感的动物，喜欢是与生俱来的能力，喜欢一个人得像一个装着纸条的小瓶子，悄悄得存放着内心的秘密，但是喜欢又是约束，为了你，得愿意把最大最精致的瓶子给你放，可以损失所有的其他瓶子，唯独这个不能丢，毕竟这个是最好的，最真切的一直陪在你身边的瓶子，有这个瓶子在人就会变得平静，变得安稳，变得温暖。</p>
-<h1 id="未来">未来</h1>
-<p>未来充满着不可控性和不确定性，未来也许会很艰难，也许会充满痛苦，每件事出现的概率都是有可能的，不过是概率大小的问题。不过，事在人为，兵来将挡水来土掩，问题一定会解决的。未来有你一点都不可怕。</p>
-<p>我一直不懂什么是爱情，以至于两年前即便是说出这两个字我都羞于启齿，不过两年时间过去了，我才有一点点理解，对我来说，爱情不是虚无缥缈的东西，我们面对彼此时的喜怒哀乐，一起生活的酸甜苦辣，这些真真切切流逝的互相陪伴的时间，这就是爱情。</p>
+<h2 id="序言">序言</h2>
+<p>来公司两年了，见证了公司组件库从无到有，从1.0到2.0的变迁过程，组件库已有1500+次提交，承载了门户技术部数个移动端项目，也算得上是一个经过考验的组件库了。</p>
+<p>组件库内的组件固然重要，但是整体组件库的架构设计更是一个高可用，易扩展组件库的核心，那么应当如何搭建一个优质的组件库？</p>
+<h1 id="0-组件库的价值">0、组件库的价值</h1>
+<p>在应用端的体现：统一视觉规范，保证产品体验的一致性。<br>
+在开发侧的体现：组件的可复用性削减了开发成本，也变相地减小了页面及项目体积。</p>
+<h1 id="1-typescript支持">1、typescript支持</h1>
+<p>相比于1.0的版本，wandui2.0采用了ts的写法，强类型的校验可以将许多语法语义上的错误扼杀在萌芽之中。类型的指定也像是注释一般增强了代码的可读性。另外，在开发完成之后通过指定<code>package.json</code>内的<code>types</code>字段，配合编辑器还有导入的语法提示功能，组件库内置的组件一览无余。<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg28ixf27fj317i0dydj7.jpg" alt="语法提示" loading="lazy"></p>
+<h1 id="2-一键组件生成">2、一键组件生成</h1>
+<pre><code class="language-json">{
+    &quot;create&quot;: &quot;node build/create-component&quot;,
+    &quot;generate&quot;: &quot;node build/create-md&quot;
+}
+</code></pre>
+<p>一键生成新的组件规则，仅需执行一行<code>npm run create</code>，通过命令行inquiry式调用，传入需要新生成的组件名，脚本便会通过读取模板，进行新的组件的初始化，包括生成组件主文件、组件样式文件、组件文档、将组件添加进路由等等一系列重复操作，开发人员仅需关注组件本身的实现，大大提升了开发者的开发效率。<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg28t8tgzpj31d50u07nb.jpg" alt="一键组件生成" loading="lazy"></p>
+<h1 id="3-打包配置">3、打包配置</h1>
+<h2 id="31-为了实现按需加载的处理">3.1、为了实现按需加载的处理</h2>
+<p>为了实现按需加载引入，我们常用<code>babel-plugin-component</code>或<code>babel-plugin-syntax-dynamic-import</code>这两个babel插件来使得<code>import { WandUploader } from @weiyi/wand-ui</code>变成<code>import /node_modules/@weiyi/wand-ui/libaryName/uploader/index.js</code>+组件css引入（通用css会从libaryName下引入）来实现。<br>
+因此我们要将每个组件作为单独入口打包出index.js和组件的css，组件css可以使用<code>MiniCssExtractPlugin</code>来实现拆分。</p>
+<h2 id="32-组件库的通用样式">3.2、组件库的通用样式</h2>
+<p>当业务方使用按需加载的方式引入我们的组件库，如果每个组件都对组件库通用样式进行引用，无疑会有大量的重复样式代码，由于<code>babel-plugin-component</code>插件已经提供了style选项，当该选项设置为<code>true</code>时，会将组件库通用样式额外引入，因此，为了单独打包出一份通用css文件，我们引入了gulp额外为通用css进行一次打包。</p>
+<pre><code class="language-javascript">// 编译less
+gulp.task('css', done =&gt; {
+  gulp
+    .src('../../src/styles/base.less')
+    .pipe(less())
+    .pipe(concat('base.css'))
+    .pipe(autoprefixer({
+      overrideBrowserslist: ['last 2 versions', 'ie &gt; 8']
+    }))
+    .pipe(cleanCSS())
+    .pipe(rename(function (path) {
+      path.dirname = path.dirname.replace('less', 'css')
+    }))
+    .pipe(gulp.dest('../../lib/theme-chalk/'))
+
+    done()
+})
+</code></pre>
+<h2 id="33-获取运行时依赖">3.3、获取运行时依赖</h2>
+<p>配置中需要外置化vue，防止vue被打包进入组件bundle中，而是通过运行时再去外部获取这些扩展依赖，配合指定<code>package.json</code>中的peerDependencies，强制要求接入方对我们外置的扩展依赖进行安装和打包。</p>
+<pre><code class="language-javascript">// webpack.base.conf.js
+externals: [
+    {
+        vue: {
+        root: 'Vue',
+        commonjs: 'vue',
+        commonjs2: 'vue',
+        amd: 'vue'
+        }
+    }
+]
+// package.json
+&quot;peerDependencies&quot;: {
+    &quot;vue&quot;: &quot;&gt;=2.5.15&quot;
+}
+</code></pre>
+<h1 id="4-组件库文档">4、组件库文档</h1>
+<p>一份优质的文档是一个成功的组件库的基础，element-ui的官网文档是经受了无数厂商的考验的，仔细观察可以发现element-ui的组件案例和组件文档是一一对应的，难道element-ui的组件demo写了两次？仔细阅读后可以发现，element-ui的文档路由是使用的md类型的文件，而在打包配置中指定了一个自定义的md-loader来处理该路由文件，md文件中的被<code>:::demo</code>和<code>:::</code>所包裹的代码块会被执行并编译，内部执行流程大概是这个样子的：<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2bn9a1puj31p40kkthd.jpg" alt="md-loader流程图" loading="lazy"><br>
+在展示demo的项目里，我们只需要注册<code>demo-block</code>组件，并提供<code>source</code>插槽承载编译后的组件demo<br>
+，<code>highlight</code>插槽承载md中的源代码，即可得到<strong>文档即demo</strong>的效果了。效果图：<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2btuiacvj31rg0u04gm.jpg" alt="文档即demo" loading="lazy"><br>
+另一个值得权衡的问题是，文档是新开一个项目还是就放在组件库的项目里？<br>
+如果放在项目里，组件库一大，项目会略显臃肿，并且每次跑项目都需要把组件进行重新编译，速度堪忧。而如果分离出一个新的项目，则享受不到开发时热更新的遍历，需要把打包文件频繁输出，才能实时看到组件的效果，而且另起一个工程也是有成本的，需要安装两次通用的依赖。而且从维护成本的角度来看，还是放在一个项目内会方便得多，除非你的目标是做一个大而美的业界组件库，而不是为了业务需要快速迭代的产物。（然而没有资本支撑，估计也没人愿意做这么一套东西）</p>
+<h1 id="5-发包规范">5、发包规范</h1>
+<p>wand-ui2.0使用gitlab-ci，划分了打包和发包两个stage，打包机完成文档和组件库打包后进行压缩，再远程传输到虚拟机，执行publish脚本，比对线上和当前<code>package.json</code>内的组件库版本，检测到落后后自动publish。</p>
+<h1 id="6-轻量的组件库脚手架">6、轻量的组件库脚手架</h1>
+<p>文档打包，组件打包，全量、按需、开发、生产，<code>require(&quot;package.json&quot;).script</code>会越来越大build目录下的文件也会越来越多，使项目变得臃肿不堪。我们尝试对组件库基本不再修改的打包配置进行了封装，通过命令式的调用形式，读取项目配置，执行命令内置的打包配置，即可完成打包。项目内甚至无需build目录<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2cu7qwm9j310u0t6gsx.jpg" alt="" loading="lazy"><br>
+同时我们还抽离了<code>wand-template</code>一份组件库最小单元的模板，配合<code>wand-cli</code>，可以一键式地生成一个组件即demo的vue移动端组件库，并提供了ts环境开发，提供md即文档的特性。<br>
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2csubtc9j30u014cjxz.jpg" alt="" loading="lazy"></p>
+<h1 id="结语">结语</h1>
+<p>一个好的组件库不仅在组件本身的通用性，易用性，也在于整体组件库架构设计的可重用性，规范性，易扩展性，市面上的组件库层次不齐，组件库搭建可以参考学习业内如element-ui，ant-design，vant等优秀组件库的设计理念，如果有错误烦请在评论区指正交流，谢谢。</p>
 <blockquote>
-<p>愿陪你度过漫长岁月<br>
-2020/06/19</p>
+<p>文中组件库由wand-ui2.0开发小分队共同完成。</p>
 </blockquote>
 ]]></content>
     </entry>
