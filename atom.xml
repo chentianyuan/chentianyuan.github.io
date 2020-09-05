@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-06-23T10:13:10.386Z</updated>
+    <updated>2020-09-05T03:32:37.854Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -31,19 +31,25 @@
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg28ixf27fj317i0dydj7.jpg" alt="语法提示" loading="lazy"></p>
 <h1 id="2-一键组件生成">2、一键组件生成</h1>
 <pre><code class="language-json">{
-    &quot;create&quot;: &quot;node build/create-component&quot;,
-    &quot;generate&quot;: &quot;node build/create-md&quot;
+    &quot;create&quot;: &quot;node build/create-component&quot;
 }
 </code></pre>
-<p>一键生成新的组件规则，仅需执行一行<code>npm run create</code>，通过命令行inquiry式调用，传入需要新生成的组件名，脚本便会通过读取模板，进行新的组件的初始化，包括生成组件主文件、组件样式文件、组件文档、将组件添加进路由等等一系列重复操作，开发人员仅需关注组件本身的实现，大大提升了开发者的开发效率。<br>
+<p>一键生成新的组件规则，仅需执行一行<code>npm run create</code>，通过命令行inquiry式调用，传入需要新生成的组件名，脚本便会通过读取模板，进行新的组件的初始化，包括生成</p>
+<ul>
+<li>组件主文件</li>
+<li>组件样式文件</li>
+<li>组件文档</li>
+<li>将组件添加进路由</li>
+</ul>
+<p>等等一系列重复操作，开发人员仅需关注组件本身的实现，大大提升了开发者的开发效率。<br>
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg28t8tgzpj31d50u07nb.jpg" alt="一键组件生成" loading="lazy"></p>
 <h1 id="3-打包配置">3、打包配置</h1>
 <h2 id="31-为了实现按需加载的处理">3.1、为了实现按需加载的处理</h2>
-<p>为了实现按需加载引入，我们常用<code>babel-plugin-component</code>或<code>babel-plugin-syntax-dynamic-import</code>这两个babel插件来使得<code>import { WandUploader } from @weiyi/wand-ui</code>变成<code>import /node_modules/@weiyi/wand-ui/libaryName/uploader/index.js</code>+组件css引入（通用css会从libaryName下引入）来实现。<br>
-因此我们要将每个组件作为单独入口打包出index.js和组件的css，组件css可以使用<code>MiniCssExtractPlugin</code>来实现拆分。</p>
+<p>为了实现按需加载引入，我们常用<code>babel-plugin-component</code>或<code>babel-plugin-syntax-dynamic-import</code>这两个babel插件来使得<code>import { WandUploader } from @weiyi/wand-ui</code>在打包阶段转化成<code>import /node_modules/@weiyi/wand-ui/libaryName/uploader/index.js</code>+组件css引入（通用css会从libaryName下引入）来实现。<br>
+因此我们要为每个组件作为打包出index.js和组件自身的的css文件，为此在按需打包的配置中我们为组件设置单独入口，样式文件使用<code>MiniCssExtractPlugin</code>来实现拆分，最后得到如下效果。</p>
 <h2 id="32-组件库的通用样式">3.2、组件库的通用样式</h2>
 <p>当业务方使用按需加载的方式引入我们的组件库，如果每个组件都对组件库通用样式进行引用，无疑会有大量的重复样式代码，由于<code>babel-plugin-component</code>插件已经提供了style选项，当该选项设置为<code>true</code>时，会将组件库通用样式额外引入，因此，为了单独打包出一份通用css文件，我们引入了gulp额外为通用css进行一次打包。</p>
-<pre><code class="language-javascript">// 编译less
+<pre><code class="language-javascript">// less编译
 gulp.task('css', done =&gt; {
   gulp
     .src('../../src/styles/base.less')
@@ -88,11 +94,11 @@ externals: [
 另一个值得权衡的问题是，文档是新开一个项目还是就放在组件库的项目里？<br>
 如果放在项目里，组件库一大，项目会略显臃肿，并且每次跑项目都需要把组件进行重新编译，速度堪忧。而如果分离出一个新的项目，则享受不到开发时热更新的遍历，需要把打包文件频繁输出，才能实时看到组件的效果，而且另起一个工程也是有成本的，需要安装两次通用的依赖。而且从维护成本的角度来看，还是放在一个项目内会方便得多，除非你的目标是做一个大而美的业界组件库，而不是为了业务需要快速迭代的产物。（然而没有资本支撑，估计也没人愿意做这么一套东西）</p>
 <h1 id="5-发包规范">5、发包规范</h1>
-<p>wand-ui2.0使用gitlab-ci，划分了打包和发包两个stage，打包机完成文档和组件库打包后进行压缩，再远程传输到虚拟机，执行publish脚本，比对线上和当前<code>package.json</code>内的组件库版本，检测到落后后自动publish。</p>
+<p>早期wand-ui2.0刚出时采用指定负责人手动发包的形式，当时刚出的组件库有很多小问题，频繁的发包步骤十分繁琐。后期为了解决这一问题，项目使用gitlab-ci，配合gitlab-runner，在yml配置文件中划分了打包和发包两个stage，打包机完成文档和组件库打包后进行压缩，再远程传输到虚拟机，执行publish脚本，比对线上和当前<code>package.json</code>内的组件库版本，检测到落后后自动publish，再也不用手动发包了。</p>
 <h1 id="6-轻量的组件库脚手架">6、轻量的组件库脚手架</h1>
-<p>文档打包，组件打包，全量、按需、开发、生产，<code>require(&quot;package.json&quot;).script</code>会越来越大build目录下的文件也会越来越多，使项目变得臃肿不堪。我们尝试对组件库基本不再修改的打包配置进行了封装，通过命令式的调用形式，读取项目配置，执行命令内置的打包配置，即可完成打包。项目内甚至无需build目录<br>
+<p>文档打包，组件打包，全量、按需、开发、生产，<code>require(&quot;package.json&quot;).script</code>会越来越大build目录下的文件也会越来越多，使项目变得臃肿不堪。我们尝试对组件库基本不再修改的打包配置进行了封装，通过命令式的调用形式，读取项目配置，执行命令内置的打包配置，即可完成打包。项目内甚至无需build目录。<br>
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2cu7qwm9j310u0t6gsx.jpg" alt="" loading="lazy"><br>
-同时我们还抽离了<code>wand-template</code>一份组件库最小单元的模板，配合<code>wand-cli</code>，可以一键式地生成一个组件即demo的vue移动端组件库，并提供了ts环境开发，提供md即文档的特性。<br>
+同时我们还抽离了<code>wand-template</code>一份组件库最小单元的模板，配合抽离的<code>wand-cli</code>，可以一键式地生成一个组件即demo的vue移动端组件库，并提供了ts环境开发，提供md即文档的特性。<br>
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2csubtc9j30u014cjxz.jpg" alt="" loading="lazy"></p>
 <h1 id="结语">结语</h1>
 <p>一个好的组件库不仅在组件本身的通用性，易用性，也在于整体组件库架构设计的可重用性，规范性，易扩展性，市面上的组件库层次不齐，组件库搭建可以参考学习业内如element-ui，ant-design，vant等优秀组件库的设计理念，如果有错误烦请在评论区指正交流，谢谢。</p>
