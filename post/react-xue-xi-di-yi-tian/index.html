@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>react学习第一天 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1603379620948">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1603379620948" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            技术
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">react学习第一天</h2>
+            <div class="post-date">2020-10-22</div>
+            
+            <div class="post-content">
+              <p>react哲学！</p>
+<!-- more -->
+<h1 id="一-react的代码编写两种方式">一、react的代码编写两种方式</h1>
+<p>1、自顶向下<br>
+当前应用比较小且比较简单的情况下，我们设计了组件模块之后，可以采用自顶向下的构建形式，最先构建上级组件，然后将静态数据通过props传入更为细粒度的组件。<br>
+这种方式比较简单方便。<br>
+2、自底向上<br>
+当前涉及的业务比较复杂，设计了组件模块之后，可以先构建精细的小模块，然后通过组装的形式，慢慢地将其构建成一个大型应用。<br>
+这种方式方便在构建细粒度的组件时，同事编写测试代码。</p>
+<h1 id="二-react中的props和state">二、react中的props和state</h1>
+<p>props是静态数据，改动无法被监听，state的数据变化会重新触发render函数，页面重新渲染。<br>
+state是在组件内被内部管理的<br>
+props是传递给组件的，类似于函数形参，但是它也会影响页面的渲染<br>
+我们应该尽量确定UI state的最小状态，避免多余的state影响代码的可维护性<br>
+判断某块数据是静态还是动态的判断准则有以下几点：<br>
+<strong>1，该数据是否是由父组件通过 props 传递而来的？如果是，那它应该不是 state。<br>
+2，该数据是否随时间的推移而保持不变？如果是，那它应该也不是 state。<br>
+3，你能否根据其他 state 或 props 计算出该数据的值？如果是，那它也不是 state。</strong></p>
+<h1 id="三-thissetstate是同步还是异步的">三、this.setState是同步还是异步的</h1>
+<p>异步的！下面的操作最终得到的结果count最后会为1，而不是预期的3</p>
+<pre><code class="language-javascript">// this.state.count 0
+this.setState({ count: this.state.count + 1 })
+// this.state.count 0
+this.setState({ count: this.state.count + 1 })
+// this.state.count 0
+this.setState({ count: this.state.count + 1 })
+// this.state.count 1
+
+// 相当于
+// Object.assign(
+//     this.state,
+//     { count: this.state.count },
+//     { count: this.state.count },
+//     { count: this.state.count }
+// )
+</code></pre>
+<p>在执行setState时，this.state.count取值都还是0，react不会更新this.state.count，直到组件被重新渲染，当我们有这种需要依赖当前更新后的state去修改state的情况，可以通过给setState传入一个函数，而非对象来解决。</p>
+<pre><code class="language-javascript">// this.state.count 0
+this.setState(state =&gt; { count: this.state.count + 1 })
+// this.state.count 1
+this.setState(state =&gt;{ count: this.state.count + 1 })
+// this.state.count 2
+this.setState(state =&gt;{ count: this.state.count + 1 })
+// this.state.count 3
+</code></pre>
+<p>setState的函数调用是分批的，会先执行updater函数，再执行下一个setState，可以解决上述state更新不及时的问题。</p>
+<h1 id="四-为什么要继承reactcomponent">四、为什么要继承React.component</h1>
+<p>一个普通的无状态组件其实可以不继承React.componet，而仅仅表示为一个函数，返回模板对象<br>
+但是一个有状态的组件（props||state||context||refs）是一定要继承自ReactComponent的。</p>
+<pre><code class="language-javascript">function ReactComponent(props, context, updater) {
+  this.props = props;
+  this.context = context;
+  this.refs = emptyObject;
+  this.updater = updater || ReactNoopUpdateQueue;
+}
+ReactComponent.prototype.isReactComponent = {};
+ReactComponent.prototype.setState = function (partialState, callback) {
+  !(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'setState(...): takes an object of state variables to update or a function which returns an object of state variables.') : _prodInvariant('85') : void 0;
+  this.updater.enqueueSetState(this, partialState);
+  if (callback) {
+    this.updater.enqueueCallback(this, callback, 'setState');
+  }
+};
+
+ReactComponent.prototype.forceUpdate = function (callback) {
+  this.updater.enqueueForceUpdate(this);
+  if (callback) {
+    this.updater.enqueueCallback(this, callback, 'forceUpdate');
+  }
+};
+</code></pre>
+<p>通过源码可知，props，state，setState这些核心的api都是来源于ReactComponent的。</p>
+<h1 id="五-确定-state-放置的位置">五、确定 state 放置的位置</h1>
+<p>1、首先找到承载依赖该state所有组件的共同的父组件<br>
+2、使用一个新的组件包裹该通用的父组件<br>
+3、将state提升至该父组件<br>
+4、父子组件通过props，子组件通过props修改父组件的数据，通过this.props获取数据，父组件通过向组件标签添加属性，传入props</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/zu-jian-ku-she-ji-shang-de-tan-suo/">
+                  <h3 class="post-title">
+                    组件库搭建总结
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

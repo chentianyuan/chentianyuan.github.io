@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-09-06T16:33:54.593Z</updated>
+    <updated>2020-10-23T02:02:13.125Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,93 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[react学习第一天]]></title>
+        <id>https://chentianyuan.github.io/post/react-xue-xi-di-yi-tian/</id>
+        <link href="https://chentianyuan.github.io/post/react-xue-xi-di-yi-tian/">
+        </link>
+        <updated>2020-10-22T02:31:14.000Z</updated>
+        <summary type="html"><![CDATA[<p>react哲学！</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>react哲学！</p>
+<!-- more -->
+<h1 id="一-react的代码编写两种方式">一、react的代码编写两种方式</h1>
+<p>1、自顶向下<br>
+当前应用比较小且比较简单的情况下，我们设计了组件模块之后，可以采用自顶向下的构建形式，最先构建上级组件，然后将静态数据通过props传入更为细粒度的组件。<br>
+这种方式比较简单方便。<br>
+2、自底向上<br>
+当前涉及的业务比较复杂，设计了组件模块之后，可以先构建精细的小模块，然后通过组装的形式，慢慢地将其构建成一个大型应用。<br>
+这种方式方便在构建细粒度的组件时，同事编写测试代码。</p>
+<h1 id="二-react中的props和state">二、react中的props和state</h1>
+<p>props是静态数据，改动无法被监听，state的数据变化会重新触发render函数，页面重新渲染。<br>
+state是在组件内被内部管理的<br>
+props是传递给组件的，类似于函数形参，但是它也会影响页面的渲染<br>
+我们应该尽量确定UI state的最小状态，避免多余的state影响代码的可维护性<br>
+判断某块数据是静态还是动态的判断准则有以下几点：<br>
+<strong>1，该数据是否是由父组件通过 props 传递而来的？如果是，那它应该不是 state。<br>
+2，该数据是否随时间的推移而保持不变？如果是，那它应该也不是 state。<br>
+3，你能否根据其他 state 或 props 计算出该数据的值？如果是，那它也不是 state。</strong></p>
+<h1 id="三-thissetstate是同步还是异步的">三、this.setState是同步还是异步的</h1>
+<p>异步的！下面的操作最终得到的结果count最后会为1，而不是预期的3</p>
+<pre><code class="language-javascript">// this.state.count 0
+this.setState({ count: this.state.count + 1 })
+// this.state.count 0
+this.setState({ count: this.state.count + 1 })
+// this.state.count 0
+this.setState({ count: this.state.count + 1 })
+// this.state.count 1
+
+// 相当于
+// Object.assign(
+//     this.state,
+//     { count: this.state.count },
+//     { count: this.state.count },
+//     { count: this.state.count }
+// )
+</code></pre>
+<p>在执行setState时，this.state.count取值都还是0，react不会更新this.state.count，直到组件被重新渲染，当我们有这种需要依赖当前更新后的state去修改state的情况，可以通过给setState传入一个函数，而非对象来解决。</p>
+<pre><code class="language-javascript">// this.state.count 0
+this.setState(state =&gt; { count: this.state.count + 1 })
+// this.state.count 1
+this.setState(state =&gt;{ count: this.state.count + 1 })
+// this.state.count 2
+this.setState(state =&gt;{ count: this.state.count + 1 })
+// this.state.count 3
+</code></pre>
+<p>setState的函数调用是分批的，会先执行updater函数，再执行下一个setState，可以解决上述state更新不及时的问题。</p>
+<h1 id="四-为什么要继承reactcomponent">四、为什么要继承React.component</h1>
+<p>一个普通的无状态组件其实可以不继承React.componet，而仅仅表示为一个函数，返回模板对象<br>
+但是一个有状态的组件（props||state||context||refs）是一定要继承自ReactComponent的。</p>
+<pre><code class="language-javascript">function ReactComponent(props, context, updater) {
+  this.props = props;
+  this.context = context;
+  this.refs = emptyObject;
+  this.updater = updater || ReactNoopUpdateQueue;
+}
+ReactComponent.prototype.isReactComponent = {};
+ReactComponent.prototype.setState = function (partialState, callback) {
+  !(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'setState(...): takes an object of state variables to update or a function which returns an object of state variables.') : _prodInvariant('85') : void 0;
+  this.updater.enqueueSetState(this, partialState);
+  if (callback) {
+    this.updater.enqueueCallback(this, callback, 'setState');
+  }
+};
+
+ReactComponent.prototype.forceUpdate = function (callback) {
+  this.updater.enqueueForceUpdate(this);
+  if (callback) {
+    this.updater.enqueueCallback(this, callback, 'forceUpdate');
+  }
+};
+</code></pre>
+<p>通过源码可知，props，state，setState这些核心的api都是来源于ReactComponent的。</p>
+<h1 id="五-确定-state-放置的位置">五、确定 state 放置的位置</h1>
+<p>1、首先找到承载依赖该state所有组件的共同的父组件<br>
+2、使用一个新的组件包裹该通用的父组件<br>
+3、将state提升至该父组件<br>
+4、父子组件通过props，子组件通过props修改父组件的数据，通过this.props获取数据，父组件通过向组件标签添加属性，传入props</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[组件库搭建总结]]></title>
         <id>https://chentianyuan.github.io/post/zu-jian-ku-she-ji-shang-de-tan-suo/</id>
@@ -1880,101 +1967,6 @@ js内部会有一个ESP(记录当前执行状态的指针)，该指针总是指�
 <p>懒一下，之后总结。。。😹😹😹</p>
 <h2 id="资料参考">资料参考</h2>
 <p><a href="https://time.geekbang.org/column/article/131233">极客时间浏览器工作原理与实践（李兵）</a></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[vue生命周期（简略版）]]></title>
-        <id>https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi/</id>
-        <link href="https://chentianyuan.github.io/post/vue-sheng-ming-zhou-qi/">
-        </link>
-        <updated>2020-01-11T05:42:15.000Z</updated>
-        <summary type="html"><![CDATA[<p>通过 debugger vue 源码 观察得出的vue生命周期流程<br>
-对vue的生命周期进行深入了解 (*/ω＼*)</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>通过 debugger vue 源码 观察得出的vue生命周期流程<br>
-对vue的生命周期进行深入了解 (*/ω＼*)</p>
-<!-- more -->
-<blockquote>
-<p>版本：vue2.6.11 完整版本</p>
-</blockquote>
-<p>附官方配图<br>
-<img src="file:///Users/apple/Documents/Gridea/post-images/1578721758426.png" style="zoom:50%" /></p>
-<p>一切的一切要从vue文件加载说起</p>
-<h2 id="init">init</h2>
-<p>无论是模块化引入，还是script标签加载，都会引入vue的bundle文件，在进入生命周期之前，vue会执行如下几个方法<br>
-往vue的构造函数上挂载之后需要用到的变量，往原型上挂载要用到的方法<br>
-修改push，pop等数组操作方法，使用包装器包装</p>
-<pre><code class="language-javascript">// initGlobalAPI
-initMixin(Vue);
-stateMixin(Vue);
-eventsMixin(Vue);
-lifecycleMixin(Vue);
-renderMixin(Vue);
-</code></pre>
-<h2 id="new-vueoptions">new Vue(options)</h2>
-<p>新建vue实例的时候，构造函数内只有一个入口<code>this._init(options);</code></p>
-<h2 id="mergeoptionsconstructoroptions-options-vm">mergeOptions(constructor.options, options, vm)</h2>
-<p>将initGlobalApi中初始化的构造函数上的属性和传入的属性做一次merge，此时，一些我们平常没有注入的Component，keep-alive，transition，transition-group三个内置组件也是在这里被merge进我们的option的。值得一提的是，这里的merge不是简单的对象合并，针对不同的option，会采用不同的合并策略，比如data执行后合并成新的data函数，生命周期钩子，则被推入对应生命周期数组中</p>
-<h2 id="beforecreate">beforeCreate</h2>
-<pre><code class="language-javascript">initLifecycle(vm);
-initEvents(vm);
-initRender(vm);
-callHook(vm, 'beforeCreate');
-</code></pre>
-<p>执行beforeCreate钩子，此时的数据还不是响应式，真实dom也没有挂载到页面，页面还是带vue语法的模板</p>
-<h2 id="数据监测">数据监测</h2>
-<p>从data函数开始，<code>data.call(vm, vm)</code>得到data对象，对data对象的每个属性进行监测，为每个属性新建一个dep对象<code>const dep = new Dep()</code>，通过<code>Obejct.defineProperty</code>设置对应属性的get，set，在get中进行依赖收集，需要收集的地方会将Dep.target加到dep.sub中<code>dep.addSub(Dep.target)</code>，在被set时，通过<code>dep.notify() =&gt; watcher.cb()</code>来通知模板更新，如果属性是数组，其数组操作方法在初始化时已经被替换，则在各个操作方法中进行通知。如果当前key对应的属性仍不是基本类型，则继续进行深度遍历，知道所有属性被监听。除了data这一阶段还包括对watcher和computed的处理。</p>
-<h2 id="create">Create</h2>
-<p>这一阶段还包括了父组件provide和子组件inject的初始化处理，数据监听完毕，触发create钩子</p>
-<pre><code class="language-javascript">initInjections(vm); // resolve injections before data/props
-initState(vm);
-initProvide(vm); // resolve provide after data/props
-callHook(vm, 'created');
-</code></pre>
-<h2 id="模板编译阶段-compiletofn">模板编译阶段 CompileToFn</h2>
-<p>vue分两种版本，一种是包含模板编译大一点的版本，一种是vue.runtime.js，只包含运行时的版本，在使用webpack构建时常使用vue-loader来预处理模板，因此到页面上只需引入运行时的vue版本就好了，而没有使用模板编译的话，只能引入全量的vue了。所谓模板编译，其实就是template到render函数的过程，中间通过ast转化，通过正则匹配来确定是普通的html语法还是vue的特殊语法从而进行不同的特殊处理，最后得到一个类似这样的render函数</p>
-<pre><code class="language-javascript">(function anonymous(
-) {
-with(this){return _c('div',{attrs:{&quot;id&quot;:&quot;demo&quot;}},[_c('h1',[_v(&quot;Latest Vue.js Commits&quot;)]),_v(&quot; &quot;),_l((branches),function(branch){return [_c('input',{directives:[{name:&quot;model&quot;,rawName:&quot;v-model&quot;,value:(currentBranch),expression:&quot;currentBranch&quot;}],attrs:{&quot;type&quot;:&quot;radio&quot;,&quot;id&quot;:branch,&quot;name&quot;:&quot;branch&quot;},domProps:{&quot;value&quot;:branch,&quot;checked&quot;:_q(currentBranch,branch)},on:{&quot;change&quot;:function($event){currentBranch=branch}}}),_v(&quot; &quot;),_c('label',{attrs:{&quot;for&quot;:branch}},[_v(_s(branch))])]}),_v(&quot; &quot;),_c('p',[_v(&quot;vuejs/vue@&quot;+_s(currentBranch))]),_v(&quot; &quot;),_c('ul',_l((commits),function(record){return _c('li',[_c('a',{staticClass:&quot;commit&quot;,attrs:{&quot;href&quot;:record.html_url,&quot;target&quot;:&quot;_blank&quot;}},[_v(_s(record.sha.slice(0, 7)))]),_v(&quot;\n          - &quot;),_c('span',{staticClass:&quot;message&quot;},[_v(_s(_f(&quot;truncate&quot;)(record.commit.message)))]),_c('br'),_v(&quot;\n          by &quot;),_c('span',{staticClass:&quot;author&quot;},[_c('a',{attrs:{&quot;href&quot;:record.author.html_url,&quot;target&quot;:&quot;_blank&quot;}},[_v(_s(record.commit.author.name))])]),_v(&quot;\n          at &quot;),_c('span',{staticClass:&quot;date&quot;},[_v(_s(_f(&quot;formatDate&quot;)(record.commit.author.date)))])])}),0)],2)}
-})
-</code></pre>
-<p>with语法执行了当前作用域环境，_c其实就是常见的createElement函数</p>
-<h2 id="模板编译完成得到render函数触发beforemounted钩子">模板编译完成，得到render函数，触发beforeMounted钩子</h2>
-<h2 id="vnodetoelmmounted钩子触发">vnodeToElm，mounted钩子触发</h2>
-<p>函数执行生成的是vnode，再经由<code>vm._update(vnode, hydrating)</code>处理，进入<code>vm.__patch__(vm.$el, vnode, hydrating, false)</code>处理，第一次不会进入<code>patchVnode</code>函数，进入生成分支<code>emptyNodeAt(elm)</code>，生成最外层的父节点，再执行<code>createElm</code>阶段，将当前elm设置成<code>document.createElement(tagName)</code>，再继续进行<code>createChildren</code>，对节点的子节点重复调用<code>createElm</code>，所得的真实dom会通过parent.insertBefore或者parent.appendChild添加到父级真实dom中，最后再移除之前所有的未编译节点，呈现最终的页面（vnode.elm可以看到所有的真实节点）<br>
-<code>mountComponent</code>执行完毕，触发mounted钩子，页面上已有真实dom，但是尚未渲染。</p>
-<h2 id="nexttick异步任务">nextTick异步任务</h2>
-<p><img src="https://chentianyuan.github.io/post-images/1578730088518.png" alt="渲染流程" loading="lazy"><br>
-根据浏览器兼容性，promise =&gt; mutationObserver =&gt; setTimeout<br>
-微任务可以确保执行时间点会在会在渲染完毕之前，所以在promise =&gt; mutationObserver实现的情况下只会进行一次渲染，而setTimeout(fn, 0)，无法确保执行时间是在渲染后还是渲染之前，所以可能会造成重复渲染，造成跳帧的感觉。</p>
-<h2 id="beforeupdate钩子">beforeUpdate钩子</h2>
-<p>在mounted之后，data数据发生改变时调用，其有一个专属的组件级的watcher，在数据变化时会被调用before函数，在所有设置的watcher之前，触发beforeUpdate钩子。</p>
-<h2 id="updated钩子">updated钩子</h2>
-<p>在beforeUpdate钩子之后，对所有的update钩子进行执行<code>nextTick(flushSchedulerQueue) -&gt; callHook(vm, 'update')</code>，如果设置了，则每次在下一次重渲染之前，update钩子会被调用。</p>
-<h2 id="beforedestory钩子">beforeDestory钩子</h2>
-<p>destory可以通过<code>vm.$destory()</code>来主动触发，其并不会影响页面的展示，但是会清理与其它实例的连接，解绑(<code>vm.deps[i].removeSub()</code>)当前实例的全部指令及事件监听器，然后执行<code>vm.__patch__(vm._vnode, null)</code>，将当前vnode置空，并在其中会触发子组件的destory方法，和mounted一样，destory钩子也是先子组件后父组件</p>
-<h2 id="destory钩子">Destory钩子</h2>
-<p>所有销毁动作完成之后，触发destroyed钩子，</p>
-<h2 id="activated钩子-deactivated钩子">activated钩子 &amp;&amp; deactivated钩子</h2>
-<p>涉及keep-alive没有深入研究，大概是组件被复用和缓存组件被销毁时触发</p>
-<hr>
-<h2 id="总结">总结</h2>
-<p>1、js加载并执行，混入必要的属性和方法，声明常用工具类方法<br>
-2、实例化，属性合并，初始化解析event事件绑定的方法<br>
-3、触发beforeCreate<br>
-4、进行数据监测，依赖收集<br>
-5、触发craete<br>
-6、进行模板编译，将模板转化为render函数<br>
-7、触发beforeMounted<br>
-8、执行render函数，生成vnode，根据vnode创建真实dom，挂载到指定节点<br>
-9、触发mounted钩子<br>
-<strong>其他</strong><br>
-10、beforeUpdate执行所在的函数在beforeMounted和mounted之前已经生成了，mounted之后的数据变动都会触发beforeUpdate<br>
-11、watcher.run()<br>
-12、模板更新结束，触发updated钩子<br>
-13、beforeDestory组件销毁时触发，也可主动触发，进行事件解绑，依赖移除，vnode清空，执行顺序是先子组件后父组件<br>
-14、destory组件销毁完毕触发<br>
-15、activated钩子 &amp;&amp; deactivated钩子 缓存组件复用和缓存组件被销毁时触发</p>
 ]]></content>
     </entry>
 </feed>
