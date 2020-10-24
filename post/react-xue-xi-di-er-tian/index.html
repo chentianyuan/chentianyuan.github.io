@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>react学习第二天 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1603533816128">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1603533816128" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            技术
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">react学习第二天</h2>
+            <div class="post-date">2020-10-24</div>
+            
+            <div class="post-content">
+              <p>高级指引！</p>
+<!-- more -->
+<h1 id="一-代码分割">一、代码分割</h1>
+<h1 id="二-context使用">二、context使用</h1>
+<p>类似于vue的provider和inject属性，react提供了React.createContext方法，创建一个上下文组件，被该组件所包裹的组件可以无需通过props传递属性，直接深传递进组件树。</p>
+<pre><code class="language-javascript">const ThemeContext = React.createContext(context)
+class App extends React.componet {
+    render () {
+        return (
+            &lt;ThemeContext.provider&gt;
+                &lt;Children /&gt;
+            &lt;/ThemeContext.provider&gt;
+        )
+    }
+}
+class Children extends React.Component {
+    render () {
+        return (
+            &lt;div theme={this.context}&gt;&lt;/div&gt;
+        )
+    }
+}
+</code></pre>
+<p>context很方便，但是会使得组件的复用性变差，因此context一般用于管理应用的locale，theme等状态。<br>
+而对于业务组件，为了防止props层层传递，其实还有一种方法。</p>
+<h1 id="三-控制反转">三、控制反转</h1>
+<p>当你的组件嵌套较深，而且有某个state仅在较底层的组件使用时，我们可以将组件作为props传递，从而将底层组件提升至较为高层的组件中声明。然后在子组件中使用this.props[组件名]来将其渲染</p>
+<pre><code class="language-javascript">function Page(props) {
+  const user = props.user;
+  const userLink = (
+    &lt;Link href={user.permalink}&gt;
+      &lt;Avatar user={user} size={props.avatarSize} /&gt;
+    &lt;/Link&gt;
+  );
+  return &lt;PageLayout userLink={userLink} /&gt;;
+}
+
+// 现在，我们有这样的组件：
+&lt;Page user={user} avatarSize={avatarSize} /&gt;
+// ... 渲染出 ...
+&lt;PageLayout userLink={...} /&gt;
+// ... 渲染出 ...
+&lt;NavigationBar userLink={...} /&gt;
+// ... 渲染出 ...
+{props.userLink}
+</code></pre>
+<h1 id="四-错误边界">四、错误边界</h1>
+<p>如果一个class组件定义了static getDerivedStateFromError或者componentDidCatch这两个生命周期方法中的任意一个时，那么它就变成了一个错误边界，当子组件抛出错误时，会被最近的错误边界所捕获。</p>
+<pre><code class="language-javascript">class ErrorBoundary extends React.Component {
+    constructor (props) {
+        super(props)
+        this.state = { hasError: false }
+    }
+    static getDerivedStateFromError () {
+        // 更新 state 使下一次渲染能够显示降级后的UI
+        return { hasError: true }
+    }
+
+    render () {
+        if (this.state.hasError) {
+            return &lt;ErrorComponent/&gt;
+        }
+
+        return this.props.children
+    }
+}
+</code></pre>
+<h1 id="五-ref">五、ref</h1>
+<p>通过React.createRef方法可以创建一个ref对象，然后在指定的组件上声明ref属性为该ref对象之后，我们便可以通过该ref上的current属性，获取当前组件的真实dom元素</p>
+<pre><code class="language-javascript">class Child extends React.Component {
+  constructor () {
+    super();
+    this.childRef = React.createRef()
+  }
+
+  componentDidMount () {
+    window.a = this.childRef
+    console.log(this.childRef.current)
+  }
+
+  render () {
+    return (
+      &lt;section ref={this.childRef}&gt;
+        i am child
+      &lt;/section&gt;
+    )
+  }
+}
+</code></pre>
+<p>另外，当创建的ref作用于组件时，那么this.ref.current将会返回组件的实例。</p>
+<h1 id="六-hoc高阶组件">六、HOC高阶组件</h1>
+<p>HOC组件接收一个组件和多余参数，进行AOP面向切面编程，返回一个新的组件，HOC是纯函数，没有副作用，当我们的输入相同时其一定返回一样的结果，它不会修改传入的组件，也不会继承，而是通过包装提供通用逻辑，得到一个被包装后的原始组件。</p>
+<pre><code class="language-javascript">function logProps (Component) {
+    return class extends React.Component {
+        comonentDidUpdate (prevProps) {
+            console.log(`prevProps: ${prevProps}`);
+            console.log(`props: ${this.props}`);
+        }
+        return &lt;Component { ...this.props } /&gt;;
+    }
+}
+</code></pre>
+<h1 id="七-react-diff算法">七、react diff算法</h1>
+<p>以后详细看看，粗浅地看貌似和vue的diff差不多，只是少了头尾节点对比的过程，也有通过key进行原地复用的优化，还有同层级比较的优化。</p>
+<h1 id="八-render-props">八、render props</h1>
+<p>当我们有一个通用的高阶组件，被其包裹的组件将包含某些能力。当被包裹的组件无需读取高阶组件包含的状态时，我们可以在高阶组件内部直接读取this.props.children来渲染插入的自定义组件，但是当自定义组件需要用到高阶组件的状态，上述方法就不适用了，我们可以通过给高阶组件一个render props，再将高阶组件的state传入自定义组件中。</p>
+<pre><code class="language-javascript">class HOCComponent extends React.Component {
+    constructor (props) {
+        super(props)
+    }
+
+    componentDidMounted () {
+        console.log('hello world !')
+    }
+
+    render () {
+        return (
+            &lt;&gt;
+                {this.props.render(this.state)}
+            &lt;/&gt;
+        )
+    }
+}
+
+class Child extends React.Component {}
+class Wrap extends React.Component {
+    render () {
+        return (
+            &lt;HOCComponent render={
+                state =&gt; (
+                    &lt;Child hocState={state}&gt;
+                )
+            }/&gt;
+        )
+    }
+}
+</code></pre>
+<h1 id="九-使用proptypes对props进行类型检查">九、使用propTypes对props进行类型检查</h1>
+<p>类似于vue的prop属性，props是组件的静态属性，用于校验传入的props类型，另外，通过defaultProps静态属性还可以对传入的props赋予默认值，一个普通的propTypes如下：</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types';
+class Greeting extends React.Component {
+    static propTypes = {
+        name: PropTypes.string.isRequire,
+        age: PropTypes.oneOf([
+            PropTypes.string,
+            PropTypes.number
+        ])
+    }
+    static defaultProps = {
+        name: 'zw'
+    }
+    render () { return (&lt;div&gt;{ this.props.name }&lt;/div&gt;) }
+}
+</code></pre>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/react-xue-xi-di-yi-tian/">
+                  <h3 class="post-title">
+                    react学习第一天
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
