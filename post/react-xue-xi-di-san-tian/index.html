@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>深度优先遍历和广度优先遍历 | City Corner</title>
+<title>react学习第三天 | City Corner</title>
 <meta name="description" content="脚踏实地 仰望星空">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -106,71 +106,77 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">深度优先遍历和广度优先遍历</h2>
-            <div class="post-date">2019-12-04</div>
+            <h2 class="post-title">react学习第三天</h2>
+            <div class="post-date">2020-10-26</div>
             
             <div class="post-content">
-              <p>DFS VS BFS</p>
+              <p>react-router &amp;&amp; react hooks</p>
 <!-- more -->
-<h3 id="题目">题目</h3>
-<p>给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。</p>
-<pre><code class="language-javascript">// DFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let i = 0
-    let dfs = function (Node, i) {
-      // 该节点不存在
-      if (!Node) {
-        return
-      }
-      resultList[i] = resultList[i] || []
-      resultList[i].push(Node.val)
-      dfs(Node.left, i + 1)
-      dfs(Node.right, i + 1)
-    }
-    dfs(root, i)
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 优先左子树，再遍历右子树，每次递归深度+1
+<h1 id="一-为什么要使用hooks">一、为什么要使用hooks？</h1>
+<p>1、无需在class组件中管理this，组件更轻量<br>
+2、在一个函数中聚合</p>
+<h1 id="二-内置的hooks">二、内置的hooks</h1>
+<p>React提供的Hooks，仅允许在函数式组件中使用。</p>
+<h5 id="usestate">useState</h5>
+<p>useState接收state的默认值，返回该state和一个仅用于修改该state的函数。</p>
+<h5 id="useeffect">useEffect</h5>
+<p>useEffect包含了React的ComponentDidMounted，ComponentShouldUpdate等执行副作用函数的钩子，useEffect返回的函数会在渲染内容销毁时被触发。同事useEffect可以接收第二个参数，类似于vue的watch函数，当且仅当参数二发生变化时才会执行副作用函数。</p>
+<h5 id="usecontext">useContext</h5>
+<p>useContext接收一个context为参数，返回当前context注入的值，前提是在父级组件已经使用<code>&lt;Context.Provider&gt;</code> 包裹子组件，此时的useContext效果相当于之前使用context时的静态声明和this.context，useContext一方面提供了context上的值，另一方面标明了当前组件对context的依赖情况，当context内的属性发生变化时，即触发该组件的重渲染。（当某个值被多个组件所依赖，context可以提升我们组件的渲染性能）</p>
+<h5 id="usecallback">useCallback</h5>
+<pre><code class="language-javascript">function cacheEffectFn (EffectFn, deps = []) {
+    // 第二个参数代表依赖数组，如果依赖数组为空，则代表第一个入参将在组件内被永久缓存
+    return useCallBack(EffectFn, deps)
+}
 </code></pre>
-<pre><code class="language-javascript">// BFS 解题
-var rightSideView = function(root) {
-    let resultList = []
-    let j = -1
-    let bfs = function (Nodes) {
-      while (Nodes.length &gt; 0) {
-        j++
-        // 该节点不存在
-        if (!Nodes.length) {
-          return
-        }
-        let length = Nodes.length
-        for (let i = 0; i &lt; length; i++) {
-          let Node = Nodes.shift()
-          resultList[j] = resultList[j] || []
-          resultList[j].push(Node.val)
-          if (Node.left) Nodes.push(Node.left)
-          if (Node.right) Nodes.push(Node.right)
-        }
-      }
-    }
-    if (!root) return []
-    bfs([root])
-    return resultList.map(result =&gt; result[result.length - 1])
-};
-// 广度优先遍历的核心就是queues
-// 队列存储左右节点，然后进入下一次循环，循环原始队列，队列头出队列，将左子树右子树分别重新插入队列，最后的到的类似[left.left, left.right, right.left, right.right]进行我们想要的操作
+<p>由于函数式组件在每次渲染时都会重新执行，在函数中正常声明的函数在渲染的时候每次都会被重新创建，当我们有节流函数保存了timer的时候，此时如果有其他state发生变化，重新触发函数组件的执行，那么之前的timer将不会影响这次重新创建的timer，因此，我们需要useCallback或者useRef来对我们的节流函数进行缓存。</p>
+<h5 id="usememo">useMemo</h5>
+<p>useMemo相比于useCallback的区别在于，useCallback是根据依赖（deps）缓存第一个入参（callback）的。useMemo是根据依赖（deps）缓存第一个入参（callback）的返回值的，例如</p>
+<pre><code class="language-javascript">// 此时calcValue内的函数只会在首次渲染时或者依赖项count被改变时执行
+// 节省了每次渲染时的内存消耗
+const calcValue = React.useMemo(() =&gt; {
+    return Array(10000).fill('').map(v =&gt; /* 一些大量的计算 */v)
+}, [count])
 </code></pre>
-<p><a href="https://leetcode-cn.com/problems/binary-tree-right-side-view/">力扣原题</a></p>
+<h5 id="useref">useRef</h5>
+<p>useRef返回一个可变的ref对象，其.current属性被初始化为传入的参数，返回的ref对象在组件的整个生命周期内保持不变。</p>
+<pre><code class="language-javascript">const UseUseRef = () =&gt; {
+    const inputElement = useRef(null)
+    const focuHandle = () =&gt; {
+        if (inputElement.current) {
+            inputElement.current.focus()
+        }
+    }
+    return (
+        &lt;div className=&quot;content&quot;&gt;
+            &lt;input ref={ inputElement }  placeholder=&quot;useRef API&quot;/&gt;
+            &lt;button onClick={ focuHandle }&gt;&lt;/button&gt;
+        &lt;/div&gt;
+    )
+}
+</code></pre>
+<p>相比于createRef(null)，useRef(null)将缓存ref.current所指向的dom对象，我们还可以用来缓存像函数或者大的堆变量以节省内存消耗。</p>
+<h1 id="三-react-router">三、react-router</h1>
+<p>react-router-dom是在react-router的基础上进行的封装，下面列举一些常见的路由组件</p>
+<pre><code class="language-html">&lt;!-- 提供history路由，操作history api控制路由变化，同时根据包裹的路由情况渲染对应路由 --&gt;
+&lt;BrowserRouter /&gt;
+&lt;!-- 最常用的路由组件 --&gt;
+&lt;Route&gt;
+&lt;!-- 用于装饰组件，装饰后组件内部可以在this.props内获取到当前的路由信息 --&gt;
+&lt;withRouter&gt;
+&lt;!-- Link\NavLink导航 --&gt;
+&lt;Link to='/'&gt;
+&lt;NavLink to='/'&gt;
+</code></pre>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://chentianyuan.github.io/post/https-xie-yi-xiang-jie/">
+                <a href="https://chentianyuan.github.io/post/react-xue-xi-di-er-tian/">
                   <h3 class="post-title">
-                    https协议详解
+                    react学习第二天
                   </h3>
                 </a>
               </div>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>React简易源码构建 | City Corner</title>
+<meta name="description" content="脚踏实地 仰望星空">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://chentianyuan.github.io/favicon.ico?v=1604461117985">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://chentianyuan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://chentianyuan.github.io">
+        <img src="https://chentianyuan.github.io/images/avatar.png?v=1604461117985" class="site-logo">
+        <h1 class="site-title">City Corner</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            技术
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/chentianyuan" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://www.zhihu.com/people/chen-xiao-sa-30/activities" target="_blank">
+            <i class="fab fa-zhihu"></i>
+          </a>
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      脚踏实地 仰望星空
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://chentianyuan.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">React简易源码构建</h2>
+            <div class="post-date">2020-11-02</div>
+            
+            <div class="post-content">
+              <p>一步一步进行react源码构建<br>
+原文链接：<br>
+<a href="https://pomb.us/build-your-own-react/">Build your own React</a></p>
+<!-- more -->
+<h1 id="第一步观察jsx转化">第一步：观察jsx转化</h1>
+<p>一个简单的React例子如下</p>
+<pre><code class="language-javascript">const element = &lt;h1 title=&quot;foo&quot;&gt;Hello&lt;/h1&gt;
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>jsx文件中的jsx语法会被@babel/preset-react插件所转译，模板会被转译成React.createElement包裹的对象形式</p>
+<pre><code class="language-javascript">const element = React.createElement(&quot;h1&quot;, { title: &quot;foo&quot; }, &quot;Hello&quot;)
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>然后React.createElement又会根据传入的对象形式，得到真正的React虚拟DOM</p>
+<pre><code class="language-javascript">const element = {
+    type: &quot;h1&quot;,
+    props: {
+        title: &quot;foo&quot;,
+        children: &quot;Hello&quot;
+    }
+}
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>最后虚拟dom将被ReactDOM转化为真实dom然后挂载到container上。</p>
+<h1 id="第二步实现reactcreateelement">第二步：实现React.createElement</h1>
+<p>Hello所在的位置可能是文本节点，也可能是其他子节点，观察后可以发现createElement其实就是参数到虚拟DOM的转化</p>
+<pre><code class="language-javascript">// 简易的createElement
+function createElement (type, props, children) {
+    return {
+        type,
+        props: {
+            ...props,
+            children: children.map(child =&gt;
+                typeof child === 'object' ? child : createElement(child)
+            )
+        }
+    }
+}
+</code></pre>
+<h1 id="第三步实现一个reactdomrender函数">第三步：实现一个ReactDOM.render函数</h1>
+<p>得到虚拟dom之后，我们还可以继续实现一个简易的React.render函数</p>
+<pre><code class="language-javascript">function render (element, container) {
+    const dom = dom.type === &quot;TEXT_ELEMENT&quot;
+        ? document.createTextNode(&quot;&quot;) : document.createElement(element.type)
+    const isProperty = key =&gt; key !== &quot;children&quot;
+    Object.keys(element.props).filter(isProperty).forEach(key =&gt; {
+        dom[key] = element[key]
+    })
+
+    if (element.props &amp;&amp; element.props.children) {
+        element.props.children.forEach(child = &gt; render(child, dom))
+    }
+
+    container.appendChild(dom)
+}
+</code></pre>
+<p>通过以上三步，已经可以实现一个最小的React功能，将jsx渲染到页面上。</p>
+<h1 id="第四步concurrent-mode并发模式">第四步：Concurrent Mode（并发模式）</h1>
+<p>在前面三步，我们的dom元素的构建，appendChild方法的执行都是同步的，如果dom树规模过大，构建的过程会造成js主线程的阻塞，从而可能影响页面input用户的输入，或者动画的执行等高优先级任务，所以我们需要将任务拆分，做到不影响主线程其他任务的执行</p>
+<pre><code class="language-javascript">let nextUnitOfWork = null
+
+function workLoop (deadline) {
+    let shouldYeild = false
+    while (nextUnitOfWork &amp;&amp; !shouldYeild) {
+        // 如果有下一个任务而且不需要等待主线程时间片空余，执行该任务，并且通过preformUnitOfWork返回下一个任务
+        nextUnitOfWork = preformUnitOfWork(
+            nextUnitOfWork
+        )
+        // deadline.timeRemaining()返回一个时间DOMHighResTimeStamp, 并且是浮点类型的数值，它用来表示当前闲置周期的预估剩余毫秒数，如果剩余时间小于1则不再有空闲时间，当前任务进入阻塞态
+        shouldYeild = deadline.timeRemaining() &lt; 1
+    }
+    // 再次执行requestIdleCallback方法，进入下一轮渲染
+    requestIdleCallback(workLoop)
+}
+
+requestIdleCallback(workLoop)
+</code></pre>
+<p>借助requestIdleCallback我们可以实现任务的拆分，在浏览器空闲时间进行低优先级任务的执行。</p>
+<h1 id="第五步fiber架构">第五步：fiber架构</h1>
+<p>为了对虚拟dom=&gt;真实dom的过程实现任务拆分，我们需要一种数据结构来表示我们的任务执行顺序，这也是fiber架构的除了requestIdleCallback之外的另一个基石<br>
+<img src="https://chentianyuan.github.io/post-images/1604308808453.png" alt="fiber数据结构" loading="lazy"><br>
+fiber架构创建了一个双向链表的数据结构，也可以叫fiber树，在首次任务执行时会使用深度优先遍历该树，每个节点生成一个链表节点（拥有child、parent、sibing三个指针），preformUnitOfWork通过该链表确定下一个nextUnitOfWork。遍历过程：从root节点开始，首先寻找有没有子节点，没有则寻找有没有sibling节点，如果也没有sibing节点，则回到上一个fiber节点，判断它是否存在sibing节点，直到指针回到root节点。<br>
+第四步我们还剩下preformUnitOfWork函数没有实现，他的任务主要有以下三点</p>
+<ul>
+<li>执行任务，创建元素并添加至parentDom</li>
+<li>为元素的children创建fiber树</li>
+<li>选择下一轮需要执行的单元任务<br>
+下面把以上逻辑抽象成代码</li>
+</ul>
+<pre><code class="language-javascript">// 1、从render函数中抽离出createDom函数，用于为当前任务创建真实dom
+function createDom(fiber) {
+  const dom =
+    fiber.type == &quot;TEXT_ELEMENT&quot;
+      ? document.createTextNode(&quot;&quot;)
+      : document.createElement(fiber.type)
+​
+  const isProperty = key =&gt; key !== &quot;children&quot;
+  Object.keys(fiber.props)
+    .filter(isProperty)
+    .forEach(name =&gt; {
+      dom[name] = fiber.props[name]
+    })
+​
+  return dom
+}
+// 2、render函数设置nextUnitOfWork为根节点的任务，render函数将在浏览器空闲时通过workLoop开始执行
+function render (element, container) { /* TODO: set next unit of work */ }
+// ↓↓↓↓↓↓↓↓↓↓↓
+function render (element, container) {
+    nextUnitOfWork = {
+        dom: container,
+        props: {
+            children: [element]
+        }
+    }
+}
+</code></pre>
+<p>然后，我们开始实现performUnitOfWork方法</p>
+<pre><code class="language-javascript">function performUnitOfWork (fiber) {
+    // 1、执行任务，创建元素并添加至parentDom
+    if (!fiber.dom) {
+        // 如果没有容器则根据fiber内容创建一个dom容器
+        fiber.dom = createDom(fiber)
+    }
+    if (fiber.parent) {
+        // 把当前节点插入父节点
+        fiber.parent.dom.appendChild(fiber.dom)
+    }
+    // 2、为元素的children创建fiber树
+    const elements = fiber.props.children
+    let index = 0
+    let prevSibling = null
+    while (index &lt; element.length) {
+        // 先创建子元素
+        const element = elements[index]
+        const newFiber = {
+            type: element.type,
+            props: element.props,
+            parent: fiber,
+            dom: null
+        }
+        if (index === 0) {
+            // 第一个子元素即为当前fiber的子节点
+            fiber.child = newFiber
+        } else {
+            // 第二个子元素通过sibling指针与上一个节点互为兄弟节点
+            prevSibling.sibling = newFiber
+        }
+        // 记录上一个fiber节点
+        prevSibling = newFiber
+        index++
+    }
+    // 3、寻找下一个工作单元
+    // 如果有子节点，直接返回字节点作为下一个工作单元
+    if (fiber.child) return fiber.child
+    let nextFiber = fiber
+    while (nextFiber) {
+        // 如果有兄弟节点，则返回兄弟节点作为下一个工作单元
+        if (nextFiber.sibling) return nextFiber.sibling
+        // 否则向上查询，查找父节点的是否有兄弟节点
+        nextFiber = nextFiber.parent
+    }
+}
+</code></pre>
+<p>以上我们已经实现了一个简易版的不阻塞主线程高优先级任务的fiber架构。</p>
+<h1 id="第六步render-and-commit-phases-提交渲染阶段">第六步：Render and Commit Phases （提交渲染阶段）</h1>
+<p>上面的实现还存在一些问题，我们的fiber架构为了不阻塞页面渲染将创建和appendChild分解成了子任务，当我们出发渲染时，页面会出现dom元素一点一点更新的情况，导致用户看到的不是一个完整的渲染后的页面，而是看到页面一点一点地发生变更。<br>
+因此，我们需要移除<code>fiber.parent.dom.appendChild(fiber.dom)</code>这个步骤，把这个任务进行一个收集，最后一次性执行。</p>
+<pre><code class="language-javascript">function render (element, container) {
+    // 记录fiber root节点，也就是我们的fiber tree
+    wipRoot = {
+        dom: container,
+        props: {
+            children: [element]
+        },
+    }
+    nextUnitOfWork = wipRoot
+}
+let wipRoot = null
+
+function workLoop (deadline) {
+    // 当前没有剩余的需要执行的子任务时，执行commit，把真实dom渲染到页面上
+    if (!nextUnitOfWork &amp;&amp; wipRoot) {
+        commitRoot()
+    }
+}
+
+// 提交
+function commitRoot () {
+    commitWork(wipRoot.child)
+    // 防止内存泄漏
+    wipRoot = null
+}
+
+// real commit
+function commitWork (fiber) {
+    if (!fiber) return
+    const domParent = fiber.parent.dom
+    domParent.appendChild(fiber.dom)
+    // 递归执行appendChild
+    commitWork(fiber.child)
+    commitWork(fiber.sibling)
+}
+</code></pre>
+<p>现在，我们把所有的appendChild操作从performUnitOfWork中进行了抽离，在完整的fiber树构建完毕之后，递归执行commitWork进行append操作。</p>
+<h1 id="第七步reconciliation调和阶段">第七步：Reconciliation（调和阶段）</h1>
+<p>到目前为止，我们仅完成了数据渲染到页面的整体结构，当我们的数据发生变化，删除或新增或修改元素，我们需要对更新后的fiber tree和之前的fiber tree进行比对，然后同步到页面上。</p>
+<pre><code class="language-javascript">function commitRoot () {
+    deletions.forEach(commitWork)
+    commitWork(wipRoot.child)
+    currentRoot = vipRoot
+    wipRoot.child = null
+}
+function render (element, container) {
+    wipRoot = {
+        dom: container,
+        props: {
+            children: [element]
+        },
+        // 记录上一次commit的fiber树
+        alternate: currentRoot
+    }
+    deletions = []
+}
+let currentRoot = null
+let deletions = null
+function performUnitOfWork (fiber) {
+    // ...
+    const elements = fiber.props.children
+    reconcileChildren(fiber, elements)
+}
+
+// 从performUnitOfWork中抽离深度优先遍历的逻辑，从直接创建变成比较
+function recpmcileChildren (wipFiber, elements) {
+    let index = 0
+    let oldFiber = wipFiber.alternate &amp;&amp; wipFiber.alternate.child
+    let prevSibing = null
+    // 如果有oldFiber，要继续进行比较操作，删除原节点
+    while (index &lt; elements.length || oldFiber !== null) {
+        const element = elements[index]
+        let newFiber = null
+        // compare here
+        const sameType = oldFiber &amp;&amp; element &amp;&amp; element.type == oldFiber.type
+        if (sameType) {
+            // update the node
+            newFiber = {
+                type: oldFiber.type,
+                props: element.props, // 相同类型的节点取最新的props
+                dom: oldFiber.dom,
+                parent: wipFiber,  // 父节点被wipFiber所存储
+                alternate: oldFiber, // 继续使用上次构建的Fiber节点
+                effectaTag: 'UPDATE' // 标记update
+            }
+        }
+        if (element &amp;&amp; !sameType) {
+            // add this node
+            newFiber = {
+                type: element.type, // 更新节点类型
+                props: element.props, // 取最新节点的props
+                dom: null,
+                parent: wipFiber, 
+                alternate: null,
+                effectTag: 'PLACEMENT'
+            }
+        }
+        if (oldFiber &amp;&amp; !sameType) {
+            // delete the oldFiber's node
+            oldFiber.effectTag = 'DELETION'
+            deletions.push(oldFiber)
+        }
+
+        if (oldFiber) {
+            oldFiber = oldFiber.sibling
+        }
+        if (index === 0) {
+            wipFiber.child = newFiber
+        } else {
+            wipFiber.sibling = newFiber
+        }
+    }
+}
+
+function commitWork (fiber) {
+    if (!fiber) return
+    const domParent = fiber.parent.dom
+    if (fiber.effectTag === &quot;PLACEMENT&quot; &amp;&amp; fiber.dom != null) {
+        dom.appendChild(fiber.dom)
+    } else if (fiber.effectTag === &quot;UPDATE&quot; &amp;&amp; fiber.dom != null) {
+        // 更新页面上的元素
+        updateDom(fiber.dom, fiber.alternate.props, fiber.props)
+    } else if (fiber.effectTag === &quot;DELETION&quot;) {
+        domParent.removeChild(fiber.dom)
+    }
+    commitWork(fiber.child)
+    commitWork(fiber.sibling)
+}
+
+const isEvent = key =&gt; key.startWith('on')
+const isProperty = key =&gt; key !== &quot;children&quot; &amp;&amp; !isEvent(key)
+const isNew = (prev, next) =&gt; key =&gt; prev[key] !== next[key]
+const isGone = (prev, next) =&gt; key =&gt; !(key in next)
+function updateDom (dom, prevProps, nextProps) {
+    // Remove old or changed event listeners
+    Object.keys(prevProps)
+        .filter(isEvent)
+        .filter(key =&gt; !(key in nextProps) || isNew(prevProps, nextProps)(key))
+        .forEach(name =&gt; {
+            const eventType = name.toLowerCase().substring(2)
+            dom.removeEventListener(eventType, prevProps[name])
+        })
+    // Remove old properties
+    Object.keys(prevProps)
+        .filter(isProperty)
+        .filter(isGone(prevProps, nextProps))
+        .forEach(name =&gt; {
+            dom[name] = &quot;&quot;
+        })
+    // Set or update new properties
+    Object.keys(nextProps)
+        .filter(isProperty)
+        .filter(isNew(prevProps, nextProps))
+        .forEach(name =&gt; {
+            dom[name] = nextProps[name]
+        })
+    // Add event listeners
+    Object.keys(nextProps)
+        .filter(isEvent)
+        .filter(isNew(prevProps, nextProps))
+        .forEach(name =&gt; {
+            const eventType = name.toLowerCase().substring(2)
+            dom.addEventListener(eventType, nextProps[name])
+        })
+}
+</code></pre>
+<h1 id="第七步支持函数式组件function-components">第七步：支持函数式组件（Function Components）</h1>
+<pre><code class="language-javascript">function App (props) {
+    return &lt;h1&gt;Hi { props.name }&lt;/h1&gt;
+}
+const element = &lt;App name=&quot;foo&quot;&gt;
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>当我们的组件不再是标签式jsx，而是函数式组件时，我们将其视为一种特殊的type类型，然后对划分任务阶段的performUnitOfWork函数进行改造</p>
+<pre><code class="language-javascript">function performUnitOfWork (fiber) {
+    const isFunctionComponent = fiber.type instanceof Function
+    if (isFunctionComponent) {
+        updateFunctionComponent(fiber)
+    } else {
+        updateHostComponent(fiber)
+    }
+    // ...
+    function updateFunctionComponent (fiber) {
+        // 执行函数，作为当前fiber节点的一个children属性，进入调和阶段
+        const children = [fiber.type(fiber.props)]
+        reconcileChildren(fiber, children)
+    }
+    function updateHostComponent (fiber) {/* 非函数式组件，交由调和函数，标记元素修改状态 */}
+}
+
+function commitWork (fiber) {
+    // ...
+    let domParentFiber = fiber.parent
+    while (!domParentFiber.dom) {
+        // 针对函数式组件，没有自身的dom时，将其要append的dom元素设为父元素的dom
+        domParentFiber = domParentFiber.parent
+    }
+    const domParent = domParentFiber.dom
+    // ...
+    if (fiber.effectTag === &quot;DELETION&quot;) {
+        commitDeletion(fiber, domParent)
+    }
+
+    function commitDeletion (fiber, domParent) {
+        if (fiber.dom) {
+            domParent.removeChild(fiber.dom)
+        } else {
+            commitDeletion(fiber.child, domParent)
+        }
+    }
+}
+</code></pre>
+<h1 id="第八步支持react-hooks">第八步：支持react hooks</h1>
+<p>在函数组件中使用hooks，此处实现一个最简易的useState hooks</p>
+<pre><code class="language-javascript">// 首先初始化一些变量用于增强我们的fiber架构
+let wipFiber = null // record prev function fiber
+let hookIndex = null //
+function updateFunctionComponent (fiber) {
+    wipFiber = fiber
+    hookIndex = 0
+    wipFiber.hooks = []
+}
+
+function useState (initial) {
+    const oldHook = 
+        wipFiber.alternate &amp;&amp;
+        wipFiber.alternate.hooks &amp;&amp;
+        wipFiber.alternate.hooks[hookIndex]
+    const hook = {
+        state: oldHook ? oldHook.state : initial,
+        queue: []
+    }
+    const action = oldHook ? oldHook.queue : []
+    actions.forEach(action =&gt; {
+        hook.state = action(hook.state)
+    })
+    // 首次执行setState时，react会将执行的action推入hook,queue
+    // 当我们对函数组件进行fiber任务执行阶段时，action会从oldHook.queue中取出，并一个一个执行，并且更新到hook.state上，此时函数组件拿到的就是最新的state了
+    const setState = action =&gt; {
+        hook.queue.push(action)
+        wipRoot = {
+            dom: currentRoot.dom,
+            props: currentRoot.props,
+            alternate: currentRoot
+        }
+        nextUnitOfWork = wipRoot
+        // hook重新创建
+        deletions = []
+    }
+    wipFiber.hooks.push(hook)
+    hookIndex++
+    return [hook.state, setState]
+}
+</code></pre>
+<h1 id="总结">总结</h1>
+<p>实现一个简易的react步骤</p>
+<ul>
+<li>通过createElement实现jsx的转化</li>
+<li>通过createElement转化得出的虚拟dom，递归实现ReacrDOM.render函数</li>
+<li>通过requestIdleCallback实现任务的分段执行</li>
+<li>因为直接分段的形式会使得用户看到不完整的页面。通过fiber架构，双向特殊链表，深度优先遍历，实现页面dom结构创建的分层和缓存，最后一次性递归append到页面</li>
+<li>调和阶段对比oldFiber和newFiber的不同，实现新增，修改，删除三种页面常见的结构变化操作</li>
+<li>支持函数式组件</li>
+<li>支持建议的hooks</li>
+</ul>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://chentianyuan.github.io/post/react-xue-xi-di-san-tian/">
+                  <h3 class="post-title">
+                    react学习第三天
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c56a51c05f5b5d771fd3',
+        clientSecret: '60ee440f298d2fb1c5ba92f3236b618bd749de24',
+        repo: 'chentianyuan.github.io',
+        owner: 'chentianyuan',
+        admin: ['chentianyuan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

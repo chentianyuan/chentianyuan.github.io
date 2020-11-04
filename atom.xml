@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chentianyuan.github.io</id>
     <title>City Corner</title>
-    <updated>2020-10-24T10:03:44.556Z</updated>
+    <updated>2020-11-04T03:38:41.618Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chentianyuan.github.io"/>
     <link rel="self" href="https://chentianyuan.github.io/atom.xml"/>
@@ -10,6 +10,523 @@
     <logo>https://chentianyuan.github.io/images/avatar.png</logo>
     <icon>https://chentianyuan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, City Corner</rights>
+    <entry>
+        <title type="html"><![CDATA[React简易源码构建]]></title>
+        <id>https://chentianyuan.github.io/post/react-jian-yi-yuan-ma-gou-jian/</id>
+        <link href="https://chentianyuan.github.io/post/react-jian-yi-yuan-ma-gou-jian/">
+        </link>
+        <updated>2020-11-02T02:03:05.000Z</updated>
+        <summary type="html"><![CDATA[<p>一步一步进行react源码构建<br>
+原文链接：<br>
+<a href="https://pomb.us/build-your-own-react/">Build your own React</a></p>
+]]></summary>
+        <content type="html"><![CDATA[<p>一步一步进行react源码构建<br>
+原文链接：<br>
+<a href="https://pomb.us/build-your-own-react/">Build your own React</a></p>
+<!-- more -->
+<h1 id="第一步观察jsx转化">第一步：观察jsx转化</h1>
+<p>一个简单的React例子如下</p>
+<pre><code class="language-javascript">const element = &lt;h1 title=&quot;foo&quot;&gt;Hello&lt;/h1&gt;
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>jsx文件中的jsx语法会被@babel/preset-react插件所转译，模板会被转译成React.createElement包裹的对象形式</p>
+<pre><code class="language-javascript">const element = React.createElement(&quot;h1&quot;, { title: &quot;foo&quot; }, &quot;Hello&quot;)
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>然后React.createElement又会根据传入的对象形式，得到真正的React虚拟DOM</p>
+<pre><code class="language-javascript">const element = {
+    type: &quot;h1&quot;,
+    props: {
+        title: &quot;foo&quot;,
+        children: &quot;Hello&quot;
+    }
+}
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>最后虚拟dom将被ReactDOM转化为真实dom然后挂载到container上。</p>
+<h1 id="第二步实现reactcreateelement">第二步：实现React.createElement</h1>
+<p>Hello所在的位置可能是文本节点，也可能是其他子节点，观察后可以发现createElement其实就是参数到虚拟DOM的转化</p>
+<pre><code class="language-javascript">// 简易的createElement
+function createElement (type, props, children) {
+    return {
+        type,
+        props: {
+            ...props,
+            children: children.map(child =&gt;
+                typeof child === 'object' ? child : createElement(child)
+            )
+        }
+    }
+}
+</code></pre>
+<h1 id="第三步实现一个reactdomrender函数">第三步：实现一个ReactDOM.render函数</h1>
+<p>得到虚拟dom之后，我们还可以继续实现一个简易的React.render函数</p>
+<pre><code class="language-javascript">function render (element, container) {
+    const dom = dom.type === &quot;TEXT_ELEMENT&quot;
+        ? document.createTextNode(&quot;&quot;) : document.createElement(element.type)
+    const isProperty = key =&gt; key !== &quot;children&quot;
+    Object.keys(element.props).filter(isProperty).forEach(key =&gt; {
+        dom[key] = element[key]
+    })
+
+    if (element.props &amp;&amp; element.props.children) {
+        element.props.children.forEach(child = &gt; render(child, dom))
+    }
+
+    container.appendChild(dom)
+}
+</code></pre>
+<p>通过以上三步，已经可以实现一个最小的React功能，将jsx渲染到页面上。</p>
+<h1 id="第四步concurrent-mode并发模式">第四步：Concurrent Mode（并发模式）</h1>
+<p>在前面三步，我们的dom元素的构建，appendChild方法的执行都是同步的，如果dom树规模过大，构建的过程会造成js主线程的阻塞，从而可能影响页面input用户的输入，或者动画的执行等高优先级任务，所以我们需要将任务拆分，做到不影响主线程其他任务的执行</p>
+<pre><code class="language-javascript">let nextUnitOfWork = null
+
+function workLoop (deadline) {
+    let shouldYeild = false
+    while (nextUnitOfWork &amp;&amp; !shouldYeild) {
+        // 如果有下一个任务而且不需要等待主线程时间片空余，执行该任务，并且通过preformUnitOfWork返回下一个任务
+        nextUnitOfWork = preformUnitOfWork(
+            nextUnitOfWork
+        )
+        // deadline.timeRemaining()返回一个时间DOMHighResTimeStamp, 并且是浮点类型的数值，它用来表示当前闲置周期的预估剩余毫秒数，如果剩余时间小于1则不再有空闲时间，当前任务进入阻塞态
+        shouldYeild = deadline.timeRemaining() &lt; 1
+    }
+    // 再次执行requestIdleCallback方法，进入下一轮渲染
+    requestIdleCallback(workLoop)
+}
+
+requestIdleCallback(workLoop)
+</code></pre>
+<p>借助requestIdleCallback我们可以实现任务的拆分，在浏览器空闲时间进行低优先级任务的执行。</p>
+<h1 id="第五步fiber架构">第五步：fiber架构</h1>
+<p>为了对虚拟dom=&gt;真实dom的过程实现任务拆分，我们需要一种数据结构来表示我们的任务执行顺序，这也是fiber架构的除了requestIdleCallback之外的另一个基石<br>
+<img src="https://chentianyuan.github.io/post-images/1604308808453.png" alt="fiber数据结构" loading="lazy"><br>
+fiber架构创建了一个双向链表的数据结构，也可以叫fiber树，在首次任务执行时会使用深度优先遍历该树，每个节点生成一个链表节点（拥有child、parent、sibing三个指针），preformUnitOfWork通过该链表确定下一个nextUnitOfWork。遍历过程：从root节点开始，首先寻找有没有子节点，没有则寻找有没有sibling节点，如果也没有sibing节点，则回到上一个fiber节点，判断它是否存在sibing节点，直到指针回到root节点。<br>
+第四步我们还剩下preformUnitOfWork函数没有实现，他的任务主要有以下三点</p>
+<ul>
+<li>执行任务，创建元素并添加至parentDom</li>
+<li>为元素的children创建fiber树</li>
+<li>选择下一轮需要执行的单元任务<br>
+下面把以上逻辑抽象成代码</li>
+</ul>
+<pre><code class="language-javascript">// 1、从render函数中抽离出createDom函数，用于为当前任务创建真实dom
+function createDom(fiber) {
+  const dom =
+    fiber.type == &quot;TEXT_ELEMENT&quot;
+      ? document.createTextNode(&quot;&quot;)
+      : document.createElement(fiber.type)
+​
+  const isProperty = key =&gt; key !== &quot;children&quot;
+  Object.keys(fiber.props)
+    .filter(isProperty)
+    .forEach(name =&gt; {
+      dom[name] = fiber.props[name]
+    })
+​
+  return dom
+}
+// 2、render函数设置nextUnitOfWork为根节点的任务，render函数将在浏览器空闲时通过workLoop开始执行
+function render (element, container) { /* TODO: set next unit of work */ }
+// ↓↓↓↓↓↓↓↓↓↓↓
+function render (element, container) {
+    nextUnitOfWork = {
+        dom: container,
+        props: {
+            children: [element]
+        }
+    }
+}
+</code></pre>
+<p>然后，我们开始实现performUnitOfWork方法</p>
+<pre><code class="language-javascript">function performUnitOfWork (fiber) {
+    // 1、执行任务，创建元素并添加至parentDom
+    if (!fiber.dom) {
+        // 如果没有容器则根据fiber内容创建一个dom容器
+        fiber.dom = createDom(fiber)
+    }
+    if (fiber.parent) {
+        // 把当前节点插入父节点
+        fiber.parent.dom.appendChild(fiber.dom)
+    }
+    // 2、为元素的children创建fiber树
+    const elements = fiber.props.children
+    let index = 0
+    let prevSibling = null
+    while (index &lt; element.length) {
+        // 先创建子元素
+        const element = elements[index]
+        const newFiber = {
+            type: element.type,
+            props: element.props,
+            parent: fiber,
+            dom: null
+        }
+        if (index === 0) {
+            // 第一个子元素即为当前fiber的子节点
+            fiber.child = newFiber
+        } else {
+            // 第二个子元素通过sibling指针与上一个节点互为兄弟节点
+            prevSibling.sibling = newFiber
+        }
+        // 记录上一个fiber节点
+        prevSibling = newFiber
+        index++
+    }
+    // 3、寻找下一个工作单元
+    // 如果有子节点，直接返回字节点作为下一个工作单元
+    if (fiber.child) return fiber.child
+    let nextFiber = fiber
+    while (nextFiber) {
+        // 如果有兄弟节点，则返回兄弟节点作为下一个工作单元
+        if (nextFiber.sibling) return nextFiber.sibling
+        // 否则向上查询，查找父节点的是否有兄弟节点
+        nextFiber = nextFiber.parent
+    }
+}
+</code></pre>
+<p>以上我们已经实现了一个简易版的不阻塞主线程高优先级任务的fiber架构。</p>
+<h1 id="第六步render-and-commit-phases-提交渲染阶段">第六步：Render and Commit Phases （提交渲染阶段）</h1>
+<p>上面的实现还存在一些问题，我们的fiber架构为了不阻塞页面渲染将创建和appendChild分解成了子任务，当我们出发渲染时，页面会出现dom元素一点一点更新的情况，导致用户看到的不是一个完整的渲染后的页面，而是看到页面一点一点地发生变更。<br>
+因此，我们需要移除<code>fiber.parent.dom.appendChild(fiber.dom)</code>这个步骤，把这个任务进行一个收集，最后一次性执行。</p>
+<pre><code class="language-javascript">function render (element, container) {
+    // 记录fiber root节点，也就是我们的fiber tree
+    wipRoot = {
+        dom: container,
+        props: {
+            children: [element]
+        },
+    }
+    nextUnitOfWork = wipRoot
+}
+let wipRoot = null
+
+function workLoop (deadline) {
+    // 当前没有剩余的需要执行的子任务时，执行commit，把真实dom渲染到页面上
+    if (!nextUnitOfWork &amp;&amp; wipRoot) {
+        commitRoot()
+    }
+}
+
+// 提交
+function commitRoot () {
+    commitWork(wipRoot.child)
+    // 防止内存泄漏
+    wipRoot = null
+}
+
+// real commit
+function commitWork (fiber) {
+    if (!fiber) return
+    const domParent = fiber.parent.dom
+    domParent.appendChild(fiber.dom)
+    // 递归执行appendChild
+    commitWork(fiber.child)
+    commitWork(fiber.sibling)
+}
+</code></pre>
+<p>现在，我们把所有的appendChild操作从performUnitOfWork中进行了抽离，在完整的fiber树构建完毕之后，递归执行commitWork进行append操作。</p>
+<h1 id="第七步reconciliation调和阶段">第七步：Reconciliation（调和阶段）</h1>
+<p>到目前为止，我们仅完成了数据渲染到页面的整体结构，当我们的数据发生变化，删除或新增或修改元素，我们需要对更新后的fiber tree和之前的fiber tree进行比对，然后同步到页面上。</p>
+<pre><code class="language-javascript">function commitRoot () {
+    deletions.forEach(commitWork)
+    commitWork(wipRoot.child)
+    currentRoot = vipRoot
+    wipRoot.child = null
+}
+function render (element, container) {
+    wipRoot = {
+        dom: container,
+        props: {
+            children: [element]
+        },
+        // 记录上一次commit的fiber树
+        alternate: currentRoot
+    }
+    deletions = []
+}
+let currentRoot = null
+let deletions = null
+function performUnitOfWork (fiber) {
+    // ...
+    const elements = fiber.props.children
+    reconcileChildren(fiber, elements)
+}
+
+// 从performUnitOfWork中抽离深度优先遍历的逻辑，从直接创建变成比较
+function recpmcileChildren (wipFiber, elements) {
+    let index = 0
+    let oldFiber = wipFiber.alternate &amp;&amp; wipFiber.alternate.child
+    let prevSibing = null
+    // 如果有oldFiber，要继续进行比较操作，删除原节点
+    while (index &lt; elements.length || oldFiber !== null) {
+        const element = elements[index]
+        let newFiber = null
+        // compare here
+        const sameType = oldFiber &amp;&amp; element &amp;&amp; element.type == oldFiber.type
+        if (sameType) {
+            // update the node
+            newFiber = {
+                type: oldFiber.type,
+                props: element.props, // 相同类型的节点取最新的props
+                dom: oldFiber.dom,
+                parent: wipFiber,  // 父节点被wipFiber所存储
+                alternate: oldFiber, // 继续使用上次构建的Fiber节点
+                effectaTag: 'UPDATE' // 标记update
+            }
+        }
+        if (element &amp;&amp; !sameType) {
+            // add this node
+            newFiber = {
+                type: element.type, // 更新节点类型
+                props: element.props, // 取最新节点的props
+                dom: null,
+                parent: wipFiber, 
+                alternate: null,
+                effectTag: 'PLACEMENT'
+            }
+        }
+        if (oldFiber &amp;&amp; !sameType) {
+            // delete the oldFiber's node
+            oldFiber.effectTag = 'DELETION'
+            deletions.push(oldFiber)
+        }
+
+        if (oldFiber) {
+            oldFiber = oldFiber.sibling
+        }
+        if (index === 0) {
+            wipFiber.child = newFiber
+        } else {
+            wipFiber.sibling = newFiber
+        }
+    }
+}
+
+function commitWork (fiber) {
+    if (!fiber) return
+    const domParent = fiber.parent.dom
+    if (fiber.effectTag === &quot;PLACEMENT&quot; &amp;&amp; fiber.dom != null) {
+        dom.appendChild(fiber.dom)
+    } else if (fiber.effectTag === &quot;UPDATE&quot; &amp;&amp; fiber.dom != null) {
+        // 更新页面上的元素
+        updateDom(fiber.dom, fiber.alternate.props, fiber.props)
+    } else if (fiber.effectTag === &quot;DELETION&quot;) {
+        domParent.removeChild(fiber.dom)
+    }
+    commitWork(fiber.child)
+    commitWork(fiber.sibling)
+}
+
+const isEvent = key =&gt; key.startWith('on')
+const isProperty = key =&gt; key !== &quot;children&quot; &amp;&amp; !isEvent(key)
+const isNew = (prev, next) =&gt; key =&gt; prev[key] !== next[key]
+const isGone = (prev, next) =&gt; key =&gt; !(key in next)
+function updateDom (dom, prevProps, nextProps) {
+    // Remove old or changed event listeners
+    Object.keys(prevProps)
+        .filter(isEvent)
+        .filter(key =&gt; !(key in nextProps) || isNew(prevProps, nextProps)(key))
+        .forEach(name =&gt; {
+            const eventType = name.toLowerCase().substring(2)
+            dom.removeEventListener(eventType, prevProps[name])
+        })
+    // Remove old properties
+    Object.keys(prevProps)
+        .filter(isProperty)
+        .filter(isGone(prevProps, nextProps))
+        .forEach(name =&gt; {
+            dom[name] = &quot;&quot;
+        })
+    // Set or update new properties
+    Object.keys(nextProps)
+        .filter(isProperty)
+        .filter(isNew(prevProps, nextProps))
+        .forEach(name =&gt; {
+            dom[name] = nextProps[name]
+        })
+    // Add event listeners
+    Object.keys(nextProps)
+        .filter(isEvent)
+        .filter(isNew(prevProps, nextProps))
+        .forEach(name =&gt; {
+            const eventType = name.toLowerCase().substring(2)
+            dom.addEventListener(eventType, nextProps[name])
+        })
+}
+</code></pre>
+<h1 id="第七步支持函数式组件function-components">第七步：支持函数式组件（Function Components）</h1>
+<pre><code class="language-javascript">function App (props) {
+    return &lt;h1&gt;Hi { props.name }&lt;/h1&gt;
+}
+const element = &lt;App name=&quot;foo&quot;&gt;
+const container = document.getElementById(&quot;root&quot;)
+ReactDOM.render(element, container)
+</code></pre>
+<p>当我们的组件不再是标签式jsx，而是函数式组件时，我们将其视为一种特殊的type类型，然后对划分任务阶段的performUnitOfWork函数进行改造</p>
+<pre><code class="language-javascript">function performUnitOfWork (fiber) {
+    const isFunctionComponent = fiber.type instanceof Function
+    if (isFunctionComponent) {
+        updateFunctionComponent(fiber)
+    } else {
+        updateHostComponent(fiber)
+    }
+    // ...
+    function updateFunctionComponent (fiber) {
+        // 执行函数，作为当前fiber节点的一个children属性，进入调和阶段
+        const children = [fiber.type(fiber.props)]
+        reconcileChildren(fiber, children)
+    }
+    function updateHostComponent (fiber) {/* 非函数式组件，交由调和函数，标记元素修改状态 */}
+}
+
+function commitWork (fiber) {
+    // ...
+    let domParentFiber = fiber.parent
+    while (!domParentFiber.dom) {
+        // 针对函数式组件，没有自身的dom时，将其要append的dom元素设为父元素的dom
+        domParentFiber = domParentFiber.parent
+    }
+    const domParent = domParentFiber.dom
+    // ...
+    if (fiber.effectTag === &quot;DELETION&quot;) {
+        commitDeletion(fiber, domParent)
+    }
+
+    function commitDeletion (fiber, domParent) {
+        if (fiber.dom) {
+            domParent.removeChild(fiber.dom)
+        } else {
+            commitDeletion(fiber.child, domParent)
+        }
+    }
+}
+</code></pre>
+<h1 id="第八步支持react-hooks">第八步：支持react hooks</h1>
+<p>在函数组件中使用hooks，此处实现一个最简易的useState hooks</p>
+<pre><code class="language-javascript">// 首先初始化一些变量用于增强我们的fiber架构
+let wipFiber = null // record prev function fiber
+let hookIndex = null //
+function updateFunctionComponent (fiber) {
+    wipFiber = fiber
+    hookIndex = 0
+    wipFiber.hooks = []
+}
+
+function useState (initial) {
+    const oldHook = 
+        wipFiber.alternate &amp;&amp;
+        wipFiber.alternate.hooks &amp;&amp;
+        wipFiber.alternate.hooks[hookIndex]
+    const hook = {
+        state: oldHook ? oldHook.state : initial,
+        queue: []
+    }
+    const action = oldHook ? oldHook.queue : []
+    actions.forEach(action =&gt; {
+        hook.state = action(hook.state)
+    })
+    // 首次执行setState时，react会将执行的action推入hook,queue
+    // 当我们对函数组件进行fiber任务执行阶段时，action会从oldHook.queue中取出，并一个一个执行，并且更新到hook.state上，此时函数组件拿到的就是最新的state了
+    const setState = action =&gt; {
+        hook.queue.push(action)
+        wipRoot = {
+            dom: currentRoot.dom,
+            props: currentRoot.props,
+            alternate: currentRoot
+        }
+        nextUnitOfWork = wipRoot
+        // hook重新创建
+        deletions = []
+    }
+    wipFiber.hooks.push(hook)
+    hookIndex++
+    return [hook.state, setState]
+}
+</code></pre>
+<h1 id="总结">总结</h1>
+<p>实现一个简易的react步骤</p>
+<ul>
+<li>通过createElement实现jsx的转化</li>
+<li>通过createElement转化得出的虚拟dom，递归实现ReacrDOM.render函数</li>
+<li>通过requestIdleCallback实现任务的分段执行</li>
+<li>因为直接分段的形式会使得用户看到不完整的页面。通过fiber架构，双向特殊链表，深度优先遍历，实现页面dom结构创建的分层和缓存，最后一次性递归append到页面</li>
+<li>调和阶段对比oldFiber和newFiber的不同，实现新增，修改，删除三种页面常见的结构变化操作</li>
+<li>支持函数式组件</li>
+<li>支持建议的hooks</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[react学习第三天]]></title>
+        <id>https://chentianyuan.github.io/post/react-xue-xi-di-san-tian/</id>
+        <link href="https://chentianyuan.github.io/post/react-xue-xi-di-san-tian/">
+        </link>
+        <updated>2020-10-26T08:44:28.000Z</updated>
+        <summary type="html"><![CDATA[<p>react-router &amp;&amp; react hooks</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>react-router &amp;&amp; react hooks</p>
+<!-- more -->
+<h1 id="一-为什么要使用hooks">一、为什么要使用hooks？</h1>
+<p>1、无需在class组件中管理this，组件更轻量<br>
+2、在一个函数中聚合</p>
+<h1 id="二-内置的hooks">二、内置的hooks</h1>
+<p>React提供的Hooks，仅允许在函数式组件中使用。</p>
+<h5 id="usestate">useState</h5>
+<p>useState接收state的默认值，返回该state和一个仅用于修改该state的函数。</p>
+<h5 id="useeffect">useEffect</h5>
+<p>useEffect包含了React的ComponentDidMounted，ComponentShouldUpdate等执行副作用函数的钩子，useEffect返回的函数会在渲染内容销毁时被触发。同事useEffect可以接收第二个参数，类似于vue的watch函数，当且仅当参数二发生变化时才会执行副作用函数。</p>
+<h5 id="usecontext">useContext</h5>
+<p>useContext接收一个context为参数，返回当前context注入的值，前提是在父级组件已经使用<code>&lt;Context.Provider&gt;</code> 包裹子组件，此时的useContext效果相当于之前使用context时的静态声明和this.context，useContext一方面提供了context上的值，另一方面标明了当前组件对context的依赖情况，当context内的属性发生变化时，即触发该组件的重渲染。（当某个值被多个组件所依赖，context可以提升我们组件的渲染性能）</p>
+<h5 id="usecallback">useCallback</h5>
+<pre><code class="language-javascript">function cacheEffectFn (EffectFn, deps = []) {
+    // 第二个参数代表依赖数组，如果依赖数组为空，则代表第一个入参将在组件内被永久缓存
+    return useCallBack(EffectFn, deps)
+}
+</code></pre>
+<p>由于函数式组件在每次渲染时都会重新执行，在函数中正常声明的函数在渲染的时候每次都会被重新创建，当我们有节流函数保存了timer的时候，此时如果有其他state发生变化，重新触发函数组件的执行，那么之前的timer将不会影响这次重新创建的timer，因此，我们需要useCallback或者useRef来对我们的节流函数进行缓存。</p>
+<h5 id="usememo">useMemo</h5>
+<p>useMemo相比于useCallback的区别在于，useCallback是根据依赖（deps）缓存第一个入参（callback）的。useMemo是根据依赖（deps）缓存第一个入参（callback）的返回值的，例如</p>
+<pre><code class="language-javascript">// 此时calcValue内的函数只会在首次渲染时或者依赖项count被改变时执行
+// 节省了每次渲染时的内存消耗
+const calcValue = React.useMemo(() =&gt; {
+    return Array(10000).fill('').map(v =&gt; /* 一些大量的计算 */v)
+}, [count])
+</code></pre>
+<h5 id="useref">useRef</h5>
+<p>useRef返回一个可变的ref对象，其.current属性被初始化为传入的参数，返回的ref对象在组件的整个生命周期内保持不变。</p>
+<pre><code class="language-javascript">const UseUseRef = () =&gt; {
+    const inputElement = useRef(null)
+    const focuHandle = () =&gt; {
+        if (inputElement.current) {
+            inputElement.current.focus()
+        }
+    }
+    return (
+        &lt;div className=&quot;content&quot;&gt;
+            &lt;input ref={ inputElement }  placeholder=&quot;useRef API&quot;/&gt;
+            &lt;button onClick={ focuHandle }&gt;&lt;/button&gt;
+        &lt;/div&gt;
+    )
+}
+</code></pre>
+<p>相比于createRef(null)，useRef(null)将缓存ref.current所指向的dom对象，我们还可以用来缓存像函数或者大的堆变量以节省内存消耗。</p>
+<h1 id="三-react-router">三、react-router</h1>
+<p>react-router-dom是在react-router的基础上进行的封装，下面列举一些常见的路由组件</p>
+<pre><code class="language-html">&lt;!-- 提供history路由，操作history api控制路由变化，同时根据包裹的路由情况渲染对应路由 --&gt;
+&lt;BrowserRouter /&gt;
+&lt;!-- 最常用的路由组件 --&gt;
+&lt;Route&gt;
+&lt;!-- 用于装饰组件，装饰后组件内部可以在this.props内获取到当前的路由信息 --&gt;
+&lt;withRouter&gt;
+&lt;!-- Link\NavLink导航 --&gt;
+&lt;Link to='/'&gt;
+&lt;NavLink to='/'&gt;
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[react学习第二天]]></title>
         <id>https://chentianyuan.github.io/post/react-xue-xi-di-er-tian/</id>
@@ -1158,832 +1675,6 @@ npm install --save @babel/runtime
 <p>plugin-transform-runtime可以和polyfill或者runtime配合，它是用来分析文件需要的垫片，自动从polyfill或者runtime中获取并加入的<br>
 @babel/runtime 用来在生产环境中提供垫片<br>
 撒花✿✿ヽ(°▽°)ノ✿</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[一天一道算法题系列（3.9-4.9）]]></title>
-        <id>https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/</id>
-        <link href="https://chentianyuan.github.io/post/yi-tian-yi-dao-suan-fa-ti-xi-lie/">
-        </link>
-        <updated>2020-03-09T15:02:13.000Z</updated>
-        <summary type="html"><![CDATA[<p>自知算法薄弱，做不到一步登天，那就脚踏实地，聚沙成塔。<br>
-不积跬步无以至千里，不积小流无以成江河。</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>自知算法薄弱，做不到一步登天，那就脚踏实地，聚沙成塔。<br>
-不积跬步无以至千里，不积小流无以成江河。</p>
-<!-- more -->
-<h1 id="20200309">20200309</h1>
-<p><strong>题型：树的广度优先遍历</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcokigrjddj31b00pk755.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
- */
-var levelOrderBottom = function(root) {
-  if (!root) return []
-  let result = []
-  let depth = 0
-  let queue = []
-  queue.push(root)
-  while (queue.length) {
-    result[depth] = []
-    let length = queue.length
-    for (let i = 0; i &lt; length; i++) {
-      queue[i].val !== null &amp;&amp; result[depth].push(queue[i].val)
-      if (queue[i].left) queue.push(queue[i].left)
-      if (queue[i].right) queue.push(queue[i].right)
-    }
-    queue.splice(0, length)
-    depth++
-  }
-  return result.reverse()
-};
-</code></pre>
-<p>思路：广度优先遍历需要借助队列，每一层结束了就splice掉，一层一层向下，最后翻转一下就好。<br>
-时间复杂度：O(n)</p>
-<h1 id="20200310">20200310</h1>
-<p><strong>题型：树的深度优先遍历</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcp7mcpe93j31bi0jwdgo.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
- */
-var diameterOfBinaryTree = function(root) {
-  if (!root) return 0
-  let result = 0
-  function getMax (root) {
-    result = Math.max(result, getDeep(root.left) + getDeep(root.right))
-    if (root.left) getMax(root.left)
-    if (root.right) getMax(root.right)
-    return result
-  }
-  function getDeep (node, depth = 0) {
-    if (node) {
-      depth++
-      return Math.max(getDeep(node.left, depth), getDeep(node.right, depth))
-    } else {
-      return depth
-    }
-  }
-  return getMax(root)
-};
-</code></pre>
-<p>思路：方向是对的，深度优先遍历，但是这边有个坑，不能直接两边最大深度相加，因为这个直径可能根本就不经过根节点，所以要把每个节点都当做根节点进行一次递归求两边最大深度与当前result的大值。</p>
-<h1 id="20200311">20200311</h1>
-<p><strong>题型：数学、双向链表</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcqeh1o63nj312q0u0763.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} A
- * @return {boolean}
- */
-var canThreePartsEqualSum = function(A) {
-  let sum = getSum(A)
-  let left = []
-  let right = []
-  if (sum % 3 !== 0) return false
-  for (let i = 0; i &lt; A.length - 1; i++) {
-    left.push(A[i])
-    if (getSum(left) === sum / 3) {
-      for (let j = A.length - 1; j &gt; i + 1; j--) {
-        right.push(A[j])
-        if (getSum(right) === sum / 3) {
-          return true
-        }
-      }
-      return false
-    }
-  }
-  return false
-};
-
-function getSum (arr) {
-  return arr.reduce((a, b) =&gt; (a + b), 0)
-}
-</code></pre>
-<p>思路：最重要的是，数组可以分成三段，每段和相同，那么他们一定等于<code>getSum(A) / 3</code>，剩下的就是两边往中间遍历而已。</p>
-<h1 id="20200312">20200312</h1>
-<p>** 题型：数学 **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcrld0bogcj314y0u0dh9.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {string} str1
- * @param {string} str2
- * @return {string}
- */
-var gcdOfStrings = function(str1, str2) {
-  if (str1 === str2) return str1
-  if (str1.length &lt; str2.length) {
-    let temp = str2
-    str2 = str1
-    str1 = temp
-  }
-  let result = ''
-  for (let i = 1; i &lt;= str2.length; i++) {
-    let temp = str2.slice(0, i)
-    if (str1.split(temp).join('') === '' &amp;&amp; str2.split(temp).join('') === '') {
-      result = temp
-    }
-  }
-  return result
-};
-</code></pre>
-<p>思路：1、最简单的枚举，从长度1到较小字符串长度一个一个试，2、欧几里得公式，求最大公约数，然后从较小的字符串里取这个长度</p>
-<h1 id="20200313">20200313</h1>
-<p>** 题型：哈希表 **<br>
-169. 多数元素</p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- * @return {number}
- */
-var majorityElement = function(nums) {
-  let timeMap = new Map()
-  if (nums.length === 1) return nums[0]
-  for (let i = 0; i &lt; nums.length; i++) {
-    if (timeMap.has(nums[i])) {
-      if (timeMap.get(nums[i]) + 1 &gt; Math.floor(nums.length / 2)) {
-        return nums[i]
-      }
-      timeMap.set(nums[i], timeMap.get(nums[i]) + 1)
-    } else {
-      timeMap.set(nums[i], 1)
-    }
-  }
-};
-</code></pre>
-<p>思路：hashmap存储元素出现的次数，比较简单</p>
-<h1 id="20200314">20200314</h1>
-<p>** 题型：动态规划 **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gctu5hfdfrj31bq0jkmya.jpg" alt="最长上升子序列" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- * @return {number}
- */
-var lengthOfLIS = function(nums) {
-  let maxUpList = []
-  for (let i = 0; i  &lt; nums.length; i++) {
-    if (!maxUpList.length) {
-      maxUpList.push(nums[i])
-    } else if (maxUpList.slice(-1) &lt; nums[i]) {
-      maxUpList.push(nums[i])
-    } else {
-      let index = maxUpList.findIndex(item =&gt; item &gt;= nums[i])
-      maxUpList[index] = nums[i]
-    }
-  }
-  return maxUpList.length
-};
-
-// 动态规划版本
-var lengthOfLIS = function(nums) {
-  let dp = new Array(nums.length).fill(1)
-  for (let i = 1; i &lt; nums.length; i++) {
-    for (let j = 0; j &lt; i; j++) {
-      if (nums[j] &lt; nums[i]) {
-        // 状态转移方程
-        dp[i] = Math.max(dp[j] + 1, dp[i])
-      }
-    }
-  }
-  return dp.reduce((pre, cur) =&gt; Math.max(pre, cur), 0)
-};
-</code></pre>
-<p>思路：最开始的思路就是对整个数组进行一次遍历，往后插入大值，小值可以替换前面的值，因为遍历还是线性的，所以时间复杂度还是O(n^2)<br>
-从动态规划的角度来看，dp[j] = dp[i] + 1，只要满足j位置的值大于前面i位置的值，那么就可以和i位置的最长上升子序列组成一个更长的最长上升子序列，因为每次到j时都得变量一遍前面i个位置的值，所以时间复杂度还是O(n^2)，使用的数组长度小于等于原数组长度，空间复杂度O(n)</p>
-<h1 id="20200316">20200316</h1>
-<p>** 题型：空间换取时间 **<br>
-<a href="https://leetcode-cn.com/problems/compress-string-lcci/">试题 01.06. 字符串压缩</a><br>
-思路：用两个组分别存储重复字符和重复字符的长度，最后进行一次比较即可</p>
-<h1 id="20200317">20200317</h1>
-<p>** 题型：哈希表计数 **<br>
-<a href="https://leetcode-cn.com/problems/find-words-that-can-be-formed-by-characters/">1160. 拼写单词</a></p>
-<pre><code class="language-javascript">var countCharacters = function(words, chars) {
-  let map = {}
-  for (let i = 0; i &lt; chars.length; i++) {
-    if (!map[chars[i]]) {
-      map[chars[i]] = 1
-    } else {
-      map[chars[i]] = map[chars[i]] + 1
-    }
-  }
-  return words.reduce((result, cur) =&gt; {
-    let word = {}
-    for (let i = 0; i &lt; cur.length; i++) {
-      if (word[cur[i]]) {
-        word[cur[i]] = word[cur[i]] + 1
-      } else {
-        word[cur[i]] = 1
-      }
-    }
-    if (Object.keys(word).every(key =&gt; map[key] &gt;= word[key])) {
-      return result + cur.length
-    } else {
-      return result
-    }
-  }, 0)
-};
-</code></pre>
-<h1 id="20200318">20200318</h1>
-<p>** 题型：数学 **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gcyh1i751cj312q0u0761.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} rec1
- * @param {number[]} rec2
- * @return {boolean}
- */
-var isRectangleOverlap = function(rec1, rec2) {
-  let [x1, y1, x2, y2] = rec1
-  let [x3, y3, x4, y4] = rec2
-  return hasjiaoji([x1, x2], [x3, x4]) &amp;&amp; hasjiaoji([y1, y2], [y3, y4])
-};
-
-function hasjiaoji (arr1, arr2) {
-  let da1 = Math.max(arr1[0], arr1[1])
-  let da2 = Math.max(arr2[0], arr2[1])
-  let xiao1 = Math.min(arr1[0], arr1[1])
-  let xiao2 = Math.min(arr2[0], arr2[1])
-  if (
-    da1 &lt;= xiao2 || xiao1 &gt;= da2
-  ) {
-    return false
-  } else {
-    return true
-  }
-}
-</code></pre>
-<p>思路：看x轴和y轴是否两两相交，如果是则必有面积重叠</p>
-<h1 id="20200319">20200319</h1>
-<p>** 题型：哈希表 || Set **<br>
-<a href="https://leetcode-cn.com/problems/longest-palindrome/">409. 最长回文串</a></p>
-<pre><code class="language-javascript">/**
- * @param {string} s
- * @return {number}
- */
-var longestPalindrome = function(s) {
-  let map = {}
-  for (let i = 0; i &lt; s.length; i++) {
-    if (map[s[i]]) {
-      map[s[i]] = map[s[i]] + 1
-    } else {
-      map[s[i]] = 1
-    }
-  }
-  let hasSingle = false
-  return Object.values(map).reduce((result, cur) =&gt; {
-    if (cur % 2 !== 0 &amp;&amp; !hasSingle) {
-      hasSingle = true
-    }
-    return result + (Math.floor(cur / 2) * 2)
-  }, 0) + (hasSingle ? 1 : 0)
-};
-</code></pre>
-<p>思路：<br>
-1、能组成回文则出现偶数次，若有一个字符出现奇数次，回文长度加一<br>
-2、使用Set数据结构，set.has，则长度加2，并set.delete该值，若不存在则set.add</p>
-<h1 id="20200322前两天太忙了今天补上之后继续因为代码可以到力扣看这边简单题只写思路和截图">20200322（前两天太忙了，今天补上之后继续，因为代码可以到力扣看，这边简单题只写思路和截图）</h1>
-<p><strong>题型：hash表</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd31jfoh24j315g0rcabe.jpg" alt="" loading="lazy"><br>
-思路：先排序，重复出现的元素仅需要比上一个出现的非重复元素大1即可，累加相差的值就是要move的值<br>
-<strong>题型：数学</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd33erq644j315a0p475p.jpg" alt="" loading="lazy"><br>
-思路：非常硬核的一道题，暴力求解会超时。由于数组中最大的值为1e9也就是10的9次方，因为2^30&lt; 10e9 &lt;2^31也就是说至少需要31位2进制才可以表示这个二进制数，通过num.toString(2)转为二进制之后，遍历每一位上的0和1的个数并统计，当前位汉明距离（任意两个数二进制当前位不同的数量即01组合的个数）等于count[0]*count[1]个，最后31位统一累加，时间复杂度是O(n)，空间复杂度O(1)。</p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- * @return {number}
- */
-var totalHammingDistance = function(nums) {
-  let result = 0
-  let maxBit = 31 // 最大32位
-  nums = nums.map(num =&gt; num.toString(2))
-  for (let i = 0; i &lt; maxBit; i++) {
-    let count = {
-      '0': 0,
-      '1': 0
-    }
-    for (let j = 0; j &lt; nums.length; j++) {
-      let cur = nums[j]
-      count[+cur[cur.length - i - 1] ? '1' : '0']++
-    }
-    result += count[0] * count[1]
-  }
-  return result
-};
-</code></pre>
-<h1 id="20200323">20200323</h1>
-<p><strong>题型：链表</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd4aa3oh6bj31410u0jt8.jpg" alt="" loading="lazy"><br>
-思路：<br>
-1、单指针两次遍历，第一次记录长度，第二次访问到中间长度时返回节点<br>
-2、快慢指针，快指针一次移动两格，慢指针一次移动一格，快指针到达链表尾部时，慢指针也就在中间了~</p>
-<h1 id="20200324">20200324</h1>
-<p>** 题型：动态规划**<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd5eehkstfj313b0u0jt9.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- * @return {number}
- */
-var massage = function(nums) {
-  let dp = []
-  dp[0] = nums[0]
-  dp[1] = Math.max(nums[1], nums[0])
-  for (let i = 2; i &lt; nums.length; i++) {
-    dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i])
-  }
-  return dp[nums.length - 1] || 0
-};
-</code></pre>
-<p>每次做到动态规划的题总是知道这道题要用动态规划，可是就是做不出来。。<br>
-思路：<code>dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i])</code>。每次中间需要间隔，三个一组，但是不是0,3到3,6，而是0,3到1,4，像滑动窗口一样划过去，计算每个点位的最大值，最后返回dp[i]即可。</p>
-<h1 id="20200325">20200325</h1>
-<p><strong>题型：数学</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd6ncibrylj30u00vg41h.jpg" alt="" loading="lazy"><br>
-思路：横向，竖向分别遍历一次，按条件捕获即可，时间复杂度O(n^2)。</p>
-<h1 id="20200326">20200326</h1>
-<p><strong>题型：动态规划</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd7rocy4lwj315c0q00to.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- * @return {number}
- */
-var maxSubArray = function(nums) {
-  let dp = []
-  let max = nums[0]
-  dp[0] = nums[0]
-  for (let i = 1; i &lt; nums.length; i++) {
-    if (dp[i - 1] &lt; 0) {
-      dp[i] = nums[i]
-    } else {
-      dp[i] = dp[i - 1] + nums[i]
-    }
-    max = Math.max(dp[i], max)
-  }
-  return max
-};
-</code></pre>
-<p>思路：动态规划，dp[i - 1]为负时相当于前面的总和已经是负收益，dp[i]直接等于当前值即可，转移方程是 -&gt; dp[i] = dp[i - 1]是负数 ？nums[i] : dp[i - 1] + nums[i]。</p>
-<h1 id="20200326-2">20200326</h1>
-<p><strong>题型：最小公约数</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gd8x3w716qj30u30u0dhi.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} deck
- * @return {boolean}
- */
-var hasGroupsSizeX = function(deck) {
-  let arr = {}
-  for (let i = 0; i &lt; deck.length; i++) {
-    if (arr[deck[i]] !== void 0) {
-      arr[deck[i]] = arr[deck[i]] + 1
-    } else {
-      arr[deck[i]] = 1
-    }
-  }
-  let g = -1
-  for (let i = 0; i &lt; 10000; i++) {
-    if (arr[i]) {
-      if (g === -1) {
-        g = arr[i]
-      } else {
-        g = gcd(g, arr[i])
-      }
-    }
-  }
-  return g &gt;= 2
-};
-
-// 求最大公约数！谨记，如果x（余）为0，则最大公约数是上一次的x，这一次的y
-function gcd (x, y) {
-  return x === 0 ? y : gcd(y % x, x)
-}
-</code></pre>
-<p>思路：先记录所有数字出现的次数，再根据题意最大值不超过10000，求最小公约数，gcb公式（Greatest Common Divisor）要牢记！还有另一种思路，就是记录最大值，遍历到这个最大值最大公约数是否大于2。</p>
-<h1 id="20200327">20200327</h1>
-<p><strong>题型：动态规划</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdax9wbqysj314s0ksgmc.jpg" alt="" loading="lazy"><br>
-思路：<br>
-1、&gt;&gt; 符号在js里，如果是&gt;&gt;0相当于Math.floor取整，如果是&gt;&gt;1则表示将2进制位右移一位，并补位0<br>
-2、Array.from(arr, item =&gt; item + 1)，Array的第二个参数是一个回调，可以操作前面的类数组，并最后返回一个数组<br>
-3、最长回文子可以通过暴力枚举、反转字符串求公共子串、动态规划来做<br>
-动态规划：将i，j表示为i到j的字符串，值表示为是否是回文子串动态规划方程是<br>
-dp[i][j] = dp[i + 1][j - 1] &amp;&amp; s[i] === s[j]<br>
-true表示是回文串，反之不是</p>
-<h1 id="20200328">20200328</h1>
-<p><strong>题型：数学</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdb5vnmdv2j315g0mat9v.jpg" alt="" loading="lazy"><br>
-思路：1、正常思路，控制递增变量，取递增最大的那一次，时间复杂度O(n)，空间复杂度O(1)<br>
-2、动态规划，下一个数大于上一个数则 dp[i] = dp[i - 1] + 1 否则 dp[i] = 1</p>
-<h1 id="20200329">20200329</h1>
-<p><strong>题型：经典约瑟夫环</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdgigcuovbj315a0oadh0.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number} n
- * @param {number} m
- * @return {number}
- */
-var lastRemaining = function(n, m) {
-  if (m === 1) return n - 1
-  let arr = []
-  for (let i = 0; i &lt; n; i++) {
-    arr.push(i)
-  }
-  let idx = 0
-  while (arr.length !== 1) {
-    idx = (idx + m - 1) % arr.length
-    arr.splice(idx, 1)
-  }
-  return arr[0]
-}
-</code></pre>
-<p>思路：每次删除后，记录下当前的位置，下次再对数组长度求余，得到新的要删除的位置，勉强通过</p>
-<h1 id="20200330">20200330</h1>
-<p><strong>题型：分治</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gddjsv04n3j31580qcgmf.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- * @return {number[]}
- */
-var sortArray = function(nums) {
-  if (nums.length &lt;= 1) {
-    return nums
-  }
-  // 归并排序
-  let length = nums.length
-  let mid = (length / 2) &gt;&gt; 0
-  let left = nums.slice(0, mid)
-  let right = nums.slice(mid, length)
-  return merge(sortArray(left), sortArray(right))
-};
-
-function merge (left, right) {
-  let result = []
-  while (left.length &amp;&amp; right.length) {
-    if (left[0] &lt; right[0]) {
-      result.push(left.shift())
-    } else {
-      result.push(right.shift())
-    }
-  }
-  return result.concat(left).concat(right)
-}
-</code></pre>
-<p>思路：Array.sort本质上是快排，选择，归并的合集，根据数组长度来选择最佳的排序规则，做到这道题时想学习一下归并。归并排序采用的是分而治之的思想，将数组拆分成一个一个的小数组进行排序，然后将排序好的小数组再进行一次排序，长度为n的数组本质上仅需要log2n次拆分，时间复杂度为nlogn</p>
-<h1 id="20200331">20200331</h1>
-<p><strong>题型：栈</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdeoe7snr9j30yx0u0whl.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {string} seq
- * @return {number[]}
- */
-var maxDepthAfterSplit = function(seq) {
-  if (!seq.length) return []
-  let result = [0]
-  let A = [seq[0]]
-  let B = []
-  for (let i = 1; i &lt; seq.length; i++) {
-    // A.slice(-1)
-    if (seq[i] === ')') {
-      if (A.length &gt; B.length) {
-        A.length = A.length - 1
-        result.push(0)
-      } else {
-        B.length = B.length - 1
-        result.push(1)
-      }
-    } else {
-      if (A.length &gt; B.length) {
-        B.push(seq[i])
-        result.push(1)
-      } else {
-        A.push(seq[i])
-        result.push(0)
-      }
-    }
-  }
-  return result
-};
-</code></pre>
-<p>思路：保持AB组的深度一致，相差不超过1即可，可以找规律，也可以像我这样暴力破解，哈哈哈哈哈哈哈哈哈嗝，时间复杂度N，空间复杂度1</p>
-<h1 id="20200401">20200401</h1>
-<p>** 题型：数学 **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdfvup02njj30x20u0acu.jpg" alt="" loading="lazy"><br>
-思路：没什么好说的，按题意来，8个方向都取一次，时间复杂度O(n^2)，空间复杂度O(n)</p>
-<h1 id="20200402">20200402</h1>
-<p>** 题型：数学 **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdgieglimnj30uq0u0422.jpg" alt="" loading="lazy"><br>
-思路：耐心题，确认好函数边界，虚怀若谷，沉住气</p>
-<h1 id="20200403">20200403</h1>
-<p>** 题型：数学（木板效应） **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdi7b4d6cmj314y0okjs7.jpg" alt="" loading="lazy"><br>
-思路：根据木板效应，每一个能接的水取决于左右两边最短的那一块减去当前木板高度的值，暴力法求解，时间复杂度O(n^2)</p>
-<h1 id="20200404">20200404</h1>
-<p>** 题型：LFU算法 **<br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdjcz4hl7dj30u00wr40r.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">let LFUCache = class {
-    constructor(capacity) {
-        this.limit = capacity
-        this.cache = new Map()
-        this.freqMap = new Map()
-    }
-
-    get(key) {
-        let cache = this.cache
-        let r = -1
-        if (typeof cache[key] != &quot;undefined&quot;) {
-            let o = cache[key]
-            r = o.value
-            //更新频率记录
-            this.updateL(key, o)
-        }
-        return r
-    };
-
-    updateL(key, obj){
-        let freq = obj.freq;
-        let arr = this.freqMap[freq]
-        // 删除原频率记录
-        this.freqMap[freq].splice(arr.indexOf(key), 1)
-        // 清理
-        if (this.freqMap[freq].length == 0) delete this.freqMap[freq]
-        // 更新频率
-        freq = obj.freq = obj.freq + 1
-        if (!this.freqMap[freq]) this.freqMap[freq] = []
-        this.freqMap[freq].push(key)
-    }
-
-    put(key, value) {
-        let cache = this.cache
-        let limit = this.limit
-        let fmap = this.freqMap
-        if (limit &lt;= 0) return
-        if(typeof key==&quot;undefined&quot;||typeof value==&quot;undefined&quot;) throw new Error('key or value is undefined')
-        // 存在则直接更新
-        if (typeof cache[key] == &quot;undefined&quot;) {
-            // 获取频率 key
-            // 判断容量是否满
-            if (Object.keys(cache).length == limit) {
-                let fkeys = Object.keys(fmap)
-                let freq = fkeys[0]
-                // 获取key集合
-                let keys = fmap[freq]
-                // 淘汰首位
-                delete cache[keys.shift()]
-                // 清理
-                if (fmap[freq].length == 0) delete fmap[freq]
-            }
-            // 频率记录是否存在
-            if (!fmap[1]) fmap[1] = []
-            // 插入新值
-            fmap[1].push(key)
-            cache[key] = {
-                value: value,
-                freq: 1 // 默认的频率
-            }
-        } else {
-            cache[key].value = value
-            //更新频率记录
-            this.updateL(key, cache[key])
-        }
-    };
-};
-</code></pre>
-<p>思路：跟LRU不同，LRU是根据时间来清除最久未使用的数据，LFU是根据频率来清除最久未使用的数据，为了节省时间，这边需要两个map，一个cacheMap用来存储key对应key的val和freq频率，一个freqMap用来存储每一种freq频率对应的keyArr，以便在相同频率的情况下删除最前面的数据，更新map。（做的我自闭了</p>
-<h1 id="20200405">20200405</h1>
-<p><strong>题型： 排序</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdkfqwhd5vj30yo0r274y.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} arr
- * @param {number} k
- * @return {number[]}
- */
-var getLeastNumbers = function(arr, k) {
-  var sort = incorporateSort(arr)
-  return sort.slice(0, k)
-};
-
-var incorporateSort = function (arr) {
-  if (arr.length &lt;= 1) return arr
-  let mid = Math.floor(arr.length / 2)
-  let left = arr.slice(0, mid)
-  let right = arr.slice(mid)
-  return merge(incorporateSort(left), incorporateSort(right))
-}
-
-var merge = function (left, right) {
-  let result = []
-  while (left.length &amp;&amp; right.length) {
-    if (left[0] &lt; right[0]) {
-      result.push(left.shift())
-    } else {
-      result.push(right.shift())
-    }
-  }
-  return result.concat(left).concat(right)
-}
-</code></pre>
-<p>思路：<br>
-1、排序，我用了归并，分治的思想<br>
-2、（因为这里没有规定要按顺序返回）最小栈，维护一个栈，先将k个数推入栈内，然后从k+1个数开始遍历，如果它比顶部值要小（最小的k个数肯定会满足这个条件），那就插入栈的尾部，最后返回该栈元素</p>
-<h1 id="20200406">20200406</h1>
-<p><strong>题型：动态规划+缓存</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdlo2f0p7mj30z80ju0ti.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number[]} nums
- */
-var NumArray = function(nums) {
-  this.nums = nums
-  this.record = new Array(nums.length)
-  this.record[0] = nums[0]
-  for (let i = 1; i &lt; nums.length; i++) {
-    this.record[i] = this.nums[i] + this.record[i - 1]
-  }
-};
-
-/** 
- * @param {number} i 
- * @param {number} j
- * @return {number}
- */
-NumArray.prototype.sumRange = function(i, j) {
-  if (i === 0) return this.record[j]
-  return this.record[j] - this.record[i - 1]
-};
-</code></pre>
-<p>思路：刚开始想的就是动态规划，结果一做超时，想着用map来缓存求过的值，一做，还是超时，正确的思路是新建一个记录数组，每个位置为0到该位置的和，那么有sum(i, j) = record[j] - record[i - 1]成立，每次只要计算减法就好了，时间复杂度O(n)比动规O(n^2)效率高很多。</p>
-<h1 id="20200407">20200407</h1>
-<p><strong>题型：寻路算法、dfs、bfs</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdmslwmxf3j30q20tejsf.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number} m
- * @param {number} n
- * @param {number} k
- * @return {number}
- */
-var movingCount = function(m, n, k) {
-  let result = 0
-  let record = {}
-  let runner = function (a, b) {
-    if (a &gt;= m || b &gt;= n || a &lt; 0 || b &lt; 0) {
-      return
-    }
-    let sum = getSum(a) + getSum(b)
-    let axis = JSON.stringify([a, b])
-    if (sum &lt;= k &amp;&amp; !record[axis]) {
-      result++
-      record[axis] = true
-      runner(a + 1, b)
-      runner(a - 1, b)
-      runner(a, b + 1)
-      runner(a, b - 1)
-    }
-  }
-  runner(0, 0)
-  return result
-};
-
-function getSum (num) {
-  let res = 0
-  while (num &gt; 0) {
-    res += num % 10
-    num = Math.floor(num / 10)
-  }
-  return res
-}
-</code></pre>
-<p>思路：好题。题中只能上下左右移动因此可以将不满足条件的点想成砖块，同时对满足砖块的每个点做上下左右移动的操作，并记录到过的点位，可以计出总数。另外求和总数，每次除10求余数，然后除以10，继续取余数，得到位数和。</p>
-<h1 id="20200408">20200408</h1>
-<p><strong>题型：深度优先遍历</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdnwqsy70vj30wm0n0wez.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number} n
- * @return {string[]}
- */
-var generateParenthesis = function(n) {
-  let result = []
-  const dfs = function (str, leftNumber, rightNumber) {
-    if (str.length === n * 2) {
-      result.push(str)
-      return
-    }
-    if (rightNumber &lt; leftNumber) return
-    if (leftNumber === n) {
-      dfs(str + '(', leftNumber - 1, rightNumber)
-    } else {
-      leftNumber &gt; 0 &amp;&amp; dfs(str + '(', leftNumber - 1, rightNumber)
-      rightNumber &gt; 0 &amp;&amp; dfs(str + ')', leftNumber, rightNumber - 1)
-    }
-  }
-  dfs('', n, n)
-  return result
-};
-</code></pre>
-<p>思路：深度优先遍历，先全部左括弧，然后一个一个右括弧往上叠加，注意有效的括号左括弧的数量要始终大于等于右括弧的数量。最后返回所有结果。</p>
-<h1 id="20200409">20200409</h1>
-<p><strong>题型：位运算</strong><br>
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdnxbgkm2bj30w40q0zl3.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-javascript">/**
- * @param {number} num
- * @return {number[]}
- */
-var findClosedNumbers = function(num) {
-  let times = getOneTimes(num)
-  let min = -1
-  let max
-  let i = num
-  let j = num
-  while (!max) {
-    ++i
-    if (getOneTimes(i) === times) {
-      max = i
-    }
-  }
-  while (min === -1 &amp;&amp; j &gt; 0) {
-    --j
-    if (getOneTimes(j) === times) {
-      min = j
-    }
-  }
-  return [max, min]
-};
-
-function getOneTimes (num) {
-  let numT = Number(num).toString(2)
-  return numT.length - numT.split('1').join('').length
-}
-</code></pre>
-<p>思路： 暴力解法就是从num往两边移动，分别找到符合条件的最大最小的数。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[组件库设计思路]]></title>
-        <id>https://chentianyuan.github.io/post/zu-jian-ku-she-ji-si-lu/</id>
-        <link href="https://chentianyuan.github.io/post/zu-jian-ku-she-ji-si-lu/">
-        </link>
-        <updated>2020-02-24T06:22:23.000Z</updated>
-        <summary type="html"><![CDATA[<p>去年参与了部分公司的组件库建设，md-loader只是一部分，从全局的角度梳理一下整个组件库的设计流程</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>去年参与了部分公司的组件库建设，md-loader只是一部分，从全局的角度梳理一下整个组件库的设计流程</p>
-<!-- more -->
-<h1 id="1-文档的归属">1、文档的归属</h1>
-<p>一份优质的文档是一个成功的组件库的基础，element-ui的官网文档是经受了无数厂商的考验的，因此md-loader已经是很好的实践。另一个值得权衡的问题是，文档是新开一个项目还是就放在组件库的项目里？<br>
-如果放在项目里，组件库一大，项目会略显臃肿，并且每次跑项目都需要把组件进行重新编译，速度堪忧。而如果分离出一个新的项目，则享受不到开发时热更新的遍历，需要把打包文件频繁输出，才能实时看到组件的效果，而且另起一个工程也是有成本的，需要安装两次通用的依赖。<br>
-综上：从遍历性的角度来看，还是放在一个项目内会方便得多，除非你的目标是做一个大而美的业界组件库，而不是为了业务需要快速迭代的产物（然而没有资本支撑，估计也没人愿意做这么一套东西）</p>
-<h1 id="2-打包配置">2、打包配置</h1>
-<h3 id="21-按需打包配置">2.1 按需打包配置</h3>
-<p>为了按需加载引入，我们常用<code>babel-plugin-component</code>或<code>babel-plugin-syntax-dynamic-import</code>这两个babel插件来使得<code>import { WandUploader } from @weiyi/wand-ui</code>变成<code>import /node_modules/@weiyi/wand-ui/libaryName/uploader/index.js</code>+组件css引入（通用css会从libaryName下引入）来实现。因此我们要将每个组件作为单独入口打包出index.js和组件的css，组件css可以使用<code>MiniCssExtractPlugin</code>来实现拆分。另外，配置中需要外置化vue，否则vue会被打包进入组件bundle。</p>
-<pre><code class="language-javascript">externals: [
-    {
-        vue: {
-        root: 'Vue',
-        commonjs: 'vue',
-        commonjs2: 'vue',
-        amd: 'vue'
-        },
-        'vue-property-decorator': 'vue-property-decorator'
-    }
-]
-</code></pre>
-<h3 id="22-全量打包配置">2.2 全量打包配置</h3>
-<p>当我们全量引入某个vue组件库时，在入口处直接使用<code>Vue.use(WandUi)</code>来导入非常方便，因此，我们的全量打包入口文件也应当导出一个install函数，来支持这种插件式引入。</p>
-<pre><code class="language-javascript">export default {
-  install: (Vue: VueConstructor) =&gt; {
-    components.forEach(comp =&gt; {
-      if (comp.install) {
-          // 针对支持插件式调用的组件，还需要进行一次插件注册
-        Vue.use(comp as any)
-      } else {
-          // 全局组件注册
-        Vue.component((comp as any).options.name, comp)
-      }
-    })
-  }
-}
-</code></pre>
-<h3 id="3-便捷组件生成">3、便捷组件生成</h3>
-<pre><code class="language-json">{
-    &quot;create&quot;: &quot;node build/create-component&quot;,
-    &quot;generate&quot;: &quot;node build/create-md&quot;
-}
-</code></pre>
-<p>一键生成新的组件规则，通过读取模板，生成组件主文件，组件样式文件，组件文档，将组件添加进路由等等一系列重复操作，减少开发人员开发成本，也是不可或缺的一部分，通过命令行inquiry式调用，提升开发效率</p>
-<h3 id="4-组件命令封装">4、组件命令封装</h3>
-<p>文档打包，组件打包，全量、按需、开发、生产，<code>require(&quot;package.json&quot;).script</code>会越来越大，显得十分臃肿且难以理解，封装一个cli，可以增加可读性，减小代码体积，也提升了再建组件库的通用性。</p>
-<pre><code class="language-json">&quot;scripts&quot;: {
-&quot;bootstrap&quot;: &quot;yarn || npm i&quot;,
-&quot;dev&quot;: &quot;vant-cli dev&quot;,
-&quot;lint&quot;: &quot;vant-cli lint&quot;,
-&quot;test&quot;: &quot;vant-cli test&quot;,
-&quot;build&quot;: &quot;vant-cli build&quot;,
-&quot;release&quot;: &quot;vant-cli release&quot;,
-&quot;test:watch&quot;: &quot;vant-cli test --watch&quot;,
-&quot;release:site&quot;: &quot;sh docs/site/release.sh&quot;,
-&quot;test:coverage&quot;: &quot;open test/coverage/index.html&quot;
-}
-</code></pre>
-<h1 id="总结">总结</h1>
-<p>一个好的组件库不仅在组件本身的通用性，易用性，也在于整体组件库架构设计的可重用性，规范性，易扩展性，市面上的组件库层次不齐，组件库设计可以参考大的如element-ui，ant-design，vant等优秀组件库进行设计</p>
 ]]></content>
     </entry>
 </feed>
